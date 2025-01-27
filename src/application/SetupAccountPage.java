@@ -51,28 +51,47 @@ public class SetupAccountPage {
             String userName = userNameField.getText();
             String password = passwordField.getText();
             String code = inviteCodeField.getText();
+            String userNameError = UserNameRecognizer.checkForValidUserName(userName);
+            String passwordError = PasswordEvaluator.evaluatePassword(password);
+            
+
             
             try {
-            	// Check if the user already exists
-            	if(!databaseHelper.doesUserExist(userName)) {
+            	// Check if the username is valid
+            	if(userNameError.equals("")) {
             		
-            		// Validate the invitation code
-            		if(databaseHelper.validateInvitationCode(code)) {
+            		// Check if the password is valid
+            		if (passwordError.equals("")) {
             			
-            			// Create a new user and register them in the database
-		            	User user=new User(userName, password, "user");
-		                databaseHelper.register(user);
+	            		// Check if the user already exists
+	            		if(!databaseHelper.doesUserExist(userName)) {
+	        		
+	            			// Validate the invitation code
+	            			if(databaseHelper.validateInvitationCode(code)) {
+	        			
+	            				// Create a new user and register them in the database
+	            				User user=new User(userName, password, "user");
+	            				databaseHelper.register(user);
 		                
-		             // Navigate to the Welcome Login Page
-		                new WelcomeLoginPage(databaseHelper).show(primaryStage,user);
+	            				// Navigate to the Welcome Login Page
+	            				new WelcomeLoginPage(databaseHelper).show(primaryStage,user);
+	            			}
+	            			else {
+	            				errorLabel.setText("Please enter a valid invitation code");
+	            			}
+	            		}
+	            		else {
+	            			errorLabel.setText("This userName is taken!!.. Please use another to setup an account");
+	            		}
             		}
             		else {
-            			errorLabel.setText("Please enter a valid invitation code");
+            			errorLabel.setText(passwordError);
             		}
             	}
             	else {
-            		errorLabel.setText("This useruserName is taken!!.. Please use another to setup an account");
+            		errorLabel.setText(userNameError);
             	}
+            		
             	
             } catch (SQLException e) {
                 System.err.println("Database error: " + e.getMessage());
