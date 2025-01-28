@@ -144,9 +144,6 @@ public class DatabaseHelper {
 	// Validates an invitation code to check if it is unused.
 	public boolean validateInvitationCode(String code) {
 	    String query = "SELECT * FROM InvitationCodes WHERE code = ? AND isUsed = FALSE";
-	    if (code.equals("0000")) { // THIS MUST BE REMOVED
-	    	return true;
-	    }
 	    try (PreparedStatement pstmt = connection.prepareStatement(query)) {
 	        pstmt.setString(1, code);
 	        ResultSet rs = pstmt.executeQuery();
