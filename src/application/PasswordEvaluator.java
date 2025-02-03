@@ -15,6 +15,8 @@ public class PasswordEvaluator {
 	 * 
 	 * @version 0.00	LRC	2018-02-22	Initial baseline 
 	 * @version 0.10	ES	2025-01-16	Updated error messages for UX improvement.
+	 * @version 1.11 	ES	2025-02-03	Disabled debug messages and added error messages to
+	 * 									System.err.
 	 * 
 	 */
 

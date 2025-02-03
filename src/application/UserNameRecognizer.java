@@ -17,7 +17,8 @@ public class UserNameRecognizer {
 	 * @version 1.01	LRC	2024-09-17	Correction to address UNChar coding error, improper error
 	 * 									message, and improve internal documentation
 	 * @version 1.10	ES	2025-01-16	Updated FSM based on new requirements.
-	 * 
+	 * @version 1.11 	ES	2025-02-03	Disabled debug messages and added error messages to
+	 * 									System.err.
 	 */
 
 	/**********************************************************************************************
