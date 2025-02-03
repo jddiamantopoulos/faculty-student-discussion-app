@@ -224,6 +224,8 @@ public class UserNameRecognizer {
 		case 0:
 			// State 0 is not a final state, so we can return a very specific error message
 			userNameRecognizerErrorMessage += "A UserName must start with A-Z or a-z.\n";
+			System.err.println("An error was found with user input in the password field.");
+			System.err.println("Message: " + userNameRecognizerErrorMessage);
 			return userNameRecognizerErrorMessage;
 
 		case 1:
@@ -233,18 +235,24 @@ public class UserNameRecognizer {
 			if (userNameSize < 4) {
 				// UserName is too small
 				userNameRecognizerErrorMessage += "A UserName must have at least 4 characters.\n";
+				System.err.println("An error was found with user input in the password field.");
+				System.err.println("Message: " + userNameRecognizerErrorMessage);
 				return userNameRecognizerErrorMessage;
 			}
 			else if (userNameSize > 16) {
 				// UserName is too long
 				userNameRecognizerErrorMessage += 
 					"A UserName must have no more than 16 characters.\n";
+				System.err.println("An error was found with user input in the password field.");
+				System.err.println("Message: " + userNameRecognizerErrorMessage);
 				return userNameRecognizerErrorMessage;
 			}
 			else if (currentCharNdx < input.length()) {
 				// There are characters remaining in the input, so the input is not valid
 				userNameRecognizerErrorMessage += 
 					"A UserName must only contain A-Z, a-z, 0-9, or select special characters ( , || - || _ ).\n";
+				System.err.println("An error was found with user input in the password field.");
+				System.err.println("Message: " + userNameRecognizerErrorMessage);
 				return userNameRecognizerErrorMessage;
 			}
 			else {
@@ -258,6 +266,8 @@ public class UserNameRecognizer {
 			// State 2 is not a final state, so we can return a very specific error message
 			userNameRecognizerErrorMessage +=
 				"A UserName character after a period, hyphen, or underscore must be A-Z, a-z, 0-9.\n";
+			System.err.println("An error was found with user input in the password field.");
+			System.err.println("Message: " + userNameRecognizerErrorMessage);
 			return userNameRecognizerErrorMessage;
 			
 		default:

@@ -146,6 +146,8 @@ public class PasswordEvaluator {
 		if (errMessage == "")
 			return "";
 		
+		System.err.println("An error was found with user input in the password field.");
+		System.err.println("Message: " + errMessage);
 		passwordIndexofError = currentCharNdx;
 		return "The following password conditions were not met: " + errMessage;
 
