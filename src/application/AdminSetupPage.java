@@ -33,25 +33,42 @@ public class AdminSetupPage {
 
         Button setupButton = new Button("Setup");
         
+        // Label to display error messages for invalid usernames and passwords
+        Label errorLabel = new Label();
+        errorLabel.setStyle("-fx-text-fill: red; -fx-font-size: 12px;");
+        
         setupButton.setOnAction(a -> {
         	// Retrieve user input
             String userName = userNameField.getText();
             String password = passwordField.getText();
+            String userNameError = UserNameRecognizer.checkForValidUserName(userName);
+            String passwordError = PasswordEvaluator.evaluatePassword(password);
+            
             try {
-            	// Create a new User object with admin role and register in the database
-            	User user=new User(userName, password, "admin");
-                databaseHelper.register(user);
-                System.out.println("Administrator setup completed.");
-                
-                // Navigate to the Welcome Login Page
-                new WelcomeLoginPage(databaseHelper).show(primaryStage,user);
+            	if (userNameError.equals("")) {
+            		if (passwordError.equals("")) {
+		            	// Create a new User object with admin role and register in the database
+		            	User user=new User(userName, password, "admin");
+		                databaseHelper.register(user);
+		                System.out.println("Administrator setup completed.");
+		                
+		                // Navigate to the Welcome Login Page
+		                new WelcomeLoginPage(databaseHelper).show(primaryStage,user);
+            		}
+	                else {
+	                	errorLabel.setText(passwordError);
+	                }
+            	}
+            	else {
+            		errorLabel.setText(userNameError);
+            	}
             } catch (SQLException e) {
                 System.err.println("Database error: " + e.getMessage());
                 e.printStackTrace();
             }
         });
 
-        VBox layout = new VBox(10, userNameField, passwordField, setupButton);
+        VBox layout = new VBox(10, userNameField, passwordField, setupButton, errorLabel);
         layout.setStyle("-fx-padding: 20; -fx-alignment: center;");
 
         primaryStage.setScene(new Scene(layout, 800, 400));
