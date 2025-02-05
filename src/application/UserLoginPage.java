@@ -11,14 +11,20 @@ import databasePart1.*;
  * The UserLoginPage class provides a login interface with FSM-based login handling.
  * 
  * Improvements:
- * 1. Introduced an FSM (Finite State Machine) with `LoginState` enum to track different login stages.
- * 2. Ensured state-based transitions to prevent repeating login attempts.
- * 3. Centralized authentication in `authenticateUser` to manage state updates and error handling.
+ * 1. Added a system (`LoginState`) to track different steps of the login process.  
+ *2. Made sure users can't try logging in multiple times at the same time.  
+ *3. Moved login checks into one place (`authenticateUser`) to update states and handle errors better.  
+ *4. Added a check to make sure username and password fields aren't empty before logging in.  
+ *5. Included a logout function to reset the login process.  
+ *6. Cleaned up the code by putting UI setup in a separate method for better readability.
  */
 public class UserLoginPage {
     private final DatabaseHelper databaseHelper;
     private LoginState loginState;
-    
+    private TextField userNameField;
+    private PasswordField passwordField;
+    private Label errorLabel;
+
     // Define FSM states
     private enum LoginState {
         ENTER_CREDENTIALS,  // Initial state where user enters login details
@@ -33,30 +39,33 @@ public class UserLoginPage {
     }
 
     public void show(Stage primaryStage) {
-        TextField userNameField = new TextField();
+        initializeUI(primaryStage);
+    }
+
+    /**
+     * Initializes UI components to improve code readability and modularity.
+     */
+    private void initializeUI(Stage primaryStage) {
+        userNameField = new TextField();
         userNameField.setPromptText("Enter userName");
         userNameField.setMaxWidth(250);
 
-        PasswordField passwordField = new PasswordField();
+        passwordField = new PasswordField();
         passwordField.setPromptText("Enter Password");
         passwordField.setMaxWidth(250);
         
-        Label errorLabel = new Label();
+        errorLabel = new Label();
         errorLabel.setStyle("-fx-text-fill: red; -fx-font-size: 12px;");
 
         Button loginButton = new Button("Login");
+        Button logoutButton = new Button("Logout");
         
-        // Making sure the login process only proceeds when in ENTER_CREDENTIALS state
-        loginButton.setOnAction(a -> {
-            if (loginState == LoginState.ENTER_CREDENTIALS) {
-                loginState = LoginState.AUTHENTICATING;
-                authenticateUser(userNameField.getText(), passwordField.getText(), errorLabel, primaryStage);
-            }
-        });
+        loginButton.setOnAction(a -> handleLogin(primaryStage));
+        logoutButton.setOnAction(a -> handleLogout());
 
         VBox layout = new VBox(10);
         layout.setStyle("-fx-padding: 20; -fx-alignment: center;");
-        layout.getChildren().addAll(userNameField, passwordField, loginButton, errorLabel);
+        layout.getChildren().addAll(userNameField, passwordField, loginButton, logoutButton, errorLabel);
 
         primaryStage.setScene(new Scene(layout, 800, 400));
         primaryStage.setTitle("User Login");
@@ -64,33 +73,61 @@ public class UserLoginPage {
     }
 
     /**
+     * Handles login attempts, including input validation and authentication state management.
+     */
+    private void handleLogin(Stage primaryStage) {
+        if (loginState == LoginState.ENTER_CREDENTIALS) {
+            String userName = userNameField.getText().trim();
+            String password = passwordField.getText().trim();
+
+            if (userName.isEmpty() || password.isEmpty()) {
+                errorLabel.setText("Username and Password cannot be empty.");
+                return;
+            }
+
+            loginState = LoginState.AUTHENTICATING;
+            authenticateUser(userName, password, primaryStage);
+        }
+    }
+
+    /**
      * Handles user authentication while managing FSM state transitions.
      * Ensures proper error handling and state updates based on the authentication outcome.
      */
-    private void authenticateUser(String userName, String password, Label errorLabel, Stage primaryStage) {
+    private void authenticateUser(String userName, String password, Stage primaryStage) {
         try {
             User user = new User(userName, password, "");
             WelcomeLoginPage welcomeLoginPage = new WelcomeLoginPage(databaseHelper);
             
-            // Retrieve user role from the database
             String role = databaseHelper.getUserRole(userName);
             if (role != null) {
                 user.setRole(role);
                 if (databaseHelper.login(user)) {
-                    loginState = LoginState.LOGIN_SUCCESS; // Successful login transition
+                    loginState = LoginState.LOGIN_SUCCESS;
                     welcomeLoginPage.show(primaryStage, user);
                 } else {
-                    loginState = LoginState.LOGIN_FAILURE; // Failed login transition
+                    loginState = LoginState.LOGIN_FAILURE;
                     errorLabel.setText("Error logging in");
                 }
             } else {
-                loginState = LoginState.LOGIN_FAILURE; // User does not exist in database
+                loginState = LoginState.LOGIN_FAILURE;
                 errorLabel.setText("User account doesn't exist");
             }
         } catch (SQLException e) {
             System.err.println("Database error: " + e.getMessage());
             e.printStackTrace();
-            loginState = LoginState.LOGIN_FAILURE; // Handle database errors
+            loginState = LoginState.LOGIN_FAILURE;
         }
     }
+
+    /**
+     * Handles logout functionality by resetting the FSM state.
+     */
+    private void handleLogout() {
+        loginState = LoginState.ENTER_CREDENTIALS;
+        userNameField.clear();
+        passwordField.clear();
+        errorLabel.setText("");
+    }
 }
+
