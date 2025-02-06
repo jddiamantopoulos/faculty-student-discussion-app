@@ -7,7 +7,7 @@ import javafx.stage.Stage;
 
 import java.sql.SQLException;
 
-import databasePart1.*;
+import databasePart1.DatabaseHelper;
 
 /**
  * SetupAccountPage class handles the account setup process for new users.
@@ -51,28 +51,46 @@ public class SetupAccountPage {
             String userName = userNameField.getText();
             String password = passwordField.getText();
             String code = inviteCodeField.getText();
+            String newUserRole;
+            String userNameError = UserNameRecognizer.checkForValidUserName(userName);
+            String passwordError = PasswordEvaluator.evaluatePassword(password);
+            
+
             
             try {
-            	// Check if the user already exists
-            	if(!databaseHelper.doesUserExist(userName)) {
-            		
-            		// Validate the invitation code
-            		if(databaseHelper.validateInvitationCode(code)) {
+            	// Check if the username and password are valid
+            	if(userNameError.equals("") &&
+            			passwordError.equals("")) {
             			
-            			// Create a new user and register them in the database
-		            	User user=new User(userName, password, "user");
-		                databaseHelper.register(user);
-		                
-		             // Navigate to the Welcome Login Page
-		                new WelcomeLoginPage(databaseHelper).show(primaryStage,user);
+	            		// Check if the user already exists
+	            		if(!databaseHelper.doesUserExist(userName)) {
+	        		
+	            			// Validate the invitation code
+	            			if(databaseHelper.validateInvitationCode(code)) {
+	            				
+	            				// Get the invite code's associated role from the database
+	            				newUserRole = databaseHelper.getAssociatedRole(code);
+	        			
+	            				// Create a new user and register them in the database
+	            				User user = new User(userName, password, newUserRole);
+	            				databaseHelper.register(user);
+	            				
+	            				// Navigate to the Welcome Login Page
+	            				new WelcomeLoginPage(databaseHelper).show(primaryStage, user);
+	            				
+	            			}
+            			else {
+            				errorLabel.setText("Please enter a valid invitation code");
+            			}
             		}
             		else {
-            			errorLabel.setText("Please enter a valid invitation code");
-            		}
+            			errorLabel.setText("This userName is taken!!.. Please use another to setup an account");
+            		}	
             	}
             	else {
-            		errorLabel.setText("This useruserName is taken!!.. Please use another to setup an account");
+            		errorLabel.setText(userNameError + "\n" + passwordError);
             	}
+            		
             	
             } catch (SQLException e) {
                 System.err.println("Database error: " + e.getMessage());

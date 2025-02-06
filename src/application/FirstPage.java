@@ -1,6 +1,6 @@
 package application;
 
-import databasePart1.*;
+import databasePart1.DatabaseHelper;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;

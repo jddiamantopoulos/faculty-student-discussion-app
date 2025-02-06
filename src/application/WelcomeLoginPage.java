@@ -5,7 +5,12 @@ import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.application.Platform;
-import databasePart1.*;
+import javafx.collections.FXCollections;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+
+import databasePart1.DatabaseHelper;
 
 /**
  * The WelcomeLoginPage class displays a welcome screen for authenticated users.
@@ -18,7 +23,7 @@ public class WelcomeLoginPage {
     public WelcomeLoginPage(DatabaseHelper databaseHelper) {
         this.databaseHelper = databaseHelper;
     }
-    public void show( Stage primaryStage, User user) {
+    public void show(Stage primaryStage, User user) {
     	
     	VBox layout = new VBox(5);
 	    layout.setStyle("-fx-alignment: center; -fx-padding: 20;");
@@ -26,17 +31,41 @@ public class WelcomeLoginPage {
 	    Label welcomeLabel = new Label("Welcome!!");
 	    welcomeLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
 	    
+	    // Set up the role select list in case it needs to be displayed
+	    Label roleSelect = new Label("Select your role: ");
+	    roleSelect.setStyle("-fx-font-size: 12px");
+	    ArrayList<String> rawList;
+	    // Set the list of roles
+	    if (user.getRole().equals("admin")) {
+	    	rawList = new ArrayList<String>(Arrays.asList("user", user.getRole()));
+	    }
+	    else {
+	    	rawList = new ArrayList<String>(); // initialize to empty even if unused
+	    }
+	    // Display the list of roles in a ChoiceBox
+	    ChoiceBox<String> choice = new ChoiceBox<String>(FXCollections.observableArrayList(rawList)); 
+	    
+	    // Add a horizontal bar between unrelated elements
+	    Separator horizontalSpace = new Separator();
+	    
 	    // Button to navigate to the user's respective page based on their role
 	    Button continueButton = new Button("Continue to your Page");
 	    continueButton.setOnAction(a -> {
-	    	String role =user.getRole();
-	    	System.out.println(role);
+	    	String role;
+	    	if (!(user.getRole().equals("user"))) {
+	    		role = choice.getValue().toString();
+	    		user.setRole(role);
+	    	// System.out.println(role);
+	    	}
+	    	else {
+	    		role = "user";
+	    	}
 	    	
 	    	if(role.equals("admin")) {
-	    		new AdminHomePage().show(primaryStage);
+	    		new AdminHomePage(databaseHelper, user).show(primaryStage);
 	    	}
 	    	else if(role.equals("user")) {
-	    		new UserHomePage().show(primaryStage);
+	    		new UserHomePage(databaseHelper, user).show(primaryStage);
 	    	}
 	    });
 	    
@@ -47,16 +76,26 @@ public class WelcomeLoginPage {
 	    	Platform.exit(); // Exit the JavaFX application
 	    });
 	    
+	    layout.getChildren().add(welcomeLabel);
+	    
+	    // Display role selection if applicable				// Note: This is a separate if statement
+	    if ("admin".equals(user.getRole())) {				// because it will be used with other roles.
+	    	choice.setValue(rawList.get(1));
+	    	layout.getChildren().add(roleSelect);
+            layout.getChildren().add(choice);
+            layout.getChildren().add(horizontalSpace);
+	    }
+	    
 	    // "Invite" button for admin to generate invitation codes
 	    if ("admin".equals(user.getRole())) {
-            Button inviteButton = new Button("Invite");
+            Button inviteButton = new Button("Invite New User");
             inviteButton.setOnAction(a -> {
-                new InvitationPage().show(databaseHelper, primaryStage);
+                new InvitationPage(databaseHelper).show(primaryStage);
             });
             layout.getChildren().add(inviteButton);
         }
 
-	    layout.getChildren().addAll(welcomeLabel,continueButton,quitButton);
+	    layout.getChildren().addAll(continueButton,quitButton);
 	    Scene welcomeScene = new Scene(layout, 800, 400);
 
 	    // Set the scene to primary stage
