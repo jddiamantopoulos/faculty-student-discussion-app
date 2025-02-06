@@ -40,6 +40,7 @@ public class InvitationPage {
 	    ArrayList<String> rawList = new ArrayList<String>(Arrays.asList("Select Role", "user", "admin"));
 	    ObservableList<String> list = FXCollections.observableArrayList(rawList);
 	    ChoiceBox choice = new ChoiceBox(FXCollections.observableArrayList(rawList)); 
+	    choice.setValue(rawList.get(0));
 	    
 	    // Label to display the generated invitation code
 	    Label inviteCodeLabel = new Label(""); ;
