@@ -44,8 +44,7 @@ public class WelcomeLoginPage {
 	    	rawList = new ArrayList<String>(); // initialize to empty even if unused
 	    }
 	    // Display the list of roles in a ChoiceBox
-	    ObservableList<String> list = FXCollections.observableArrayList(rawList);
-	    ChoiceBox choice = new ChoiceBox(FXCollections.observableArrayList(rawList)); 
+	    ChoiceBox<String> choice = new ChoiceBox<String>(FXCollections.observableArrayList(rawList)); 
 	    
 	    // Add a horizontal bar between unrelated elements
 	    Separator horizontalSpace = new Separator();
