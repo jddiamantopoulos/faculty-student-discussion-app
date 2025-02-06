@@ -7,7 +7,7 @@ import javafx.stage.Stage;
 
 import java.sql.SQLException;
 
-import databasePart1.*;
+import databasePart1.DatabaseHelper;
 
 /**
  * The UserLoginPage class provides a login interface for users to access their accounts.
@@ -43,20 +43,23 @@ public class UserLoginPage {
             String userName = userNameField.getText();
             String password = passwordField.getText();
             try {
-            	User user=new User(userName, password, "");
-            	WelcomeLoginPage welcomeLoginPage = new WelcomeLoginPage(databaseHelper);
-            	
-            	// Retrieve the user's role from the database using userName
+            	User user = new User(userName, password, "");
             	String role = databaseHelper.getUserRole(userName);
             	
-            	if(role!=null) {
+            	if (role != null) {
             		user.setRole(role);
+<<<<<<< HEAD
             		if(databaseHelper.login(user)) {
             			welcomeLoginPage.show(primaryStage, user);
             		}
             		else {
             			// Display an error if the login fails
                         errorLabel.setText("Error logging in");
+=======
+            		if (databaseHelper.login(user)) {
+            			User fullUser = databaseHelper.getUser(userName);
+            			new WelcomeLoginPage(databaseHelper).show(primaryStage, fullUser);
+>>>>>>> TP1-HS
             		}
             	}
             	else {

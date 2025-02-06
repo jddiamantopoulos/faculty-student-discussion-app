@@ -19,16 +19,15 @@ public class StartCSE360 extends Application {
 	@Override
     public void start(Stage primaryStage) {
         try {
-            databaseHelper.connectToDatabase(); // Connect to the database
+            databaseHelper.connectToDatabase();
             if (databaseHelper.isDatabaseEmpty()) {
-            	
-            	new FirstPage(databaseHelper).show(primaryStage);
+                new FirstPage(databaseHelper).show(primaryStage);
             } else {
-            	new SetupLoginSelectionPage(databaseHelper).show(primaryStage);
-                
+                new SetupLoginSelectionPage(databaseHelper).show(primaryStage);
             }
         } catch (SQLException e) {
-        	System.out.println(e.getMessage());
+            System.err.println("Database error: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 	

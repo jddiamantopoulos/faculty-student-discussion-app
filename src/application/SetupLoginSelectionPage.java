@@ -5,7 +5,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
-import databasePart1.*;
+import databasePart1.DatabaseHelper;
 
 /**
  * The SetupLoginSelectionPage class allows users to choose between setting up a new account
@@ -20,23 +20,41 @@ public class SetupLoginSelectionPage {
     }
 
     public void show(Stage primaryStage) {
+        // First check if any users exist in the database
+        if (!databaseHelper.hasUsers()) {
+            // If no users exist, go directly to admin setup
+            new AdminSetupPage(databaseHelper).show(primaryStage);
+            return;
+        }
+
+        // If users exist, show the normal selection page
+        Label titleLabel = new Label("Welcome to Account Management");
+        titleLabel.setStyle("-fx-font-size: 20px; -fx-font-weight: bold;");
         
-    	// Buttons to select Login / Setup options that redirect to respective pages
-        Button setupButton = new Button("SetUp");
+        Button setupButton = new Button("Setup New Account");
+        setupButton.setStyle("-fx-font-size: 14px; -fx-min-width: 150px;");
+        
         Button loginButton = new Button("Login");
+        loginButton.setStyle("-fx-font-size: 14px; -fx-min-width: 150px;");
         
-        setupButton.setOnAction(a -> {
+        setupButton.setOnAction(event -> {
             new SetupAccountPage(databaseHelper).show(primaryStage);
         });
-        loginButton.setOnAction(a -> {
-        	new UserLoginPage(databaseHelper).show(primaryStage);
+        
+        loginButton.setOnAction(event -> {
+            new UserLoginPage(databaseHelper).show(primaryStage);
         });
 
-        VBox layout = new VBox(10);
-        layout.setStyle("-fx-padding: 20; -fx-alignment: center;");
-        layout.getChildren().addAll(setupButton, loginButton);
+        // Create vertical layout with spacing and padding
+        VBox layout = new VBox(20); // 20 pixels spacing between elements
+        layout.setStyle("-fx-padding: 40; -fx-alignment: center;");
+        layout.getChildren().addAll(titleLabel, setupButton, loginButton);
 
-        primaryStage.setScene(new Scene(layout, 800, 400));
+        // Create scene with proper size
+        Scene scene = new Scene(layout, 800, 400);
+        
+        // Set the stage
+        primaryStage.setScene(scene);
         primaryStage.setTitle("Account Setup");
         primaryStage.show();
     }

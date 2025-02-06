@@ -25,7 +25,6 @@ public class DatabaseHelper {
 
 	private Connection connection = null;
 	private Statement statement = null; 
-	//	PreparedStatement pstmt
 
 	public void connectToDatabase() throws SQLException {
 		try {
@@ -42,6 +41,7 @@ public class DatabaseHelper {
 	}
 
 	private void createTables() throws SQLException {
+<<<<<<< HEAD
 		String userTable = "CREATE TABLE IF NOT EXISTS cse360users ("
 				+ "id INT AUTO_INCREMENT PRIMARY KEY, "
 				+ "userName VARCHAR(255) UNIQUE, "
@@ -55,6 +55,29 @@ public class DatabaseHelper {
 	            + "role VARCHAR(127), "
 	            + "isUsed BOOLEAN DEFAULT FALSE)";
 	    statement.execute(invitationCodesTable);
+=======
+		// First check if we need to update existing table
+		try {
+			statement.executeQuery("SELECT name FROM cse360users LIMIT 1");
+		} catch (SQLException e) {
+		// Create tables if they don't exist
+			String userTable = "CREATE TABLE IF NOT EXISTS cse360users ("
+					+ "id INT AUTO_INCREMENT PRIMARY KEY, "
+					+ "userName VARCHAR(255) UNIQUE, "
+					+ "password VARCHAR(255), "
+					+ "role VARCHAR(20), "
+					+ "name VARCHAR(255), "
+					+ "email VARCHAR(255))";
+			statement.execute(userTable);
+			
+			// Create the invitation codes table
+		    String invitationCodesTable = "CREATE TABLE IF NOT EXISTS InvitationCodes ("
+		            + "code VARCHAR(10) PRIMARY KEY,"
+		            + "role VARCHAR(127), "
+		            + "isUsed BOOLEAN DEFAULT FALSE)";
+		    statement.execute(invitationCodesTable);
+		}
+>>>>>>> TP1-HS
 	}
 
 
@@ -70,16 +93,19 @@ public class DatabaseHelper {
 
 	// Registers a new user in the database.
 	public void register(User user) throws SQLException {
-		String insertUser = "INSERT INTO cse360users (userName, password, role) VALUES (?, ?, ?)";
+		String insertUser = "INSERT INTO cse360users (userName, password, role, name, email) VALUES (?, ?, ?, ?, ?)";
 		try (PreparedStatement pstmt = connection.prepareStatement(insertUser)) {
 			pstmt.setString(1, user.getUserName());
 			pstmt.setString(2, user.getPassword());
 			pstmt.setString(3, user.getRole());
+			pstmt.setString(4, user.getName());
+			pstmt.setString(5, user.getEmail());
 			pstmt.executeUpdate();
 		}
 	}
 
 	// Validates a user's login credentials.
+	// No need to validate personal info.
 	public boolean login(User user) throws SQLException {
 		String query = "SELECT * FROM cse360users WHERE userName = ? AND password = ? AND role = ?";
 		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
@@ -87,9 +113,33 @@ public class DatabaseHelper {
 			pstmt.setString(2, user.getPassword());
 			pstmt.setString(3, user.getRole());
 			try (ResultSet rs = pstmt.executeQuery()) {
-				return rs.next();
+				if (rs.next()) {
+					// Update the user object with name and email
+					String name = rs.getString("name");
+					String email = rs.getString("email");
+					user.setName(name != null ? name : "");
+					user.setEmail(email != null ? email : "");
+					return true;
+				}
+				else {
+					return false;
+				}
 			}
 		}
+	}
+	
+	// Determines if there are users in the table
+	public boolean hasUsers() {
+	    try {
+	        String query = "SELECT COUNT(*) FROM cse360users";
+	        java.sql.ResultSet rs = statement.executeQuery(query);
+	        if (rs.next()) {
+	            return rs.getInt(1) > 0;
+	        }
+	    } catch (SQLException e) {
+	        System.err.println("Error checking for users: " + e.getMessage());
+	    }
+	    return false;
 	}
 	
 	// Checks if a user already exists in the database based on their userName.
@@ -108,6 +158,27 @@ public class DatabaseHelper {
 	        e.printStackTrace();
 	    }
 	    return false; // If an error occurs, assume user doesn't exist
+	}
+	
+	// Add method to get full user information
+	public User getUser(String userName) throws SQLException {
+	    String query = "SELECT * FROM cse360users WHERE userName = ?";
+	    try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+	        pstmt.setString(1, userName);
+	        ResultSet rs = pstmt.executeQuery();
+	        if (rs.next()) {
+	            String name = rs.getString("name");
+	            String email = rs.getString("email");
+	            return new User(
+	                rs.getString("userName"),
+	                rs.getString("password"),
+	                rs.getString("role"),
+	                name != null ? name : "",
+	                email != null ? email : ""
+	            );
+	        }
+	    }
+	    return null;
 	}
 	
 	// Retrieves the role of a user from the database using their UserName.
@@ -142,6 +213,24 @@ public class DatabaseHelper {
 		return null;
 	}
 	
+<<<<<<< HEAD
+=======
+	// Update the information for a given user
+	public void updateUserInfo(User user) throws SQLException {
+	    String query = "UPDATE cse360users SET name = ?, email = ?, password = ? WHERE userName = ?";
+	    try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+	        pstmt.setString(1, user.getName());
+	        pstmt.setString(2, user.getEmail());
+	        pstmt.setString(3, user.getPassword());
+	        pstmt.setString(4, user.getUserName());
+	        pstmt.executeUpdate();
+	    }
+	    catch (SQLException e) {
+	    	e.printStackTrace();
+	    }
+	}
+	
+>>>>>>> TP1-HS
 	// Generates a new invitation code and inserts it into the database.
 	public String generateInvitationCode(String role) {
 	    String code = UUID.randomUUID().toString().substring(0, 4); // Generate a random 4-character code

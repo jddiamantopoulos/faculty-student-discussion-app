@@ -18,9 +18,17 @@ public class AdminHomePage {
      * @param primaryStage The primary stage where the scene will be displayed.
      */
 	private DatabaseHelper databaseHelper;
+<<<<<<< HEAD
 	
 	public AdminHomePage(DatabaseHelper databaseHelper) {
 		this.databaseHelper = databaseHelper;
+=======
+	private User currentUser;
+	
+	public AdminHomePage(DatabaseHelper databaseHelper, User currentUser) {
+		this.databaseHelper = databaseHelper;
+		this.currentUser = currentUser;
+>>>>>>> TP1-HS
 	}
 	
     public void show(Stage primaryStage) {
@@ -29,7 +37,8 @@ public class AdminHomePage {
 	    layout.setStyle("-fx-alignment: center; -fx-padding: 20;");
 	    
 	    // label to display the welcome message for the admin
-	    Label adminLabel = new Label("Hello, Admin!");
+	    Label adminLabel = new Label("Hello, " + 
+	        (currentUser.getName().isEmpty() ? "Admin" : currentUser.getName()) + "!");
 	    
 	    adminLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
 	    
@@ -37,11 +46,24 @@ public class AdminHomePage {
 	    Button logout = new Button("Logout");
 	    
 	    logout.setOnAction(a -> {
+<<<<<<< HEAD
 	    	new SetupLoginSelectionPage(databaseHelper).show(primaryStage);
         });
 	    
 	    layout.getChildren().add(adminLabel);
 	    layout.getChildren().add(logout);
+=======
+	    	// databaseHelper.closeConnection();  // Removing, fixes logout bug
+	    	new SetupLoginSelectionPage(databaseHelper).show(primaryStage);
+        });
+	    
+	    Button updateAccountBtn = new Button("Update Account Info");
+	    updateAccountBtn.setOnAction(a -> {
+	    	new AccountUpdatePage(databaseHelper, currentUser).show(primaryStage);
+	    });
+	    
+	    layout.getChildren().addAll(adminLabel, updateAccountBtn, logout);
+>>>>>>> TP1-HS
 
 	    Scene adminScene = new Scene(layout, 800, 400);
 
