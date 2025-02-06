@@ -3,6 +3,7 @@ package application;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
+import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -47,6 +48,7 @@ public class WelcomeLoginPage {
 	    
 	    // Add a horizontal bar between unrelated elements
 	    Separator horizontalSpace = new Separator();
+	    Separator horizontalSpace2 = new Separator();
 	    
 	    // Button to navigate to the user's respective page based on their role
 	    Button continueButton = new Button("Continue to your Page");
@@ -67,6 +69,12 @@ public class WelcomeLoginPage {
 	    	else if(role.equals("user")) {
 	    		new UserHomePage(databaseHelper, user).show(primaryStage);
 	    	}
+	    });
+	    
+	    // Button to log out of the application
+	    Button logoutButton = new Button("Logout");
+	    logoutButton.setOnAction(a -> {
+	    	new SetupLoginSelectionPage(databaseHelper).show(primaryStage);
 	    });
 	    
 	    // Button to quit the application
@@ -95,7 +103,7 @@ public class WelcomeLoginPage {
             layout.getChildren().add(inviteButton);
         }
 
-	    layout.getChildren().addAll(continueButton,quitButton);
+	    layout.getChildren().addAll(continueButton, horizontalSpace2, logoutButton, quitButton);
 	    Scene welcomeScene = new Scene(layout, 800, 400);
 
 	    // Set the scene to primary stage
