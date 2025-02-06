@@ -14,6 +14,8 @@ import javafx.stage.Stage;
 public class UserHomePage {
 	private DatabaseHelper databaseHelper;
 	
+	// databaseHelper is not global, needs to be passed 
+	// through here to allow it to be passed back to the first page.
 	public UserHomePage(DatabaseHelper databaseHelper) {
 		this.databaseHelper = databaseHelper;
 	}

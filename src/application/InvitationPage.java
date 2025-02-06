@@ -36,6 +36,7 @@ public class InvitationPage {
 	    // Button to generate the invitation code
 	    Button showCodeButton = new Button("Generate Invitation Code");
 	    
+	    // Create a list of available roles
 	    ArrayList<String> rawList = new ArrayList<String>(Arrays.asList("Select Role", "user", "admin"));
 	    ObservableList<String> list = FXCollections.observableArrayList(rawList);
 	    ChoiceBox choice = new ChoiceBox(FXCollections.observableArrayList(rawList)); 
@@ -45,8 +46,9 @@ public class InvitationPage {
         inviteCodeLabel.setStyle("-fx-font-size: 14px; -fx-font-style: italic;");
         
         Label errorLabel = new Label("");
-        errorLabel.setStyle("-fx-font-size: 14px; -fx-font-style: italic; -fx-text-fill: red;");
+        errorLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: red;");
         
+        // Verify that a role has been selected before generating an invite code
         showCodeButton.setOnAction(a -> {
         	if (choice.getValue() == null ||
         			choice.getValue().equals("Select Role")) {
