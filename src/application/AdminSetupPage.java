@@ -45,22 +45,18 @@ public class AdminSetupPage {
             String passwordError = PasswordEvaluator.evaluatePassword(password);
             
             try {
-            	if (userNameError.equals("")) {
-            		if (passwordError.equals("")) {
-		            	// Create a new User object with admin role and register in the database
-		            	User user=new User(userName, password, "admin");
-		                databaseHelper.register(user);
-		                System.out.println("Administrator setup completed.");
+            	if (userNameError.equals("") &&
+            		passwordError.equals("")) {
+		           	// Create a new User object with admin role and register in the database
+		           	User user=new User(userName, password, "admin");
+		            databaseHelper.register(user);
+		            System.out.println("Administrator setup completed.");
 		                
-		                // Navigate to the Welcome Login Page
-		                new WelcomeLoginPage(databaseHelper).show(primaryStage,user);
-            		}
-	                else {
-	                	errorLabel.setText(passwordError);
-	                }
+		            // Navigate to the Welcome Login Page
+		            new WelcomeLoginPage(databaseHelper).show(primaryStage,user);
             	}
             	else {
-            		errorLabel.setText(userNameError);
+            		errorLabel.setText(userNameError + "\n" + passwordError);
             	}
             } catch (SQLException e) {
                 System.err.println("Database error: " + e.getMessage());

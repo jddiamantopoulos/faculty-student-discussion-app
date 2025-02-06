@@ -57,11 +57,9 @@ public class SetupAccountPage {
 
             
             try {
-            	// Check if the username is valid
-            	if(userNameError.equals("")) {
-            		
-            		// Check if the password is valid
-            		if (passwordError.equals("")) {
+            	// Check if the username and password are valid
+            	if(userNameError.equals("") &&
+            			passwordError.equals("")) {
             			
 	            		// Check if the user already exists
 	            		if(!databaseHelper.doesUserExist(userName)) {
@@ -75,21 +73,18 @@ public class SetupAccountPage {
 		                
 	            				// Navigate to the Welcome Login Page
 	            				new WelcomeLoginPage(databaseHelper).show(primaryStage,user);
+	            				
 	            			}
-	            			else {
-	            				errorLabel.setText("Please enter a valid invitation code");
-	            			}
-	            		}
-	            		else {
-	            			errorLabel.setText("This userName is taken!!.. Please use another to setup an account");
-	            		}
+            			else {
+            				errorLabel.setText("Please enter a valid invitation code");
+            			}
             		}
             		else {
-            			errorLabel.setText(passwordError);
-            		}
+            			errorLabel.setText("This userName is taken!!.. Please use another to setup an account");
+            		}	
             	}
             	else {
-            		errorLabel.setText(userNameError);
+            		errorLabel.setText(userNameError + "\n" + passwordError);
             	}
             		
             	
