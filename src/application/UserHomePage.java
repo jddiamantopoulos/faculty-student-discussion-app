@@ -35,7 +35,7 @@ public class UserHomePage {
 	    Button logout = new Button("Logout");
 	    
 	    logout.setOnAction(a -> {
-	    	databaseHelper.closeConnection();  // Close the connection before logout
+	    	//databaseHelper.closeConnection();  // Removing, causes logout bug
 	    	new SetupLoginSelectionPage(databaseHelper).show(primaryStage);
         });
 	    

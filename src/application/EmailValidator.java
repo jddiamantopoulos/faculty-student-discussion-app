@@ -55,6 +55,7 @@ public class EmailValidator {
 					}
 				}
 				else {
+					errorMessage += "Invalid character in TLD component (must be alphanumeric).";
 					state = 5;
 				}
 				break;

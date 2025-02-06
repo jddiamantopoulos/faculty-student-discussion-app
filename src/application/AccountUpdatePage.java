@@ -80,6 +80,8 @@ public class AccountUpdatePage {
             String name = nameField.getText().trim();
             String email = emailField.getText().trim();
             String newPassword = passwordField.getText();
+            String emailError = EmailValidator.validateEmail(email);
+            String passwordError = PasswordEvaluator.evaluatePassword(newPassword);
 
             // Input validation
             if (name.isEmpty()) {
@@ -87,16 +89,15 @@ public class AccountUpdatePage {
                 return;
             }
 
-            // Email validation using regex
-            if (!email.matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
-                showError(messageLabel, "Please enter a valid email address");
+            // Email validation using the FSM class
+            if (!emailError.equals("")) {
+                showError(messageLabel, emailError);
                 return;
             }
 
             // Password validation if a new password is provided
             if (!newPassword.isEmpty()) {
-                String passwordError = PasswordEvaluator.evaluatePassword(newPassword);
-                if (!passwordError.isEmpty()) {
+                if (!passwordError.equals("")) {
                     showError(messageLabel, passwordError);
                     return;
                 }
