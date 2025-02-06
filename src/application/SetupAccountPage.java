@@ -73,7 +73,7 @@ public class SetupAccountPage {
             	// Check that the name field is not empty
             	// Validation is performed here as requirements are simple
             	if(!realName.equals("") &&
-            			realName.length < 255) {
+            			realName.length() < 255) {
 	            	// Check if the username and password are valid
 	            	if(userNameError.equals("") &&
 	            			passwordError.equals("")) {
@@ -92,6 +92,8 @@ public class SetupAccountPage {
 			        			
 			            				// Create a new user and register them in the database
 			            				User user = new User(userName, password, newUserRole);
+			            				user.setEmail(email);
+			            				user.setName(realName);
 			            				databaseHelper.register(user);
 			            				
 			            				// Navigate to the Welcome Login Page
@@ -115,7 +117,7 @@ public class SetupAccountPage {
 	            	}
             	}
             	else {
-            		errorLabel.setText("Please enter )
+            		errorLabel.setText("Please enter a valid name");
             	}
             	
             } catch (SQLException e) {
@@ -126,7 +128,7 @@ public class SetupAccountPage {
 
         VBox layout = new VBox(10);
         layout.setStyle("-fx-padding: 20; -fx-alignment: center;");
-        layout.getChildren().addAll(userNameField, passwordField,inviteCodeField, setupButton, errorLabel);
+        layout.getChildren().addAll(realNameField, userNameField, passwordField, emailField, inviteCodeField, setupButton, errorLabel);
 
         primaryStage.setScene(new Scene(layout, 800, 400));
         primaryStage.setTitle("Account Setup");

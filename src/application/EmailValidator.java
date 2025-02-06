@@ -5,7 +5,7 @@ public class EmailValidator {
 	public static String validateEmail(String input) {
 		int currIndex = 0;
 		int state = 0;
-		String errorMessage = "";
+		String errorMessage = "Email error: ";
 		
 		while (currIndex < input.length()) {
 			switch (state) {
@@ -16,8 +16,14 @@ public class EmailValidator {
 					currIndex++;
 				}
 				else if (input.charAt(currIndex) == '@') {
-					state = 1;
-					currIndex++;
+					if (currIndex == 0) {
+						errorMessage += "Must have some local component (the part before the '@')";
+						state = 5;
+					}
+					else {
+						state = 1;
+						currIndex++;
+					}
 				}
 				else {
 					errorMessage += "Invalid character in local component (must be alphanumeric or a special character).";
@@ -52,6 +58,8 @@ public class EmailValidator {
 					state = 5;
 				}
 				break;
+			case 3:
+				return "";
 			default:
 				return errorMessage;
 			}
