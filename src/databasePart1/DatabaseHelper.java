@@ -34,7 +34,7 @@ public class DatabaseHelper {
 			connection = DriverManager.getConnection(DB_URL, USER, PASS);
 			statement = connection.createStatement(); 
 			// You can use this command to clear the database and restart from fresh.
-			//statement.execute("DROP ALL OBJECTS");
+			// statement.execute("DROP ALL OBJECTS");
 			createTables();  // Create the necessary tables if they don't exist
 		} catch (ClassNotFoundException e) {
 			System.err.println("JDBC Driver not found: " + e.getMessage());
@@ -51,7 +51,8 @@ public class DatabaseHelper {
 		
 		// Create the invitation codes table
 	    String invitationCodesTable = "CREATE TABLE IF NOT EXISTS InvitationCodes ("
-	            + "code VARCHAR(10) PRIMARY KEY, "
+	            + "code VARCHAR(10) PRIMARY KEY,"
+	            + "role VARCHAR(127), "
 	            + "isUsed BOOLEAN DEFAULT FALSE)";
 	    statement.execute(invitationCodesTable);
 	}
@@ -125,13 +126,30 @@ public class DatabaseHelper {
 	    return null; // If no user exists or an error occurs
 	}
 	
+	// Retrieves the role associated with a given invite code.
+	public String getAssociatedRole(String code) {
+		String query = "SELECT role FROM invitationCodes WHERE code = ?";
+		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+			pstmt.setString(1, code);
+			ResultSet rs = pstmt.executeQuery();
+			
+			if (rs.next()) {
+				return rs.getString("role");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
 	// Generates a new invitation code and inserts it into the database.
-	public String generateInvitationCode() {
+	public String generateInvitationCode(String role) {
 	    String code = UUID.randomUUID().toString().substring(0, 4); // Generate a random 4-character code
-	    String query = "INSERT INTO InvitationCodes (code) VALUES (?)";
+	    String query = "INSERT INTO InvitationCodes (code, role) VALUES (?, ?)";
 
 	    try (PreparedStatement pstmt = connection.prepareStatement(query)) {
 	        pstmt.setString(1, code);
+	        pstmt.setString(2, role);
 	        pstmt.executeUpdate();
 	    } catch (SQLException e) {
 	        e.printStackTrace();

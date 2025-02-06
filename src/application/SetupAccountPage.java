@@ -51,6 +51,7 @@ public class SetupAccountPage {
             String userName = userNameField.getText();
             String password = passwordField.getText();
             String code = inviteCodeField.getText();
+            String newUserRole;
             String userNameError = UserNameRecognizer.checkForValidUserName(userName);
             String passwordError = PasswordEvaluator.evaluatePassword(password);
             
@@ -66,11 +67,14 @@ public class SetupAccountPage {
 	        		
 	            			// Validate the invitation code
 	            			if(databaseHelper.validateInvitationCode(code)) {
+	            				
+	            				// Get the invite code's associated role from the database
+	            				newUserRole = databaseHelper.getAssociatedRole(code);
 	        			
 	            				// Create a new user and register them in the database
-	            				User user=new User(userName, password, "user");
+	            				User user=new User(userName, password, newUserRole);
 	            				databaseHelper.register(user);
-		                
+	            				
 	            				// Navigate to the Welcome Login Page
 	            				new WelcomeLoginPage(databaseHelper).show(primaryStage,user);
 	            				

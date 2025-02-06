@@ -52,7 +52,7 @@ public class UserLoginPage {
             	if(role!=null) {
             		user.setRole(role);
             		if(databaseHelper.login(user)) {
-            			welcomeLoginPage.show(primaryStage,user);
+            			welcomeLoginPage.show(primaryStage, user);
             		}
             		else {
             			// Display an error if the login fails
