@@ -41,21 +41,6 @@ public class DatabaseHelper {
 	}
 
 	private void createTables() throws SQLException {
-<<<<<<< HEAD
-		String userTable = "CREATE TABLE IF NOT EXISTS cse360users ("
-				+ "id INT AUTO_INCREMENT PRIMARY KEY, "
-				+ "userName VARCHAR(255) UNIQUE, "
-				+ "password VARCHAR(255), "
-				+ "role VARCHAR(20))";
-		statement.execute(userTable);
-		
-		// Create the invitation codes table
-	    String invitationCodesTable = "CREATE TABLE IF NOT EXISTS InvitationCodes ("
-	            + "code VARCHAR(10) PRIMARY KEY,"
-	            + "role VARCHAR(127), "
-	            + "isUsed BOOLEAN DEFAULT FALSE)";
-	    statement.execute(invitationCodesTable);
-=======
 		// First check if we need to update existing table
 		try {
 			statement.executeQuery("SELECT name FROM cse360users LIMIT 1");
@@ -77,7 +62,6 @@ public class DatabaseHelper {
 		            + "isUsed BOOLEAN DEFAULT FALSE)";
 		    statement.execute(invitationCodesTable);
 		}
->>>>>>> TP1-HS
 	}
 
 
@@ -213,8 +197,6 @@ public class DatabaseHelper {
 		return null;
 	}
 	
-<<<<<<< HEAD
-=======
 	// Update the information for a given user
 	public void updateUserInfo(User user) throws SQLException {
 	    String query = "UPDATE cse360users SET name = ?, email = ?, password = ? WHERE userName = ?";
@@ -230,7 +212,6 @@ public class DatabaseHelper {
 	    }
 	}
 	
->>>>>>> TP1-HS
 	// Generates a new invitation code and inserts it into the database.
 	public String generateInvitationCode(String role) {
 	    String code = UUID.randomUUID().toString().substring(0, 4); // Generate a random 4-character code
