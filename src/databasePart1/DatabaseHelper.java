@@ -37,6 +37,7 @@ public class DatabaseHelper {
             Class.forName(JDBC_DRIVER);
             connection = DriverManager.getConnection(DB_URL, USER, PASS);
             statement = connection.createStatement();
+            statement.execute("DROP ALL OBJECTS");
             createTables();
             databaseState = DatabaseState.CONNECTED;
         } catch (ClassNotFoundException | SQLException e) {
