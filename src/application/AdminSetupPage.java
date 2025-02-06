@@ -48,20 +48,12 @@ public class AdminSetupPage {
             	if (userNameError.equals("") &&
             		passwordError.equals("")) {
 		           	// Create a new User object with admin role and register in the database
-<<<<<<< HEAD
-		           	User user=new User(userName, password, "admin");
-=======
 		           	User user = new User(userName, password, "admin");
->>>>>>> TP1-HS
 		            databaseHelper.register(user);
 		            System.out.println("Administrator setup completed.");
 		                
 		            // Navigate to the Welcome Login Page
-<<<<<<< HEAD
-		            new WelcomeLoginPage(databaseHelper).show(primaryStage,user);
-=======
 		            new WelcomeLoginPage(databaseHelper).show(primaryStage, user);
->>>>>>> TP1-HS
             	}
             	else {
             		errorLabel.setText(userNameError + "\n" + passwordError);

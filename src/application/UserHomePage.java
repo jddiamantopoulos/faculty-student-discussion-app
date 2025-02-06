@@ -13,13 +13,6 @@ import javafx.stage.Stage;
 
 public class UserHomePage {
 	private DatabaseHelper databaseHelper;
-<<<<<<< HEAD
-	
-	// databaseHelper is not global, needs to be passed 
-	// through here to allow it to be passed back to the first page.
-	public UserHomePage(DatabaseHelper databaseHelper) {
-		this.databaseHelper = databaseHelper;
-=======
 	private User currentUser;
 	
 	// databaseHelper is not global, needs to be passed 
@@ -27,7 +20,6 @@ public class UserHomePage {
 	public UserHomePage(DatabaseHelper databaseHelper, User currentUser) {
 		this.databaseHelper = databaseHelper;
 		this.currentUser = currentUser;
->>>>>>> TP1-HS
 	}
 
     public void show(Stage primaryStage) {
@@ -43,13 +35,6 @@ public class UserHomePage {
 	    Button logout = new Button("Logout");
 	    
 	    logout.setOnAction(a -> {
-<<<<<<< HEAD
-	    	new SetupLoginSelectionPage(databaseHelper).show(primaryStage);
-        });
-	    
-	    layout.getChildren().add(userLabel);
-	    layout.getChildren().add(logout);
-=======
 	    	//databaseHelper.closeConnection();  // Removing, causes logout bug
 	    	new SetupLoginSelectionPage(databaseHelper).show(primaryStage);
         });
@@ -62,7 +47,6 @@ public class UserHomePage {
 	    
 	    // Add it to your layout before the logout button
 	    layout.getChildren().addAll(userLabel, updateAccountBtn, logout);
->>>>>>> TP1-HS
 	    
 	    Scene userScene = new Scene(layout, 800, 400);
 

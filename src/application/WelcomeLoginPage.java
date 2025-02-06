@@ -6,19 +6,11 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
-<<<<<<< HEAD
-import javafx.collections.ObservableList;
-=======
->>>>>>> TP1-HS
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
-<<<<<<< HEAD
-import databasePart1.*;
-=======
 import databasePart1.DatabaseHelper;
->>>>>>> TP1-HS
 
 /**
  * The WelcomeLoginPage class displays a welcome screen for authenticated users.
@@ -70,17 +62,10 @@ public class WelcomeLoginPage {
 	    	}
 	    	
 	    	if(role.equals("admin")) {
-<<<<<<< HEAD
-	    		new AdminHomePage(databaseHelper).show(primaryStage);
-	    	}
-	    	else if(role.equals("user")) {
-	    		new UserHomePage(databaseHelper).show(primaryStage);
-=======
 	    		new AdminHomePage(databaseHelper, user).show(primaryStage);
 	    	}
 	    	else if(role.equals("user")) {
 	    		new UserHomePage(databaseHelper, user).show(primaryStage);
->>>>>>> TP1-HS
 	    	}
 	    });
 	    

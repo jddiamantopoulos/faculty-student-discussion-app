@@ -65,47 +65,11 @@ public class SetupAccountPage {
             String newUserRole;
             String userNameError = UserNameRecognizer.checkForValidUserName(userName);
             String passwordError = PasswordEvaluator.evaluatePassword(password);
-<<<<<<< HEAD
-=======
             String emailError = EmailValidator.validateEmail(email);
->>>>>>> TP1-HS
             
 
             
             try {
-<<<<<<< HEAD
-            	// Check if the username and password are valid
-            	if(userNameError.equals("") &&
-            			passwordError.equals("")) {
-            			
-	            		// Check if the user already exists
-	            		if(!databaseHelper.doesUserExist(userName)) {
-	        		
-	            			// Validate the invitation code
-	            			if(databaseHelper.validateInvitationCode(code)) {
-	            				
-	            				// Get the invite code's associated role from the database
-	            				newUserRole = databaseHelper.getAssociatedRole(code);
-	        			
-	            				// Create a new user and register them in the database
-	            				User user=new User(userName, password, newUserRole);
-	            				databaseHelper.register(user);
-	            				
-	            				// Navigate to the Welcome Login Page
-	            				new WelcomeLoginPage(databaseHelper).show(primaryStage,user);
-	            				
-	            			}
-            			else {
-            				errorLabel.setText("Please enter a valid invitation code");
-            			}
-            		}
-            		else {
-            			errorLabel.setText("This userName is taken!!.. Please use another to setup an account");
-            		}	
-            	}
-            	else {
-            		errorLabel.setText(userNameError + "\n" + passwordError);
-=======
             	// Check that the name field is not empty
             	// Validation is performed here as requirements are simple
             	if(!realName.equals("") &&
@@ -154,9 +118,7 @@ public class SetupAccountPage {
             	}
             	else {
             		errorLabel.setText("Please enter a valid name");
->>>>>>> TP1-HS
             	}
-            		
             	
             } catch (SQLException e) {
                 System.err.println("Database error: " + e.getMessage());

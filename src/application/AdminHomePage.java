@@ -18,17 +18,11 @@ public class AdminHomePage {
      * @param primaryStage The primary stage where the scene will be displayed.
      */
 	private DatabaseHelper databaseHelper;
-<<<<<<< HEAD
-	
-	public AdminHomePage(DatabaseHelper databaseHelper) {
-		this.databaseHelper = databaseHelper;
-=======
 	private User currentUser;
 	
 	public AdminHomePage(DatabaseHelper databaseHelper, User currentUser) {
 		this.databaseHelper = databaseHelper;
 		this.currentUser = currentUser;
->>>>>>> TP1-HS
 	}
 	
     public void show(Stage primaryStage) {
@@ -46,13 +40,6 @@ public class AdminHomePage {
 	    Button logout = new Button("Logout");
 	    
 	    logout.setOnAction(a -> {
-<<<<<<< HEAD
-	    	new SetupLoginSelectionPage(databaseHelper).show(primaryStage);
-        });
-	    
-	    layout.getChildren().add(adminLabel);
-	    layout.getChildren().add(logout);
-=======
 	    	// databaseHelper.closeConnection();  // Removing, fixes logout bug
 	    	new SetupLoginSelectionPage(databaseHelper).show(primaryStage);
         });
@@ -63,7 +50,6 @@ public class AdminHomePage {
 	    });
 	    
 	    layout.getChildren().addAll(adminLabel, updateAccountBtn, logout);
->>>>>>> TP1-HS
 
 	    Scene adminScene = new Scene(layout, 800, 400);
 

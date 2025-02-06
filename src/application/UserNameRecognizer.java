@@ -33,10 +33,6 @@ public class UserNameRecognizer {
 	public static int userNameRecognizerIndexofError = -1;		// The index of error location
 	private static int state = 0;						// The current state value
 	private static int nextState = 0;					// The next state value
-<<<<<<< HEAD
-	private static boolean finalState = false;			// Is this state a final state?
-=======
->>>>>>> TP1-HS
 	private static String inputLine = "";				// The input line
 	private static char currentChar;					// The current character in the line
 	private static int currentCharNdx;					// The index of the current character
@@ -44,23 +40,6 @@ public class UserNameRecognizer {
 														// running
 	private static int userNameSize = 0;			// A numeric value may not exceed 16 characters
 
-<<<<<<< HEAD
-	// Private method to display debugging data
-	private static void displayDebuggingInfo() {
-		// Display the current state of the FSM as part of an execution trace
-		if (currentCharNdx >= inputLine.length())
-			// display the line with the current state numbers aligned
-			System.out.println(((state > 99) ? " " : (state > 9) ? "  " : "   ") + state + 
-					((finalState) ? "       F   " : "           ") + "None");
-		else
-			System.out.println(((state > 99) ? " " : (state > 9) ? "  " : "   ") + state + 
-				((finalState) ? "       F   " : "           ") + "  " + currentChar + " " + 
-				((nextState > 99) ? "" : (nextState > 9) || (nextState == -1) ? "   " : "    ") + 
-				nextState + "     " + userNameSize);
-	}
-	
-=======
->>>>>>> TP1-HS
 	// Private method to move to the next character within the limits of the input line
 	private static void moveToNextCharacter() {
 		currentCharNdx++;
@@ -195,10 +174,6 @@ public class UserNameRecognizer {
 			}
 			
 			if (running) {
-<<<<<<< HEAD
-				//displayDebuggingInfo();
-=======
->>>>>>> TP1-HS
 				// When the processing of a state has finished, the FSM proceeds to the next
 				// character in the input and if there is one, it fetches that character and
 				// updates the currentChar.  If there is no next character the currentChar is
@@ -207,25 +182,10 @@ public class UserNameRecognizer {
 
 				// Move to the next state
 				state = nextState;
-<<<<<<< HEAD
-				
-				// Is the new state a final state?  If so, signal this fact.
-				if (state == 1) finalState = true;
-
-				// Ensure that one of the cases sets this to a valid value
-				nextState = -1;
-=======
->>>>>>> TP1-HS
 			}
 			// Should the FSM get here, the loop starts again
 	
 		}
-<<<<<<< HEAD
-		//displayDebuggingInfo();
-		
-		//System.out.println("The loop has ended.");
-=======
->>>>>>> TP1-HS
 		
 		// When the FSM halts, we must determine if the situation is an error or not.  That depends
 		// of the current state of the FSM and whether or not the whole string has been consumed.

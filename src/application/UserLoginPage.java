@@ -48,18 +48,9 @@ public class UserLoginPage {
             	
             	if (role != null) {
             		user.setRole(role);
-<<<<<<< HEAD
-            		if(databaseHelper.login(user)) {
-            			welcomeLoginPage.show(primaryStage, user);
-            		}
-            		else {
-            			// Display an error if the login fails
-                        errorLabel.setText("Error logging in");
-=======
             		if (databaseHelper.login(user)) {
             			User fullUser = databaseHelper.getUser(userName);
             			new WelcomeLoginPage(databaseHelper).show(primaryStage, fullUser);
->>>>>>> TP1-HS
             		}
             	}
             	else {

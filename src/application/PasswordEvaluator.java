@@ -42,26 +42,6 @@ public class PasswordEvaluator {
 														// running
 
 	/**********
-<<<<<<< HEAD
-	 * This private method display the input line and then on a line under it displays an up arrow
-	 * at the point where an error should one be detected.  This method is designed to be used to 
-	 * display the error message on the console terminal.
-	 * 
-	 * @param input				The input string
-	 * @param currentCharNdx	The location where an error was found
-	 * @return					Two lines, the entire input line followed by a line with an up arrow
-	 */
-	private static void displayInputState() {
-		// Display the entire input line
-		System.out.println(inputLine);
-		System.out.println(inputLine.substring(0,currentCharNdx) + "?");
-		System.out.println("The password size: " + inputLine.length() + "  |  The currentCharNdx: " + 
-				currentCharNdx + "  |  The currentChar: \"" + currentChar + "\"");
-	}
-
-	/**********
-=======
->>>>>>> TP1-HS
 	 * This method is a mechanical transformation of a Directed Graph diagram into a Java
 	 * method.
 	 * 
@@ -98,10 +78,6 @@ public class PasswordEvaluator {
 		// The Directed Graph simulation continues until the end of the input is reached or at some 
 		// state the current character does not match any valid transition
 		while (running) {
-<<<<<<< HEAD
-			//displayInputState();
-=======
->>>>>>> TP1-HS
 			// The cascading if statement sequentially tries the current character against all of the
 			// valid transitions
 			if (currentChar >= 'A' && currentChar <= 'Z') {
