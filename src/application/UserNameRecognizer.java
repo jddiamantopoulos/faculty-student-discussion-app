@@ -145,7 +145,7 @@ public class UserNameRecognizer {
 					// Count the character
 					userNameSize++;
 				}
-				// . -> State 2
+				// . - _ -> State 2
 				else if ((currentChar == '.') || 
 						(currentChar == '-') ||
 						(currentChar == '_')) {		// Check for special chars
@@ -251,7 +251,7 @@ public class UserNameRecognizer {
 			else if (currentCharNdx < input.length()) {
 				// There are characters remaining in the input, so the input is not valid
 				userNameRecognizerErrorMessage += 
-					"A UserName must only contain A-Z, a-z, 0-9, or select special characters ( , || - || _ ).\n";
+					"A UserName must only contain A-Z, a-z, 0-9, or select special characters ( . || - || _ ).\n";
 				System.err.println("An error was found with user input in the password field.");
 				System.err.println("Message: " + userNameRecognizerErrorMessage);
 				return userNameRecognizerErrorMessage;
