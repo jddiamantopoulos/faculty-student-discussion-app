@@ -1,6 +1,8 @@
 package application;
 
+import databasePart1.DatabaseHelper;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -10,6 +12,11 @@ import javafx.stage.Stage;
  */
 
 public class UserHomePage {
+	private DatabaseHelper databaseHelper;
+	
+	public UserHomePage(DatabaseHelper databaseHelper) {
+		this.databaseHelper = databaseHelper;
+	}
 
     public void show(Stage primaryStage) {
     	VBox layout = new VBox();
@@ -18,8 +25,17 @@ public class UserHomePage {
 	    // Label to display Hello user
 	    Label userLabel = new Label("Hello, User!");
 	    userLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
-
+	    
+	    // Button to allow logout
+	    Button logout = new Button("Logout");
+	    
+	    logout.setOnAction(a -> {
+	    	new SetupLoginSelectionPage(databaseHelper).show(primaryStage);
+        });
+	    
 	    layout.getChildren().add(userLabel);
+	    layout.getChildren().add(logout);
+	    
 	    Scene userScene = new Scene(layout, 800, 400);
 
 	    // Set the scene to primary stage

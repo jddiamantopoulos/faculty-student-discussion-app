@@ -1,5 +1,6 @@
 package application;
 
+import databasePart1.DatabaseHelper;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
@@ -16,6 +17,12 @@ public class AdminHomePage {
      * Displays the admin page in the provided primary stage.
      * @param primaryStage The primary stage where the scene will be displayed.
      */
+	private DatabaseHelper databaseHelper;
+	
+	public AdminHomePage(DatabaseHelper databaseHelper) {
+		this.databaseHelper = databaseHelper;
+	}
+	
     public void show(Stage primaryStage) {
     	VBox layout = new VBox();
     	
@@ -25,8 +32,17 @@ public class AdminHomePage {
 	    Label adminLabel = new Label("Hello, Admin!");
 	    
 	    adminLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
-
+	    
+	    // Button to allow logout
+	    Button logout = new Button("Logout");
+	    
+	    logout.setOnAction(a -> {
+	    	new SetupLoginSelectionPage(databaseHelper).show(primaryStage);
+        });
+	    
 	    layout.getChildren().add(adminLabel);
+	    layout.getChildren().add(logout);
+
 	    Scene adminScene = new Scene(layout, 800, 400);
 
 	    // Set the scene to primary stage
