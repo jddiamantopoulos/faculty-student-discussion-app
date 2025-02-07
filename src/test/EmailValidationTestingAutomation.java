@@ -46,11 +46,15 @@ public class EmailValidationTestingAutomation {
 		performTestCase(4, "etsells@asu.ed_u", false);
 		// Empty local component
 		performTestCase(5, "@asu.edu", false);
+		// Cov hole 1: no @
+		performTestCase(6, "etsells", false);
+		// Cov hole 2: no .
+		performTestCase(7, "etsells@asu", false);
 		
 		// Testing some valid emails
-		performTestCase(6, "etsells@asu.edu", true);
-		performTestCase(7, "email@gmail.com", true);
-		performTestCase(8, "random@yahoo.com", true);
+		performTestCase(8, "etsells@asu.edu", true);
+		performTestCase(9, "email@gmail.com", true);
+		performTestCase(10, "random@yahoo.com", true);
 		
 		/************** End of the test cases **************/
 		
