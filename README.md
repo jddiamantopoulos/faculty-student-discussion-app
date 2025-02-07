@@ -3,6 +3,7 @@
 Wait, it's all java? (always has been)
 
 ===User Guide===
+
 Installation:
 No additional dependencies have been added beyond the database and JavaFX. To run the project, either download as a .zip file, or use git to clone the repository.
 
