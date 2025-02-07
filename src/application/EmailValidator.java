@@ -83,8 +83,9 @@ public class EmailValidator {
 			return false;
 		}
 	}
-		
-	private static boolean isAlphaNumeric(char currChar) {
+	
+	// Used in the databaseHelper, so it's being left public
+	public static boolean isAlphaNumeric(char currChar) {
 		if ((currChar >= 'A' && currChar <= 'Z') ||
 				(currChar >= 'a' && currChar <= 'z') ||
 				(currChar >= '0' && currChar <= '9')) {

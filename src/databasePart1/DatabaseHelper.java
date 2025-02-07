@@ -7,6 +7,7 @@ import java.sql.Statement;
 import java.util.UUID;
 
 import application.User;
+import application.EmailValidator;
 
 
 /**
@@ -230,6 +231,17 @@ public class DatabaseHelper {
 	
 	// Validates an invitation code to check if it is unused.
 	public boolean validateInvitationCode(String code) {
+		// Before asking the database, we'll check if it's in the right format.
+		if (code.length() == 4) {
+			for (int i = 0; i < 4; i++) {
+				if (!EmailValidator.isAlphaNumeric(code.charAt(i))) {
+					return false;
+				}
+			}
+		}
+		else {
+			return false;
+		}
 	    String query = "SELECT * FROM InvitationCodes WHERE code = ? AND isUsed = FALSE";
 	    try (PreparedStatement pstmt = connection.prepareStatement(query)) {
 	        pstmt.setString(1, code);
