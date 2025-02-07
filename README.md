@@ -1,7 +1,5 @@
 ﻿# CSE360Monday25
 
-![image](https://github.com/user-attachments/assets/8463c066-344e-4036-a3e8-34fd37a8815f)
-
 ===User Guide===
 
 Installation:
