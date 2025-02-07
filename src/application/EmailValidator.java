@@ -68,7 +68,14 @@ public class EmailValidator {
 		if (state == 3) {
 			return "";
 		}
+		// Catches coverage issues
 		else {
+			if (state == 0) {
+				return errorMessage + "'@' symbol missing.";
+			}
+			if (state == 1) {
+				return errorMessage + "No TLD found.";
+			}
 			return "There was a problem validating this email. Please report the issue.";
 		}
 	}
