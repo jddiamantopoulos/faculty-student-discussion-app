@@ -41,9 +41,9 @@ public class EmailValidationTestingAutomation {
 		// Invalid char in SLD
 		performTestCase(2, "etsells@as\\u.edu", false);
 		// Spchar in SLD
-		performTestCase(3, "ets\\ells@as_u.edu", false);
+		performTestCase(3, "etsells@as_u.edu", false);
 		// SPchar in TLD
-		performTestCase(4, "ets\\ells@asu.ed_u", false);
+		performTestCase(4, "etsells@asu.ed_u", false);
 		// Empty local component
 		performTestCase(5, "@asu.edu", false);
 		
