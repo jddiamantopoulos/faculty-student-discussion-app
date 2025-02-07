@@ -14,9 +14,11 @@ import java.util.Arrays;
 public class InvitationPage {
 
 	private final DatabaseHelper databaseHelper;
+	private final User user;
 
-	public InvitationPage(DatabaseHelper databaseHelper) {
+	public InvitationPage(DatabaseHelper databaseHelper, User user) {
 		this.databaseHelper = databaseHelper;
+		this.user = user;
 	}
 
 	/**
@@ -47,6 +49,12 @@ public class InvitationPage {
 	    Label errorLabel = new Label("");
 	    errorLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: red;");
 	    
+	    // Button to go back one screen the application
+	    Button backButton = new Button("Go Back");
+	    backButton.setOnAction(a -> {
+	    	new WelcomeLoginPage(databaseHelper).show(primaryStage, user);
+	    });
+	    
 	    // Verify that a role has been selected before generating an invite code
 	    showCodeButton.setOnAction(a -> {
 	    	if (roleChoice.getValue() == null || 
@@ -60,7 +68,7 @@ public class InvitationPage {
 	    });
 	    
 
-	    layout.getChildren().addAll(userLabel, roleChoice, showCodeButton, inviteCodeLabel, errorLabel);
+	    layout.getChildren().addAll(userLabel, roleChoice, showCodeButton, inviteCodeLabel, backButton, errorLabel);
 	    Scene inviteScene = new Scene(layout, 800, 400);
 
 	    // Set the scene to primary stage
