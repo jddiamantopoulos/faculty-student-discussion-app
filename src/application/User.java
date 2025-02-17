@@ -34,6 +34,8 @@ public class User {
     public void setName(String name) { this.name = name; }
     public void setEmail(String email) { this.email = email; }
     public void setPassword(String password) { this.password = password; }
+    // This one exists for debugging questions. DO NOT USE.
+    public void setUsername(String userName) { this.userName = userName; } 
 
     // Getters
     public String getUserName() { return userName; }

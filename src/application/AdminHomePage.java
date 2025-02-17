@@ -5,6 +5,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import ui.QuestionListPage;
 
 
 /**
@@ -34,6 +35,15 @@ public class AdminHomePage {
 	    Label adminLabel = new Label("Hello, " + 
 	        (currentUser.getName().isEmpty() ? "Admin" : currentUser.getName()) + "!");
 	    
+	    // Display a button to go to the question list page
+	    Button questionPageButton = new Button("Go to question list");
+	    questionPageButton.setOnAction(a -> {
+	    	new QuestionListPage(databaseHelper, currentUser).show(primaryStage);
+	    });
+	    
+	    // Separator between unrelated elements
+	    Separator separator = new Separator();
+	    
 	    adminLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
 	    
 	    // Button to allow logout
@@ -49,7 +59,7 @@ public class AdminHomePage {
 	    	new AccountUpdatePage(databaseHelper, currentUser).show(primaryStage);
 	    });
 	    
-	    layout.getChildren().addAll(adminLabel, updateAccountBtn, logout);
+	    layout.getChildren().addAll(adminLabel, questionPageButton, separator, updateAccountBtn, logout);
 
 	    Scene adminScene = new Scene(layout, 800, 400);
 

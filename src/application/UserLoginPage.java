@@ -52,6 +52,9 @@ public class UserLoginPage {
             			User fullUser = databaseHelper.getUser(userName);
             			new WelcomeLoginPage(databaseHelper).show(primaryStage, fullUser);
             		}
+            		else {
+            			errorLabel.setText("Invalid Login Credentials. Please try again.");
+            		}
             	}
             	else {
             		// Display an error if the account does not exist

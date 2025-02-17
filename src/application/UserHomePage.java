@@ -4,8 +4,10 @@ import databasePart1.DatabaseHelper;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.Separator;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import ui.QuestionListPage;
 
 /**
  * This page displays a simple welcome message for the user.
@@ -45,8 +47,17 @@ public class UserHomePage {
 	        new AccountUpdatePage(databaseHelper, currentUser).show(primaryStage);
 	    });
 	    
+	    // Display a button to go to the question list page
+	    Button questionPageButton = new Button("Go to question list");
+	    questionPageButton.setOnAction(a -> {
+	    	new QuestionListPage(databaseHelper, currentUser).show(primaryStage);
+	    });
+	    
+	    // Separator between unrelated elements
+	    Separator separator = new Separator();
+	    
 	    // Add it to your layout before the logout button
-	    layout.getChildren().addAll(userLabel, updateAccountBtn, logout);
+	    layout.getChildren().addAll(userLabel, questionPageButton, separator, updateAccountBtn, logout);
 	    
 	    Scene userScene = new Scene(layout, 800, 400);
 
