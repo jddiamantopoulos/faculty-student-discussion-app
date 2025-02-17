@@ -27,15 +27,6 @@ public class Question {
 		answers = new Answers();
 	}
 	
-	// This constructor is used when importing other kinds of existing questions.
-	public Question(String text, String body, String author, ArrayList<String> tags, Answers answers) {
-		this.text = text;
-		this.body = body;
-		this.author = author;
-		this.tags = tags;
-		this.answers = answers;
-	}
-	
 	// Adders
 	public void addTag(String newTag) { tags.add(newTag); }
 	public void addAnswer(Answer answer) { answers.add(answer) ; }
@@ -96,6 +87,7 @@ public class Question {
 		return retStr;
 	}
 	
+	// Convert tag CSV to tag arraylist.
 	private ArrayList<String> parseTagsCSV(String tagsCSV) {
 		ArrayList<String> retList = new ArrayList<String>();
 		String str = "";

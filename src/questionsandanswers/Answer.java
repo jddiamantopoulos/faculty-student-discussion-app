@@ -14,20 +14,15 @@ public class Answer {
 		markedAsHelpful = new ArrayList<String>();
 	}
 	
-	// Constructor for imported answer
-	public Answer(String text, String author, ArrayList<String> markedAsHelpful) {
-		this.text = text;
-		this.author = author;
-		this.markedAsHelpful = markedAsHelpful;
-	}
-	
 	// Constructor for imported answer (CSV)
 	public Answer(String text, String author, String votesCSV) {
 		this.text = text;
 		this.author = author;
 		this.markedAsHelpful = parseCSV(votesCSV);
-		}
+	}
 	
+	// Adds or removes a user from the list of likes depending
+	// on whether they're there or not.
 	public boolean upvote(String username) {
 		if (!markedAsHelpful.contains(username)) {
 			markedAsHelpful.add(username); 

@@ -8,7 +8,7 @@ public class Answers extends ArrayList<Answer> {
 	
 	// Placeholder for now, inherits all necessary methods
 	
-	// Fairly inefficient [O(n^2)]. Praying for small answer sets
+	// Fairly inefficient [O(n^2)].
 	public void mergeAnswers(Answers a) {
 		for (int i = 0; i < a.size(); i++) {
 			for (int j = 0; j < size(); j++)
@@ -20,6 +20,7 @@ public class Answers extends ArrayList<Answer> {
 	
 	// Sort by numLikes
 	// guide: https://www.tpointtech.com/how-to-sort-arraylist-in-java
+	// Implements mergesort. Runtime O(nlog(n)), very high memory usage.
 	public void sortAnswers() {
 		Collections.sort(this, new Comparator<Answer>() {  
             @Override  

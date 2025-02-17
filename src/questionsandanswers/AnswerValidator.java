@@ -24,9 +24,7 @@ public class AnswerValidator {
 		}
 	}
 	
-	// This method is VERY inefficient. Will cause significant wait time when posting an answer
-	// for large answer sets. If a better version of what's happening here exists, we need
-	// to replace it eventually.
+	// Checks if an answer already exists for a given question.
 	public static boolean answerIsDuplicate(Question q, Answer a) {
 		for (int i = 0; i < q.getAnswers().size(); i++) {
 			if (q.getAnswers().get(i).getText().equals(a.getText())) {

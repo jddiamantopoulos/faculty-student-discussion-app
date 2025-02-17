@@ -31,7 +31,7 @@ public class Questions extends ArrayList<Question> {
 		return returned;
 	}
 	
-	// AKA get by question
+	// Could also be described as "getByQuestion()"
 	public Questions getByText(String text) {
 		Questions returned = new Questions();
 		for (int i = 0; i < size(); i++) {

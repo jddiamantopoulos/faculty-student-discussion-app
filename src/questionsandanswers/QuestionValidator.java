@@ -32,9 +32,8 @@ public class QuestionValidator {
 		}
 	}
 	
-	// This method is VERY inefficient. Will cause significant wait time when posting a question
-	// for large question sets. If a better version of what's happening here exists, we need
-	// to replace it eventually.
+	// This method is somewhat inefficient. Will cause significant wait time when posting a question
+	// for large question sets.
 	public static boolean questionIsDuplicate(Questions parentQuestions, Question q) {
 		for (int i = 0; i < parentQuestions.size(); i++) {
 			if (parentQuestions.get(i).getText().equals(q.getText())) {

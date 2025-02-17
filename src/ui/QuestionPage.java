@@ -57,7 +57,7 @@ public class QuestionPage {
     	VBox questionPane = new VBox();   // This was originally an AnchorPane, but those are very difficult to work with.
     	HBox firstRow = new HBox();
     	questionPane.setPrefWidth(670);
-    	questionPane.setMinHeight(80.0); // We'll eventually need to come up with a formula for resizing
+    	questionPane.setMinHeight(80.0);
     	questionPane.setStyle("-fx-padding: 5; -fx-background: rgb(210, 210, 210); -fx-background-color: -fx-background;");
     	
     	Label questionText = new Label(question.getText());
@@ -173,11 +173,6 @@ public class QuestionPage {
         	buttonContainer.getChildren().add(likeButton);
         }
         
-        /* See the full question text and associated answers.
-        * A design decision was made to put this in a pop up so the
-        * user doesn't have to scroll all the way back down if this
-        * doesn't meet their needs. They should even be able to open
-        * multiple different questions! */
         Label usernameAndTags = new Label("Poster: " + ans.getAuthor() + " | Marked Helpful: " + ans.getHelpfulAsString(60 - ans.getAuthor().length()));
         AnchorPane.setLeftAnchor(questionText, 5.0);
         AnchorPane.setLeftAnchor(usernameAndTags, 5.0);

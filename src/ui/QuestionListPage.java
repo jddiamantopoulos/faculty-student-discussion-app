@@ -49,8 +49,8 @@ import javafx.stage.Stage;
 
 public class QuestionListPage {
 	
-	private Questions parentQuestions; // The original (main) questions
-	private Questions questions;		 // The questions displayed on the page
+	private Questions parentQuestions; 	// The original (main) questions
+	private Questions questions;		// The questions displayed on the page
 	private final User user;
 	private String pageTitle;
 	private int listIndex = 0;
