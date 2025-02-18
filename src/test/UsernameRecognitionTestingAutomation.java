@@ -1,5 +1,5 @@
 package test;
-import application.*;
+import accounts.util.*;
 
 /*******
  * <p> Title: UsernameRecognitionTestingAutomation Class. </p>

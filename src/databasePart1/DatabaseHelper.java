@@ -7,10 +7,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.UUID;
 
-import application.EmailValidator;
-import application.User;
-// import application.EmailValidator;
-import questionsandanswers.*;
+import accounts.util.EmailValidator;
+import accounts.util.User;
+import questions.util.*;
 
 /**
  * The DatabaseHelper class is responsible for managing the connection to the
