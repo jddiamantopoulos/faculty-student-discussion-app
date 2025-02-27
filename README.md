@@ -14,4 +14,6 @@ Begin by creating an admin account. Applicable error messages will guide you thr
 
 To make a new user account, have an administrator generate an invite code and assign you a role as either "user" or "admin". You will then be prompted to enter your name, username, password, email, and this invite code.
 
+To access the question list, navigate to your user page or admin page, then click on the button to continue to questions. An additional help button is available if you need help understanding the new part of the application.
+
 Enjoy!
