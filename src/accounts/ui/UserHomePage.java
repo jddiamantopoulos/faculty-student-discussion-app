@@ -26,7 +26,7 @@ public class UserHomePage {
 	}
 
     public void show(Stage primaryStage) {
-    	VBox layout = new VBox();
+    	VBox layout = new VBox(5);
 	    layout.setStyle("-fx-alignment: center; -fx-padding: 20;");
 	    
 	    // Label to display Hello user
