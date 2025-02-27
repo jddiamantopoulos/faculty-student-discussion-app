@@ -26,7 +26,7 @@ public class QuestionValidator {
     			errorText += "Your question's body is too long! Please reduce the length to 2000 characters or less. ";
     		}
     		if (isDupe) {
-    			errorText += "Your question already exists! (like... character for character & case-sensitive... how did you even do that?)";
+    			errorText += "Your question already exists!";
     		}
     		return errorText;
 		}

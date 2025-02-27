@@ -285,7 +285,7 @@ public class DatabaseHelper {
 		for (int i = 0; i < questions.size(); i++) {
 			insertQuestion(questions.get(i));
 			Answers tempAnswers = questions.get(i).getAnswers();
-			for (int j = 0; i < tempAnswers.size(); j++) {
+			for (int j = 0; j < tempAnswers.size(); j++) {
 				insertAnswer(questions.get(i), tempAnswers.get(j));
 			}
 		}
