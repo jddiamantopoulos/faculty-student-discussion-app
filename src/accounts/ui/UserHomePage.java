@@ -34,6 +34,13 @@ public class UserHomePage {
 	        (currentUser.getName().isEmpty() ? "User" : currentUser.getName()) + "!");
 	    userLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
 	    
+	    // Button to allow user to go back
+	    Button back = new Button("Back");
+	    
+	    back.setOnAction(a -> {
+	    	new WelcomeLoginPage(databaseHelper).show(primaryStage, currentUser);
+	    });
+	    
 	    // Button to allow logout
 	    Button logout = new Button("Logout");
 	    
@@ -58,7 +65,7 @@ public class UserHomePage {
 	    Separator separator = new Separator();
 	    
 	    // Add it to your layout before the logout button
-	    layout.getChildren().addAll(userLabel, questionPageButton, separator, updateAccountBtn, logout);
+	    layout.getChildren().addAll(userLabel, questionPageButton, separator, updateAccountBtn, back, logout);
 	    
 	    Scene userScene = new Scene(layout, 800, 400);
 

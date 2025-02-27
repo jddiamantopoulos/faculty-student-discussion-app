@@ -6,6 +6,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 import accounts.util.*;
+import accounts.ui.AdminHomePage;
+import accounts.ui.UserHomePage;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.scene.Scene;
@@ -104,10 +106,12 @@ public class QuestionListPage {
 	    HBox topBox = new HBox(3);
 	    Label titleLabel = new Label(pageTitle + ":");
 	    titleLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
-	    titleLabel.setPrefWidth(654);
+	    titleLabel.setPrefWidth(580);
 	    Button helpButton = new Button("Help");
 	    Button refreshButton = new Button("Refresh");
-	    topBox.getChildren().addAll(titleLabel, helpButton, refreshButton);
+	    Button acctButton = new Button("Account");
+	    topBox.setStyle("-fx-alignment: center;");
+	    topBox.getChildren().addAll(titleLabel, helpButton, refreshButton, acctButton);
 	    
 	    // Error label
 	    Label errorLabel = new Label("");
@@ -238,6 +242,15 @@ public class QuestionListPage {
         // Get help
         helpButton.setOnAction(e -> {
         	new HelpDialogPage().show(new Stage());
+        });
+        
+        acctButton.setOnAction(e -> {
+        	if (user.getRole().equals("admin")) {
+        		new AdminHomePage(db, user).show(primaryStage);
+        	}
+        	else {
+        		new UserHomePage(db, user).show(primaryStage);
+        	}
         });
         
         // Add elements to master layout

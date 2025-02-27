@@ -47,6 +47,13 @@ public class AdminHomePage {
 	    
 	    adminLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
 	    
+	    // Button to allow user to go back
+	    Button back = new Button("Back");
+	    
+	    back.setOnAction(a -> {
+	    	new WelcomeLoginPage(databaseHelper).show(primaryStage, currentUser);
+	    });
+	    
 	    // Button to allow logout
 	    Button logout = new Button("Logout");
 	    
@@ -60,7 +67,7 @@ public class AdminHomePage {
 	    	new AccountUpdatePage(databaseHelper, currentUser).show(primaryStage);
 	    });
 	    
-	    layout.getChildren().addAll(adminLabel, questionPageButton, separator, updateAccountBtn, logout);
+	    layout.getChildren().addAll(adminLabel, questionPageButton, separator, updateAccountBtn, back, logout);
 
 	    Scene adminScene = new Scene(layout, 800, 400);
 
