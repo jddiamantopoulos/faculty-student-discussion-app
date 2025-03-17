@@ -49,11 +49,6 @@ public class QuestionAnswerValidationTestingAutomation {
 		
 		// Question-related cases are first
 		
-		/* COVERAGE HOLES:
-		 * 	Username, email, and other user-centered automation will not be
-		 * 	tested as it was implemented in the previous deliverable.
-		 */
-		
 		// Testing all failure conditions.
 		
 		// Empty Question (body can be empty, but text cannot).

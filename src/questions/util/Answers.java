@@ -6,8 +6,6 @@ import java.util.Comparator;
 
 public class Answers extends ArrayList<Answer> {
 	
-	// Placeholder for now, inherits all necessary methods
-	
 	// Fairly inefficient [O(n^2)].
 	public void mergeAnswers(Answers a) {
 		for (int i = 0; i < a.size(); i++) {
