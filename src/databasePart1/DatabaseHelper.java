@@ -25,6 +25,9 @@ public class DatabaseHelper {
 	// Database credentials
 	static final String USER = "sa";
 	static final String PASS = "";
+	
+	public static int questionKey = 1;
+	public static int answerKey = 1;
 
 	private Connection connection = null;
 	private Statement statement = null;
@@ -72,7 +75,7 @@ public class DatabaseHelper {
 				statement.execute(invitationCodesTable);
 
 				// Create the questions table
-				String questionsTable = "CREATE TABLE IF NOT EXISTS questions (" + "id INT AUTO_INCREMENT PRIMARY KEY,"
+				String questionsTable = "CREATE TABLE IF NOT EXISTS questions (" + "id INT PRIMARY KEY,"
 						+ "text VARCHAR(255)," + "body VARCHAR(2000), " + "author VARCHAR(16), " + "tags VARCHAR(64))"; // CSV:
 																														// Actually
 																														// only
@@ -87,7 +90,7 @@ public class DatabaseHelper {
 				statement.execute(questionsTable);
 
 				// Create the answers table
-				String answersTable = "CREATE TABLE IF NOT EXISTS answers (" + "id INT AUTO_INCREMENT PRIMARY KEY,"
+				String answersTable = "CREATE TABLE IF NOT EXISTS answers (" + "id INT PRIMARY KEY,"
 						+ "question VARCHAR(255)," + "text VARCHAR(2000), " + "author VARCHAR(16), "
 						+ "votes VARCHAR(1700))"; // CSV
 				statement.execute(answersTable);
@@ -246,12 +249,13 @@ public class DatabaseHelper {
 
 	// Adds a new question to the database
 	public void insertQuestion(Question q) throws SQLException {
-		String insertQuestion = "INSERT INTO questions (text, body, author, tags) VALUES (?, ?, ?, ?)";
+		String insertQuestion = "INSERT INTO questions (id, text, body, author, tags) VALUES (?, ?, ?, ?, ?)";
 		try (PreparedStatement pstmt = connection.prepareStatement(insertQuestion)) {
-			pstmt.setString(1, q.getText());
-			pstmt.setString(2, q.getBody());
-			pstmt.setString(3, q.getAuthor());
-			pstmt.setString(4, q.getTagsCSV());
+			pstmt.setInt(1, q.getKey());
+			pstmt.setString(2, q.getText());
+			pstmt.setString(3, q.getBody());
+			pstmt.setString(4, q.getAuthor());
+			pstmt.setString(5, q.getTagsCSV());
 			pstmt.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -281,15 +285,15 @@ public class DatabaseHelper {
 	// Insert a set of questions and answers to the database
 	// CAUTION: Inefficient, avoid use [O(n^2)]
 	// CAUTION: NO OVERWRITE CHECKS
-	public void insertQuestionsAndAnswers(Questions questions) throws SQLException {
-		for (int i = 0; i < questions.size(); i++) {
-			insertQuestion(questions.get(i));
-			Answers tempAnswers = questions.get(i).getAnswers();
-			for (int j = 0; j < tempAnswers.size(); j++) {
-				insertAnswer(questions.get(i), tempAnswers.get(j));
-			}
-		}
-	}
+	// public void insertQuestionsAndAnswers(Questions questions) throws SQLException {
+	//	for (int i = 0; i < questions.size(); i++) {
+	//		insertQuestion(questions.get(i));
+	//		Answers tempAnswers = questions.get(i).getAnswers();
+	//		for (int j = 0; j < tempAnswers.size(); j++) {
+	//			insertAnswer(questions.get(i), tempAnswers.get(j));
+	//		}
+	//	}
+	// }
 
 	// Gets all questions from the database
 	public Questions getQuestions() throws SQLException {
@@ -297,9 +301,10 @@ public class DatabaseHelper {
 		Questions questions = new Questions();
 		try (ResultSet rs = statement.executeQuery(getQuestion);) {
 			while (rs.next()) {
-				Question q = new Question(rs.getString("text"), rs.getString("body"), rs.getString("author"),
+				Question q = new Question(rs.getInt("id"), rs.getString("text"), rs.getString("body"), rs.getString("author"),
 						rs.getString("tags"));
 				questions.add(q);
+				questionKey++;
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -339,9 +344,10 @@ public class DatabaseHelper {
 			pstmt.setString(1, question.getText());
 			ResultSet rs = pstmt.executeQuery();
 			while (rs.next()) {
-				Answer a = new Answer(rs.getString("text"), rs.getString("author"), rs.getString("votes"));
+				Answer a = new Answer(rs.getInt("id"), rs.getString("text"), rs.getString("author"), rs.getString("votes"));
 				// Somewhere after this point is where the error arises
 				ans.add(a);
+				answerKey++;
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -353,12 +359,13 @@ public class DatabaseHelper {
 
 	// Adds a new answer to the database
 	public void insertAnswer(Question q, Answer a) throws SQLException {
-		String insertAnswer = "INSERT INTO answers (question, text, author, votes) VALUES (?, ?, ?, ?)";
+		String insertAnswer = "INSERT INTO answers (id, question, text, author, votes) VALUES (?, ?, ?, ?, ?)";
 		try (PreparedStatement pstmt = connection.prepareStatement(insertAnswer)) {
-			pstmt.setString(1, q.getText());
-			pstmt.setString(2, a.getText());
-			pstmt.setString(3, a.getAuthor());
-			pstmt.setString(4, a.getLikesCSV());
+			pstmt.setInt(1, a.getKey());
+			pstmt.setString(2, q.getText());
+			pstmt.setString(3, a.getText());
+			pstmt.setString(4, a.getAuthor());
+			pstmt.setString(5, a.getLikesCSV());
 			pstmt.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();

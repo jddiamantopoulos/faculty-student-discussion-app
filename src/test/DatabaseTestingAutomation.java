@@ -76,7 +76,8 @@ public class DatabaseTestingAutomation {
 		tests.boolEqualityTest("Test code generation", db.validateInvitationCode(code), true);
 		
 		// add a question and retrieve it
-		Question q = new Question("Test Question", "Question Body", "QuestionPoster", "");
+		Question q = new Question(DatabaseHelper.questionKey, "Test Question", "Question Body", "QuestionPoster", "");
+		DatabaseHelper.questionKey++;
 		db.insertQuestion(q);
 		tests.stringEqualityTest("Retrieve Question", db.getQuestions().get(0).getText(), "Test Question");
 		
