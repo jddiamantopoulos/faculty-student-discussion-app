@@ -1,6 +1,7 @@
 package messaging.util;
 
 import java.time.*;
+import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
 import databasePart1.DatabaseHelper;
@@ -55,6 +56,10 @@ public class Message {
 	public String getSender() { return sender; }
 	public String getRecipient() { return recipient; }
 	public LocalDateTime getTime() { return time; }
+	public String getTimeAsString() { 
+		DateTimeFormatter noMS = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+		return time.format(noMS);
+	}
 	public boolean getIsRead() { return isRead; }
 	/* This method will be used a lot, so we're optimizing memory usage */
 	public String getTimeFormatted() {

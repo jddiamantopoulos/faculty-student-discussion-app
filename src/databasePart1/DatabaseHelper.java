@@ -495,6 +495,21 @@ public class DatabaseHelper {
 		}
 		return messages;
 	}
+	
+	public void insertMessage(Message m) throws SQLException {
+		String insertQuestion = "INSERT INTO messages (id, text, sender, recipient, time, isread) VALUES (?, ?, ?, ?, ?, ?)";
+		try (PreparedStatement pstmt = connection.prepareStatement(insertQuestion)) {
+			pstmt.setInt(1, m.getKey());
+			pstmt.setString(2, m.getText());
+			pstmt.setString(3, m.getSender());
+			pstmt.setString(4, m.getRecipient());
+			pstmt.setString(5, m.getTimeAsString());
+			pstmt.setBoolean(6, m.getIsRead());
+			pstmt.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
 
 	// Closes the database connection and statement.
 	public void closeConnection() {

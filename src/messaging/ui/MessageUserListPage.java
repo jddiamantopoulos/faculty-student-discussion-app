@@ -58,7 +58,7 @@ public class MessageUserListPage {
     }
     
     public void show(Stage primaryStage) {
-    	
+    	messages.sortRecent();
     	VBox layout = new VBox(5);
     	
     	// Create the scrollable pane
@@ -150,15 +150,15 @@ public class MessageUserListPage {
         	listedUser.setStyle("-fx-background: rgb(225, 225, 225); -fx-background-color: -fx-background;");
         }
         listIndex++;
-        listedUser.setPrefSize(756.65,50);
+        listedUser.setPrefSize(550,40);
         Hyperlink userName = new Hyperlink(listUser);
         
         // Also indicate whether or not a message has been read
-        if (!hasUnread(listUser)) {
-        	userName.setStyle("-fx-font-weight: bold; -fx-font-size: 14px;");
+        if (hasUnread(listUser)) {
+        	userName.setStyle("-fx-font-weight: bold; -fx-font-size: 16px;");
         }
         else {
-        	userName.setStyle("-fx-font-style: italic; -fx-font-size: 14px;");
+        	userName.setStyle("-fx-font-style: italic; -fx-font-size: 16px;");
         }
         
         userName.setOnAction(a -> {
@@ -169,9 +169,11 @@ public class MessageUserListPage {
         userRoleLabel.setText(db.getUserRole(listUser));
         AnchorPane.setLeftAnchor(userName, 5.0);
         AnchorPane.setBottomAnchor(userRoleLabel, 5.0);
-        AnchorPane.setRightAnchor(userName, 5.0);
+        AnchorPane.setBottomAnchor(userName, 5.0);
+        AnchorPane.setRightAnchor(userRoleLabel, 5.0);
         AnchorPane.setTopAnchor(userName, 5.0);
-        listedUser.getChildren().addAll(userName);
+        AnchorPane.setTopAnchor(userRoleLabel, 5.0);
+        listedUser.getChildren().addAll(userName, userRoleLabel);
         // Add to top of list
         content.getChildren().add(0, listedUser);
     }
