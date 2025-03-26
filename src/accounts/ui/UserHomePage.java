@@ -8,6 +8,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import messaging.ui.MessageUserListPage;
 import questions.ui.QuestionListPage;
 
 /**
@@ -61,11 +62,16 @@ public class UserHomePage {
 	    	new QuestionListPage(databaseHelper, currentUser).show(primaryStage);
 	    });
 	    
+	    Button messagePageButton = new Button("Direct Messages");
+	    messagePageButton.setOnAction(a -> {
+	    	new MessageUserListPage(databaseHelper, currentUser).show(primaryStage);
+	    });
+	    
 	    // Separator between unrelated elements
 	    Separator separator = new Separator();
 	    
 	    // Add it to your layout before the logout button
-	    layout.getChildren().addAll(userLabel, questionPageButton, separator, updateAccountBtn, back, logout);
+	    layout.getChildren().addAll(userLabel, questionPageButton, messagePageButton, separator, updateAccountBtn, back, logout);
 	    
 	    Scene userScene = new Scene(layout, 800, 400);
 

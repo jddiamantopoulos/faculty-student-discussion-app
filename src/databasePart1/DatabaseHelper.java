@@ -9,6 +9,7 @@ import java.util.UUID;
 
 import accounts.util.EmailValidator;
 import accounts.util.User;
+import messaging.util.*;
 import questions.util.*;
 
 /**
@@ -28,6 +29,7 @@ public class DatabaseHelper {
 	
 	public static int questionKey = 1;
 	public static int answerKey = 1;
+	public static int messageKey = 1;
 
 	private Connection connection = null;
 	private Statement statement = null;
@@ -58,9 +60,10 @@ public class DatabaseHelper {
 	private void createTables() throws SQLException {
 		// First check if we need to update existing table
 		try {
-			// For now, we will use questions. Uncomment this when ready.
-			// statement.executeQuery("SELECT name FROM cse360users LIMIT 1");
+			// Check at least one table per update
+			statement.executeQuery("SELECT name FROM cse360users LIMIT 1");
 			statement.executeQuery("SELECT text FROM questions LIMIT 1");
+			statement.executeQuery("SELECT text FROM messages LIMIT 1");
 		} catch (SQLException e) {
 			try {
 				// Create tables if they don't exist
@@ -94,6 +97,12 @@ public class DatabaseHelper {
 						+ "question VARCHAR(255)," + "text VARCHAR(2000), " + "author VARCHAR(16), "
 						+ "votes VARCHAR(1700))"; // CSV
 				statement.execute(answersTable);
+				
+				// Create the messages table
+				String messagesTable = "CREATE TABLE IF NOT EXISTS messages (" + "id INT PRIMARY KEY,"
+						+ "text VARCHAR(500)," + "sender VARCHAR(16), " + "recipient VARCHAR(16), "
+						+ "isread BIT," + "time VARCHAR(20))";
+				statement.execute(messagesTable);
 			} catch (SQLException e2) {
 				System.err.println("Multiple database errors.");
 				e2.printStackTrace();
@@ -445,6 +454,46 @@ public class DatabaseHelper {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public Messages getMessages(String user) throws SQLException {
+		String query = "SELECT * FROM messages WHERE sender = ? OR recipient = ?";
+		Messages messages = new Messages();
+		try (PreparedStatement pstmt = connection.prepareStatement(query);) {
+			pstmt.setString(1, user);
+			pstmt.setString(2, user);
+			ResultSet rs = pstmt.executeQuery();
+			while (rs.next()) {
+				Message m = new Message(rs.getInt("id"), rs.getString("text"), rs.getString("sender"), rs.getString("recipient"),
+						rs.getBoolean("isread"), rs.getString("time"));
+				messages.add(m);
+				messageKey++;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return messages;
+	}
+	
+	public Messages getMessagesByUser(User user, String otherUser) throws SQLException {
+		String query = "SELECT * FROM messages WHERE sender = ? OR recipient = ? OR sender = ? OR recipient = ?";
+		Messages messages = new Messages();
+		try (PreparedStatement pstmt = connection.prepareStatement(query);) {
+			pstmt.setString(1, user.getUserName());
+			pstmt.setString(2, user.getUserName());
+			pstmt.setString(3, otherUser);
+			pstmt.setString(4, otherUser);
+			ResultSet rs = pstmt.executeQuery();
+			while (rs.next()) {
+				Message m = new Message(rs.getInt("id"), rs.getString("text"), rs.getString("sender"), rs.getString("recipient"),
+						rs.getBoolean("isread"), rs.getString("time"));
+				messages.add(m);
+				messageKey++;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return messages;
 	}
 
 	// Closes the database connection and statement.
