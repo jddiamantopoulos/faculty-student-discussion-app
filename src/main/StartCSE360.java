@@ -34,14 +34,26 @@ public class StartCSE360 extends Application {
             	User admin = new User("Admin", "P4$$word", "admin");
             	User owner = new User("Owner", "P4$$word", "admin");
             	User user2 = new User("user2", "P4$$word", "user");
+            	User reviewer = new User("reviewerEX", "P4$$word", "reviewer");
+            	User instructor = new User("instructorEX", "P4$$word", "instructor");
             	databaseHelper.register(user);
             	databaseHelper.register(user2);
             	databaseHelper.register(admin);
             	databaseHelper.register(owner);
+            	databaseHelper.register(reviewer);
+            	databaseHelper.register(instructor);
             	Message msg = new Message("Hey, Admin! Test test test!", "user", "Admin");
             	Message msg2 = new Message("Hey, Admin! This message exists too!", "user2", "Admin");
+            	Message msg3 = new Message("Hey, user! This is an example from a reviewer!", "reviewerEX", "user");
+            	Message msg4 = new Message("Hey, user! This message exists too!", "instructorEX", "user");
+            	Message msg5 = new Message("Hey, Admin! This is an example from a reviewer!", "reviewerEX", "Admin");
+            	Message msg6 = new Message("Hey, Admin! This message exists too!", "instructorEX", "Admin");
             	databaseHelper.insertMessage(msg);
             	databaseHelper.insertMessage(msg2);
+            	databaseHelper.insertMessage(msg3);
+            	databaseHelper.insertMessage(msg4);
+            	databaseHelper.insertMessage(msg5);
+            	databaseHelper.insertMessage(msg6);
             }
             if (databaseHelper.isDatabaseEmpty()) {
                 new FirstPage(databaseHelper).show(primaryStage);

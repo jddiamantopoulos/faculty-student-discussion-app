@@ -84,6 +84,7 @@ public class MessagePage {
         for (int i = 0; i < messages.size(); i++) {
         	addToList(messages.get(i), content);
         	messages.get(i).setRead(true);
+        	db.setMessageRead(messages.get(i));
         }
 	    
         // ACTION LISTENERS

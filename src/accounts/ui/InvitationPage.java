@@ -40,7 +40,7 @@ public class InvitationPage {
 	    Button showCodeButton = new Button("Generate Invitation Code");
 	    
 	    // Create a list of available roles and setup ChoiceBox
-	    ArrayList<String> roleList = new ArrayList<>(Arrays.asList("Select Role", "user", "admin"));
+	    ArrayList<String> roleList = new ArrayList<>(Arrays.asList("Select Role", "user", "reviewer", "instructor", "admin"));
 	    ChoiceBox<String> roleChoice = new ChoiceBox<>(FXCollections.observableArrayList(roleList));
 	    roleChoice.setValue(roleList.get(0));
 	    

@@ -188,9 +188,13 @@ public class MessageUserListPage {
         
         Label userRoleLabel = new Label();
         userRoleLabel.setText(db.getUserRole(listUser));
-        userRoleLabel.setStyle("-fx-font-size: 16px;");
-        userName.setPrefWidth(500);
-        listedUser.getChildren().addAll(userName, userRoleLabel);
+        userRoleLabel.setStyle("-fx-font-size: 16px; -fx-alignment: center;");
+        userRoleLabel.setPrefWidth(100);
+        Label vBar = new Label("|");
+        vBar.setStyle("-fx-font-size: 16px;");
+        vBar.setPrefWidth(10);
+        userName.setPrefWidth(400);
+        listedUser.getChildren().addAll(userRoleLabel, vBar, userName);
         // Add to top of list
         content.getChildren().add(0, listedUser);
     }

@@ -558,4 +558,15 @@ public class DatabaseHelper {
 		}
 	}
 
+	public void setMessageRead(Message message) {
+		String query = "UPDATE messages SET isread = TRUE WHERE id = ?";
+		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+			pstmt.setInt(1, message.getKey());
+			pstmt.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+	}
+
 }
