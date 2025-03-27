@@ -6,6 +6,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import messaging.ui.MessageUserListPage;
 import questions.ui.QuestionListPage;
 
 
@@ -42,6 +43,11 @@ public class AdminHomePage {
 	    	new QuestionListPage(databaseHelper, currentUser).show(primaryStage);
 	    });
 	    
+	    Button messagePageButton = new Button("Direct Messages");
+	    messagePageButton.setOnAction(a -> {
+	    	new MessageUserListPage(databaseHelper, currentUser).show(primaryStage);
+	    });
+	    
 	    // Separator between unrelated elements
 	    Separator separator = new Separator();
 	    
@@ -67,7 +73,7 @@ public class AdminHomePage {
 	    	new AccountUpdatePage(databaseHelper, currentUser).show(primaryStage);
 	    });
 	    
-	    layout.getChildren().addAll(adminLabel, questionPageButton, separator, updateAccountBtn, back, logout);
+	    layout.getChildren().addAll(adminLabel, questionPageButton, messagePageButton, separator, updateAccountBtn, back, logout);
 
 	    Scene adminScene = new Scene(layout, 800, 400);
 

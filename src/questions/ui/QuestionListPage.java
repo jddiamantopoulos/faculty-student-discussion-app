@@ -317,7 +317,7 @@ public class QuestionListPage {
         });
         
         // Element disablement logic
-        if (user.getRole().equals("admin") || user.getUserName().equals(newQ.getAuthor())) {
+        if (user.getRole().equals("admin") || user.getRole().equals("instructor") || user.getUserName().equals(newQ.getAuthor())) {
         	question.getChildren().add(button);
         }
         Label usernameAndTags = new Label("\tPoster: " + newQ.getAuthor() + " | Tags: " + newQ.getTagsAsString());

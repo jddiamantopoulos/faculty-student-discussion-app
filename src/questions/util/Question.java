@@ -2,15 +2,20 @@ package questions.util;
 
 import java.util.ArrayList;
 
+import databasePart1.DatabaseHelper;
+
 public class Question {
 	private String text;				// What is the question actually asking?
 	private String body;				// More details of the question
 	private String author;				// Username of the author
 	private ArrayList<String> tags;		// Requires dynamic resizing
 	private Answers answers;			// The list of answers for this question
+	int primaryKey;
 	
 	// This constructor makes a new question.
 	public Question(String text, String questionBody, String author, ArrayList<String> tags) {
+		primaryKey = DatabaseHelper.questionKey;
+		DatabaseHelper.questionKey++;
 		this.text = text;
 		this.body = questionBody;
 		this.author = author;
@@ -19,7 +24,8 @@ public class Question {
 	}
 	
 	// This constructor is used when importing questions from the database.
-	public Question(String text, String questionBody, String author, String tagsCSV) {
+	public Question(int primaryKey, String text, String questionBody, String author, String tagsCSV) {
+		this.primaryKey = primaryKey;
 		this.text = text;
 		this.body = questionBody;
 		this.author = author;
@@ -32,6 +38,7 @@ public class Question {
 	public void addAnswer(Answer answer) { answers.add(answer) ; }
 	
 	// Setters
+	public void setKey(int newKey) { primaryKey = newKey; }
 	public void setText(String newText) { text = newText; }
 	public void setAuthor(String newAuthor) { author = newAuthor; }
 	public void setBody(String newBody) { body = newBody; }
@@ -39,6 +46,7 @@ public class Question {
 	public void setAnswers(Answers newAnswers) { answers = newAnswers; }
 	
 	// Getters
+	public int getKey() { return primaryKey; }
 	public String getText() { return text; }
 	public String getAuthor() { return author; }
 	public String getBody() { return body; }

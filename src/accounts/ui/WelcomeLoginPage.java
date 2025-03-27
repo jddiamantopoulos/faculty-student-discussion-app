@@ -40,6 +40,12 @@ public class WelcomeLoginPage {
 	    ArrayList<String> rawList;
 	    // Set the list of roles
 	    if (user.getRole().equals("admin")) {
+	    	rawList = new ArrayList<String>(Arrays.asList("user", "reviewer", "instructor", user.getRole()));
+	    }
+	    else if (user.getRole().equals("instructor")) {
+	    	rawList = new ArrayList<String>(Arrays.asList("user", "reviewer", user.getRole()));
+	    }
+	    else if (user.getRole().equals("reviewer")) {
 	    	rawList = new ArrayList<String>(Arrays.asList("user", user.getRole()));
 	    }
 	    else {
@@ -68,7 +74,7 @@ public class WelcomeLoginPage {
 	    	if(role.equals("admin")) {
 	    		new AdminHomePage(databaseHelper, user).show(primaryStage);
 	    	}
-	    	else if(role.equals("user")) {
+	    	else {
 	    		new UserHomePage(databaseHelper, user).show(primaryStage);
 	    	}
 	    });
@@ -88,9 +94,9 @@ public class WelcomeLoginPage {
 	    
 	    layout.getChildren().add(welcomeLabel);
 	    
-	    // Display role selection if applicable				// Note: This is a separate if statement
-	    if ("admin".equals(user.getRole())) {				// because it will be used with other roles.
-	    	choice.setValue(rawList.get(1));
+	    // Display role selection if applicable				
+	    if (!"user".equals(user.getRole())) {				
+	    	choice.setValue(rawList.get(rawList.size() - 1));
 	    	layout.getChildren().add(roleSelect);
             layout.getChildren().add(choice);
             layout.getChildren().add(horizontalSpace);

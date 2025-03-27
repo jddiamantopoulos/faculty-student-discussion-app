@@ -9,6 +9,7 @@ import java.util.UUID;
 
 import accounts.util.EmailValidator;
 import accounts.util.User;
+import messaging.util.*;
 import questions.util.*;
 
 /**
@@ -25,6 +26,10 @@ public class DatabaseHelper {
 	// Database credentials
 	static final String USER = "sa";
 	static final String PASS = "";
+	
+	public static int questionKey = 1;
+	public static int answerKey = 1;
+	public static int messageKey = 1;
 
 	private Connection connection = null;
 	private Statement statement = null;
@@ -55,9 +60,10 @@ public class DatabaseHelper {
 	private void createTables() throws SQLException {
 		// First check if we need to update existing table
 		try {
-			// For now, we will use questions. Uncomment this when ready.
-			// statement.executeQuery("SELECT name FROM cse360users LIMIT 1");
+			// Check at least one table per update
+			statement.executeQuery("SELECT name FROM cse360users LIMIT 1");
 			statement.executeQuery("SELECT text FROM questions LIMIT 1");
+			statement.executeQuery("SELECT text FROM messages LIMIT 1");
 		} catch (SQLException e) {
 			try {
 				// Create tables if they don't exist
@@ -72,7 +78,7 @@ public class DatabaseHelper {
 				statement.execute(invitationCodesTable);
 
 				// Create the questions table
-				String questionsTable = "CREATE TABLE IF NOT EXISTS questions (" + "id INT AUTO_INCREMENT PRIMARY KEY,"
+				String questionsTable = "CREATE TABLE IF NOT EXISTS questions (" + "id INT PRIMARY KEY,"
 						+ "text VARCHAR(255)," + "body VARCHAR(2000), " + "author VARCHAR(16), " + "tags VARCHAR(64))"; // CSV:
 																														// Actually
 																														// only
@@ -87,10 +93,16 @@ public class DatabaseHelper {
 				statement.execute(questionsTable);
 
 				// Create the answers table
-				String answersTable = "CREATE TABLE IF NOT EXISTS answers (" + "id INT AUTO_INCREMENT PRIMARY KEY,"
+				String answersTable = "CREATE TABLE IF NOT EXISTS answers (" + "id INT PRIMARY KEY,"
 						+ "question VARCHAR(255)," + "text VARCHAR(2000), " + "author VARCHAR(16), "
 						+ "votes VARCHAR(1700))"; // CSV
 				statement.execute(answersTable);
+				
+				// Create the messages table
+				String messagesTable = "CREATE TABLE IF NOT EXISTS messages (" + "id INT PRIMARY KEY,"
+						+ "text VARCHAR(500)," + "sender VARCHAR(16), " + "recipient VARCHAR(16), "
+						+ "isread BIT," + "time VARCHAR(20))";
+				statement.execute(messagesTable);
 			} catch (SQLException e2) {
 				System.err.println("Multiple database errors.");
 				e2.printStackTrace();
@@ -246,12 +258,13 @@ public class DatabaseHelper {
 
 	// Adds a new question to the database
 	public void insertQuestion(Question q) throws SQLException {
-		String insertQuestion = "INSERT INTO questions (text, body, author, tags) VALUES (?, ?, ?, ?)";
+		String insertQuestion = "INSERT INTO questions (id, text, body, author, tags) VALUES (?, ?, ?, ?, ?)";
 		try (PreparedStatement pstmt = connection.prepareStatement(insertQuestion)) {
-			pstmt.setString(1, q.getText());
-			pstmt.setString(2, q.getBody());
-			pstmt.setString(3, q.getAuthor());
-			pstmt.setString(4, q.getTagsCSV());
+			pstmt.setInt(1, q.getKey());
+			pstmt.setString(2, q.getText());
+			pstmt.setString(3, q.getBody());
+			pstmt.setString(4, q.getAuthor());
+			pstmt.setString(5, q.getTagsCSV());
 			pstmt.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -281,15 +294,15 @@ public class DatabaseHelper {
 	// Insert a set of questions and answers to the database
 	// CAUTION: Inefficient, avoid use [O(n^2)]
 	// CAUTION: NO OVERWRITE CHECKS
-	public void insertQuestionsAndAnswers(Questions questions) throws SQLException {
-		for (int i = 0; i < questions.size(); i++) {
-			insertQuestion(questions.get(i));
-			Answers tempAnswers = questions.get(i).getAnswers();
-			for (int j = 0; j < tempAnswers.size(); j++) {
-				insertAnswer(questions.get(i), tempAnswers.get(j));
-			}
-		}
-	}
+	// public void insertQuestionsAndAnswers(Questions questions) throws SQLException {
+	//	for (int i = 0; i < questions.size(); i++) {
+	//		insertQuestion(questions.get(i));
+	//		Answers tempAnswers = questions.get(i).getAnswers();
+	//		for (int j = 0; j < tempAnswers.size(); j++) {
+	//			insertAnswer(questions.get(i), tempAnswers.get(j));
+	//		}
+	//	}
+	// }
 
 	// Gets all questions from the database
 	public Questions getQuestions() throws SQLException {
@@ -297,9 +310,10 @@ public class DatabaseHelper {
 		Questions questions = new Questions();
 		try (ResultSet rs = statement.executeQuery(getQuestion);) {
 			while (rs.next()) {
-				Question q = new Question(rs.getString("text"), rs.getString("body"), rs.getString("author"),
+				Question q = new Question(rs.getInt("id"), rs.getString("text"), rs.getString("body"), rs.getString("author"),
 						rs.getString("tags"));
 				questions.add(q);
+				questionKey++;
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -339,9 +353,9 @@ public class DatabaseHelper {
 			pstmt.setString(1, question.getText());
 			ResultSet rs = pstmt.executeQuery();
 			while (rs.next()) {
-				Answer a = new Answer(rs.getString("text"), rs.getString("author"), rs.getString("votes"));
-				// Somewhere after this point is where the error arises
+				Answer a = new Answer(rs.getInt("id"), rs.getString("text"), rs.getString("author"), rs.getString("votes"));
 				ans.add(a);
+				answerKey++;
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -353,12 +367,13 @@ public class DatabaseHelper {
 
 	// Adds a new answer to the database
 	public void insertAnswer(Question q, Answer a) throws SQLException {
-		String insertAnswer = "INSERT INTO answers (question, text, author, votes) VALUES (?, ?, ?, ?)";
+		String insertAnswer = "INSERT INTO answers (id, question, text, author, votes) VALUES (?, ?, ?, ?, ?)";
 		try (PreparedStatement pstmt = connection.prepareStatement(insertAnswer)) {
-			pstmt.setString(1, q.getText());
-			pstmt.setString(2, a.getText());
-			pstmt.setString(3, a.getAuthor());
-			pstmt.setString(4, a.getLikesCSV());
+			pstmt.setInt(1, a.getKey());
+			pstmt.setString(2, q.getText());
+			pstmt.setString(3, a.getText());
+			pstmt.setString(4, a.getAuthor());
+			pstmt.setString(5, a.getLikesCSV());
 			pstmt.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -439,6 +454,92 @@ public class DatabaseHelper {
 			e.printStackTrace();
 		}
 	}
+	
+	public Messages getMessages() throws SQLException {
+		String query = "SELECT * FROM messages";
+		Messages messages = new Messages();
+		try (PreparedStatement pstmt = connection.prepareStatement(query);) {
+			ResultSet rs = pstmt.executeQuery();
+			while (rs.next()) {
+				Message m = new Message(rs.getInt("id"), rs.getString("text"), rs.getString("sender"), rs.getString("recipient"),
+						rs.getBoolean("isread"), rs.getString("time"));
+				messages.add(m);
+				messageKey++;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return messages;
+	}
+	
+	public Messages getMessagesByUser(User user, String otherUser) throws SQLException {
+		String query = "SELECT * FROM messages WHERE sender = ? OR recipient = ? OR sender = ? OR recipient = ?";
+		Messages messages = new Messages();
+		try (PreparedStatement pstmt = connection.prepareStatement(query);) {
+			pstmt.setString(1, user.getUserName());
+			pstmt.setString(2, user.getUserName());
+			pstmt.setString(3, otherUser);
+			pstmt.setString(4, otherUser);
+			ResultSet rs = pstmt.executeQuery();
+			while (rs.next()) {
+				Message m = new Message(rs.getInt("id"), rs.getString("text"), rs.getString("sender"), rs.getString("recipient"),
+						rs.getBoolean("isread"), rs.getString("time"));
+				messages.add(m);
+				//messageKey++;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return messages;
+	}
+	
+	public Messages getMessagesForConvo(User user, String otherUser) throws SQLException {
+		String query = "SELECT * FROM messages WHERE (sender = ? AND recipient = ?) OR (sender = ? AND recipient = ?)";
+		Messages messages = new Messages();
+		try (PreparedStatement pstmt = connection.prepareStatement(query);) {
+			pstmt.setString(1, user.getUserName());
+			pstmt.setString(2, otherUser);
+			pstmt.setString(3, otherUser);
+			pstmt.setString(4, user.getUserName());
+			ResultSet rs = pstmt.executeQuery();
+			while (rs.next()) {
+				Message m = new Message(rs.getInt("id"), rs.getString("text"), rs.getString("sender"), rs.getString("recipient"),
+						rs.getBoolean("isread"), rs.getString("time"));
+				messages.add(m);
+				//messageKey++;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return messages;
+	}
+	
+	public void insertMessage(Message m) throws SQLException {
+		String insertQuestion = "INSERT INTO messages (id, text, sender, recipient, time, isread) VALUES (?, ?, ?, ?, ?, ?)";
+		// but first, check if the id will be valid
+		String maximumID = "SELECT MAX(id) AS maximum FROM messages;";
+		int max;
+		try (PreparedStatement stmt = connection.prepareStatement(maximumID)) {
+			ResultSet rs = stmt.executeQuery();
+			if (rs.next()) {
+				max = rs.getInt("maximum");
+				m.setKey(max + 1);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		try (PreparedStatement pstmt = connection.prepareStatement(insertQuestion)) {
+			pstmt.setInt(1, m.getKey());
+			pstmt.setString(2, m.getText());
+			pstmt.setString(3, m.getSender());
+			pstmt.setString(4, m.getRecipient());
+			pstmt.setString(5, m.getTimeAsString());
+			pstmt.setBoolean(6, m.getIsRead());
+			pstmt.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
 
 	// Closes the database connection and statement.
 	public void closeConnection() {
@@ -454,6 +555,17 @@ public class DatabaseHelper {
 		} catch (SQLException se) {
 			se.printStackTrace();
 		}
+	}
+
+	public void setMessageRead(Message message) {
+		String query = "UPDATE messages SET isread = TRUE WHERE id = ?";
+		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+			pstmt.setInt(1, message.getKey());
+			pstmt.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
 	}
 
 }

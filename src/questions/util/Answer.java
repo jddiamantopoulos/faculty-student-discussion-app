@@ -1,21 +1,25 @@
 package questions.util;
 
 import java.util.ArrayList;
+import databasePart1.DatabaseHelper;
 
 public class Answer {
 	String text;
 	String author;
 	ArrayList<String> markedAsHelpful; // In TP2, this should be ArrayList<User>
+	int primaryKey;
 	
 	// Constructor for new answer
 	public Answer(String text, String author) {
+		primaryKey = DatabaseHelper.answerKey;
+		DatabaseHelper.answerKey++;
 		this.text = text;
 		this.author = author;
 		markedAsHelpful = new ArrayList<String>();
 	}
 	
 	// Constructor for imported answer (CSV)
-	public Answer(String text, String author, String votesCSV) {
+	public Answer(int primaryKey, String text, String author, String votesCSV) {
 		this.text = text;
 		this.author = author;
 		this.markedAsHelpful = parseCSV(votesCSV);
@@ -33,10 +37,12 @@ public class Answer {
 		}
 	}
 	
+	public void setKey(int newKey) { primaryKey = newKey; }
 	public void setText(String newText) { text = newText; }
 	public void setAuthor(String newAuthorUsername) { author = newAuthorUsername; }
 	public void setMarkedHelpful(ArrayList<String> markedHelpful) { markedAsHelpful = markedHelpful; }
 	
+	public int getKey() { return primaryKey; }
 	public String getText() 		{ return text; }
 	public String getAuthor() { return author; }
 	public ArrayList<String> getMarkedHelpful() { return markedAsHelpful; }

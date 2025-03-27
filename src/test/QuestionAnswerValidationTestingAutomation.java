@@ -3,6 +3,7 @@ import java.util.ArrayList;
 
 import accounts.util.*;
 import questions.util.*;
+import databasePart1.*;
 
 /*******
  * <p> Title: UsernameRecognitionTestingAutomation Class. </p>
@@ -95,7 +96,8 @@ public class QuestionAnswerValidationTestingAutomation {
 		performTestCaseA(8, testA2, testQ6, false);
 		// Duplicate Answer (pt1 has been manually verified as a valid answer)
 		// performTestCase will pass a question containing AnswerList into the validator
-		Answer testA3pt1 = new Answer("duplicate", "testUser", likes);
+		Answer testA3pt1 = new Answer(DatabaseHelper.answerKey, "duplicate", "testUser", likes);
+		DatabaseHelper.answerKey++;
 		AnswerList.add(testA3pt1);
 		testQ5.setAnswers(AnswerList);
 		Answer testA3pt2 = new Answer("duplicate", "otherUser");
@@ -104,11 +106,13 @@ public class QuestionAnswerValidationTestingAutomation {
 		// Valid cases
 		
 		// https://edstem.org/us/courses/72657/discussion/6164729
-		Answer testA4 = new Answer("Yes, the live event will be updated in canvas", "AdvianaKirubalin", likes);
+		Answer testA4 = new Answer(DatabaseHelper.answerKey, "Yes, the live event will be updated in canvas", "AdvianaKirubalin", likes);
+		DatabaseHelper.answerKey++;
 		performTestCaseA(10, testA4, testQ5, true);
 		
 		// https://edstem.org/us/courses/72657/discussion/6161198
-		Answer testA5 = new Answer("Programming goal is to reuse components in a smart way. What you're doing is on the right path since there’s no conflict. Using the constructor for Question and Answer while having separate create and delete methods for QuestionList and AnswerList makes sense, as it keeps object creation simple while allowing better management of collections. That said, there are multiple ways to implement this and your approach might be one of them.", "TienDatDang", likes);
+		Answer testA5 = new Answer(DatabaseHelper.answerKey, "Programming goal is to reuse components in a smart way. What you're doing is on the right path since there’s no conflict. Using the constructor for Question and Answer while having separate create and delete methods for QuestionList and AnswerList makes sense, as it keeps object creation simple while allowing better management of collections. That said, there are multiple ways to implement this and your approach might be one of them.", "TienDatDang", likes);
+		DatabaseHelper.answerKey++;
 		performTestCaseA(11, testA5, testQ6, true);
 		
 		/************** End of the test cases **************/

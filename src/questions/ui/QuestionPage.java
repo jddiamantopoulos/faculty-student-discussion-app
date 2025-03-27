@@ -76,7 +76,9 @@ public class QuestionPage {
     	usernameAndTags.setStyle("-fx-padding: 5;");
     	
     	firstRow.getChildren().add(questionText);
-    	if (question.getAuthor().equals(user.getUserName()) || user.getRole().equals("admin")) {
+    	if (question.getAuthor().equals(user.getUserName()) 
+    			|| user.getRole().equals("admin") 
+    			|| user.getRole().equals("instructor") ) {
     		firstRow.getChildren().add(questionUpdateButton);
     	}
     	questionPane.getChildren().addAll(firstRow, usernameAndTags);
@@ -168,6 +170,9 @@ public class QuestionPage {
         }
         else if (user.getRole().equals("admin")) {
         	buttonContainer.getChildren().addAll(button, editButton, likeButton);
+        }
+        else if (user.getRole().equals("instructor") && !user.getUserName().equals(ans.getAuthor())) {
+        	buttonContainer.getChildren().addAll(button, likeButton);
         }
         else {
         	buttonContainer.getChildren().add(likeButton);
