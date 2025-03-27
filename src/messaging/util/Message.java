@@ -16,8 +16,8 @@ public class Message {
 	
 	// Constructor for new message
 	public Message(String text, String sender, String recipient) {
-		primaryKey = DatabaseHelper.answerKey;
 		DatabaseHelper.answerKey++;
+		primaryKey = DatabaseHelper.answerKey;
 		this.text = text;
 		this.sender = sender;
 		this.recipient = recipient;

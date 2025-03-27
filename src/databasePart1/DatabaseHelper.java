@@ -456,12 +456,10 @@ public class DatabaseHelper {
 		}
 	}
 	
-	public Messages getMessages(String user) throws SQLException {
-		String query = "SELECT * FROM messages WHERE sender = ? OR recipient = ?";
+	public Messages getMessages() throws SQLException {
+		String query = "SELECT * FROM messages";
 		Messages messages = new Messages();
 		try (PreparedStatement pstmt = connection.prepareStatement(query);) {
-			pstmt.setString(1, user);
-			pstmt.setString(2, user);
 			ResultSet rs = pstmt.executeQuery();
 			while (rs.next()) {
 				Message m = new Message(rs.getInt("id"), rs.getString("text"), rs.getString("sender"), rs.getString("recipient"),
@@ -488,7 +486,28 @@ public class DatabaseHelper {
 				Message m = new Message(rs.getInt("id"), rs.getString("text"), rs.getString("sender"), rs.getString("recipient"),
 						rs.getBoolean("isread"), rs.getString("time"));
 				messages.add(m);
-				messageKey++;
+				//messageKey++;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return messages;
+	}
+	
+	public Messages getMessagesForConvo(User user, String otherUser) throws SQLException {
+		String query = "SELECT * FROM messages WHERE (sender = ? AND recipient = ?) OR (sender = ? AND recipient = ?)";
+		Messages messages = new Messages();
+		try (PreparedStatement pstmt = connection.prepareStatement(query);) {
+			pstmt.setString(1, user.getUserName());
+			pstmt.setString(2, otherUser);
+			pstmt.setString(3, otherUser);
+			pstmt.setString(4, user.getUserName());
+			ResultSet rs = pstmt.executeQuery();
+			while (rs.next()) {
+				Message m = new Message(rs.getInt("id"), rs.getString("text"), rs.getString("sender"), rs.getString("recipient"),
+						rs.getBoolean("isread"), rs.getString("time"));
+				messages.add(m);
+				//messageKey++;
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -498,6 +517,18 @@ public class DatabaseHelper {
 	
 	public void insertMessage(Message m) throws SQLException {
 		String insertQuestion = "INSERT INTO messages (id, text, sender, recipient, time, isread) VALUES (?, ?, ?, ?, ?, ?)";
+		// but first, check if the id will be valid
+		String maximumID = "SELECT MAX(id) AS maximum FROM messages;";
+		int max;
+		try (PreparedStatement stmt = connection.prepareStatement(maximumID)) {
+			ResultSet rs = stmt.executeQuery();
+			if (rs.next()) {
+				max = rs.getInt("maximum");
+				m.setKey(max + 1);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 		try (PreparedStatement pstmt = connection.prepareStatement(insertQuestion)) {
 			pstmt.setInt(1, m.getKey());
 			pstmt.setString(2, m.getText());

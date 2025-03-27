@@ -36,15 +36,20 @@ public class MessagePage {
 	private final User user;
 	private String pageTitle;
 	private String recipient;
-	private int listIndex = 0;
 	private DatabaseHelper db;
 	
-	// Used for the initial page
-    public MessagePage(DatabaseHelper db, Messages messages, User testUser, String recipient) {
+	// Used for the page
+    public MessagePage(DatabaseHelper db, User testUser, String recipient) {
     	this.db = db;
-        this.messages = messages;
-        this.user = testUser;
+    	this.user = testUser;
         this.recipient = recipient;
+    	try { 
+    		this.messages = db.getMessagesForConvo(user, recipient);
+    	} 
+    	catch (SQLException e) {
+    		messages = new Messages(); 
+    		e.printStackTrace();
+    	}
         pageTitle = "Direct Messages with " + recipient;
     }
     
@@ -75,13 +80,33 @@ public class MessagePage {
         Button sendButton = new Button("Send");
         sendButton.setPrefWidth(120.0);
         send.getChildren().addAll(textBar, sendButton);
+        
+        for (int i = 0; i < messages.size(); i++) {
+        	addToList(messages.get(i), content);
+        	System.out.println(messages.get(i).getText());
+        }
 	    
         // ACTION LISTENERS
-        
         
         // Execute a search
         sendButton.setOnAction(e -> {
         	/* LOGIC INCOMPLETE */
+        	String messageText = textBar.getText();
+        	String msgValidation = MessageValidator.validateMessage(messageText);
+        	if (msgValidation.equals("")) {
+        		Message msg = new Message(messageText, user.getUserName(), recipient);
+        		try {
+					db.insertMessage(msg);
+				} catch (SQLException e1) {
+					// Auto-generated catch block
+					e1.printStackTrace();
+				}
+        		addToList(msg, content);
+        		textBar.setText("");
+        	}
+        	else {
+        		errorLabel.setText(msgValidation);
+        	}
         });
         
         // Add elements to master layout
@@ -106,7 +131,6 @@ public class MessagePage {
         else {
         	messagePane.setStyle("-fx-background: rgb(225, 225, 225); -fx-background-color: -fx-background;");
         }
-        listIndex++;
         messagePane.setPrefSize(550,40);
         Label msgText = new Label(message.getText());
         

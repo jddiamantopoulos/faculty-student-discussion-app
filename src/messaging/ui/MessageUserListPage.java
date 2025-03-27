@@ -51,7 +51,7 @@ public class MessageUserListPage {
     	this.db = db;
     	this.user = testUser;
     	try { 
-    		this.messages = db.getMessages(user.getUserName());
+    		this.messages = db.getMessages();
     	} 
     	catch (SQLException e) {
     		messages = new Messages(); 
@@ -121,7 +121,7 @@ public class MessageUserListPage {
         		
         		if (retVal == DialogReturns.yes) {
         			/* Open DMs (else do nothing) */
-        			new MessagePage(db, messages, user, searchedUser).show();
+        			new MessagePage(db, user, searchedUser).show();
         		}
         	}
         	else {
@@ -181,7 +181,7 @@ public class MessageUserListPage {
         }
         
         userName.setOnAction(a -> {
-        	new MessagePage(db, messages, user, listUser).show();
+        	new MessagePage(db, user, listUser).show();
         });
         
         Label userRoleLabel = new Label();

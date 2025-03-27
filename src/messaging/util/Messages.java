@@ -17,4 +17,14 @@ public class Messages extends ArrayList<Message> {
         });
 	}
 	
+	/* THIS IS IN PLACE */
+	public void filter(String userName1, String userName2) {
+		for (int i = 0; i < size(); i++) {
+			if ( !(get(i).getSender().equals(userName1) && get(i).getRecipient().equals(userName2)) 
+					&& !(get(i).getSender().equals(userName2) && get(i).getRecipient().equals(userName1) ) ) {
+				remove(get(i));
+			}
+		}
+	}
+	
 }
