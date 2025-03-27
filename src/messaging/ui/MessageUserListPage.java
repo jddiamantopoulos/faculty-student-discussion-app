@@ -6,6 +6,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 import accounts.util.*;
+import common.ui.DialogPage;
+import common.util.DialogTypes;
+import common.util.DialogReturns;
 import accounts.ui.AdminHomePage;
 import accounts.ui.UserHomePage;
 import javafx.application.Application;
@@ -80,7 +83,7 @@ public class MessageUserListPage {
 	    
 	    // Error label
 	    Label errorLabel = new Label("");
-	    errorLabel.setStyle("-fx-font-size: 12px;");
+	    errorLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: red");
         
         // Search bar
         HBox search = new HBox(2);
@@ -108,6 +111,22 @@ public class MessageUserListPage {
         	/* LOGIC INCOMPLETE */
         	/* Should check if user exists, 
         	 * start a new conversation or open existing if so, or display an error if not */
+        	String searchedUser = searchBar.getText();
+        	if (UserNameRecognizer.checkForValidUserName(searchedUser).equals("") 
+        			&& db.doesUserExist(searchedUser)
+        			&& !user.getUserName().equals(searchedUser)) {
+        		DialogPage dialogPg = new DialogPage();
+        		DialogReturns retVal = dialogPg.show(DialogTypes.twoButtonYesNo,
+        				"Open Conversation?", "Do you want to open a conversation with this user?");
+        		
+        		if (retVal == DialogReturns.yes) {
+        			/* Open DMs (else do nothing) */
+        			new MessagePage(db, messages, user, searchedUser).show();
+        		}
+        	}
+        	else {
+        		errorLabel.setText("Error: Could not open conversation with specified user.");
+        	}
         });
         
         // Refresh the page
@@ -162,7 +181,7 @@ public class MessageUserListPage {
         }
         
         userName.setOnAction(a -> {
-        	/* new DirectMessagePage(db, parentQuestions, newQ, user).show(new Stage()); */
+        	new MessagePage(db, messages, user, listUser).show();
         });
         
         Label userRoleLabel = new Label();
@@ -178,77 +197,6 @@ public class MessageUserListPage {
         content.getChildren().add(0, listedUser);
     }
     
-    /*
-    // Handle the retrieval of subsets of the questions.
-    private String executeSearch(String tags, String type, String searchBar, Stage primaryStage) {
-    	switch (type) {
-    		case "Tags":
-    			if (!tags.equals("(Tag)")) {
-    				Questions newPgQuestions = parentQuestions.getByTag(tags);
-    				if (newPgQuestions.size() > 0) {
-    					new QuestionListPage(db, newPgQuestions, parentQuestions, user).show(primaryStage);
-    					return "";
-    				}
-    				else {
-    					return "No results found for those search parameters.";
-    				}
-    			}
-    			else {
-    				return "Be sure to select a tag if you are searching by tag!";
-    			}
-    		case "Author":
-    			if (!searchBar.equals("")) {
-    				Questions newPgQuestions = parentQuestions.getByAuthor(searchBar);
-    				if (newPgQuestions.size() > 0) {
-    					new QuestionListPage(db, newPgQuestions, parentQuestions, user).show(primaryStage);
-    					return "";
-    				}
-    				else {
-    					return "No results found for those search parameters.";
-    				}
-    			}
-    			else {
-    				return "Be sure to enter an author if you are searching by author!";
-    			}
-    		case "Question":
-    			if (!searchBar.equals("")) {
-    				Questions newPgQuestions = parentQuestions.getByText(searchBar);
-    				if (newPgQuestions.size() > 0) {
-    					new QuestionListPage(db, newPgQuestions, parentQuestions, user).show(primaryStage);
-    					return "";
-    				}
-    				else {
-    					return "No results found for those search parameters. (Note: This type of search is not recommended as it requires an exact match)";
-    				}
-    			}
-    			else {
-    				return "Be sure to enter a question if you are searching by question!";
-    			}
-    		case "Unanswered":
-    			Questions newPgQuestions = parentQuestions.getUnanswered();
-    			if (newPgQuestions.size() > 0) {
-					new QuestionListPage(db, newPgQuestions, parentQuestions, user).show(primaryStage);
-					return "";
-				}
-				else {
-					return "No results found for those search parameters.";
-				}
-    		case "Answered":
-    			Questions newPgQuestions1 = parentQuestions.getAnswered(); // Got local variable issues with this one for some reason :/
-    			if (newPgQuestions1.size() > 0) {
-					new QuestionListPage(db, newPgQuestions1, parentQuestions, user).show(primaryStage);
-					return "";
-				}
-				else {
-					return "No results found for those search parameters.";
-				} 
-    		case "(Search Type)":
-    			return "Be sure to enter a search type!";
-    		default:
-    			return "Something went wrong. (Uncaught break).";
-    	}
-    }
-    */
     
     private ArrayList<String> getRelevantUsers(Messages messages, User currUser) {
     	ArrayList<String> relevantUsers = new ArrayList<String>();

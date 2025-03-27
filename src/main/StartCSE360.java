@@ -14,7 +14,9 @@ import databasePart1.DatabaseHelper;
 public class StartCSE360 extends Application {
 
 	private static final DatabaseHelper databaseHelper = new DatabaseHelper();
-	private static boolean MESSAGE_DEBUG_FLAG = false; /* I wish this were C so this could be a macro */
+	private static boolean MESSAGE_DEBUG_FLAG = false; 
+	/* I wish this were C so this could be a macro... conditional compilation of these
+	 * debug options would be a godsend. */
 	
 	public static void main( String[] args )
 	{
