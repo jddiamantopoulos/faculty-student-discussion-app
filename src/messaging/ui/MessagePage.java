@@ -83,7 +83,7 @@ public class MessagePage {
         
         for (int i = 0; i < messages.size(); i++) {
         	addToList(messages.get(i), content);
-        	System.out.println(messages.get(i).getText());
+        	messages.get(i).setRead(true);
         }
 	    
         // ACTION LISTENERS
@@ -124,15 +124,17 @@ public class MessagePage {
     private void addToList(Message message, VBox content) {
     	// Now create the display elements
     	// Alternates between darker/lighter backgrounds for contrast
-        AnchorPane messagePane = new AnchorPane();
+        //AnchorPane messagePane = new AnchorPane();
+        VBox msgBox = new VBox(2);
         if (!message.getSender().equals(user.getUserName())) {
-        	messagePane.setStyle("-fx-background: rgb(210, 210, 210); -fx-background-color: -fx-background;");
+        	msgBox.setStyle("-fx-background: rgb(210, 210, 210); -fx-background-color: -fx-background;");
         }
         else {
-        	messagePane.setStyle("-fx-background: rgb(225, 225, 225); -fx-background-color: -fx-background;");
+        	msgBox.setStyle("-fx-background: rgb(225, 225, 225); -fx-background-color: -fx-background;");
         }
-        messagePane.setPrefSize(550,40);
+        msgBox.setPrefWidth(550);
         Label msgText = new Label(message.getText());
+        msgText.setWrapText(true);
         
         // Also indicate whether or not a message has been read
         if (!message.getIsRead()) {
@@ -143,14 +145,9 @@ public class MessagePage {
         }
         
         Label senderNameLabel = new Label();
-        //userRoleLabel.setText(db.getUserRole(listUser));
-        AnchorPane.setLeftAnchor(msgText, 5.0);
-        AnchorPane.setBottomAnchor(msgText, 5.0);
-        AnchorPane.setRightAnchor(senderNameLabel, 5.0);
-        AnchorPane.setTopAnchor(senderNameLabel, 5.0);
-        messagePane.getChildren().addAll(msgText, senderNameLabel);
-        // Add to bottom of list
-        content.getChildren().add(messagePane);
+        senderNameLabel.setText(message.getSender());
+        msgBox.getChildren().addAll(senderNameLabel, msgText);
+        content.getChildren().add(msgBox);
     }
     
    

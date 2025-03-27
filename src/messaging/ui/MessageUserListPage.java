@@ -13,6 +13,7 @@ import accounts.ui.AdminHomePage;
 import accounts.ui.UserHomePage;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
@@ -25,6 +26,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import messaging.util.*;
@@ -161,7 +163,7 @@ public class MessageUserListPage {
     private void addToList(String listUser, VBox content) {
     	// Now create the display elements
     	// Alternates between darker/lighter backgrounds for contrast
-        AnchorPane listedUser = new AnchorPane();
+        HBox listedUser = new HBox();
         if (listIndex % 2 == 0) {
         	listedUser.setStyle("-fx-background: rgb(210, 210, 210); -fx-background-color: -fx-background;");
         }
@@ -186,12 +188,8 @@ public class MessageUserListPage {
         
         Label userRoleLabel = new Label();
         userRoleLabel.setText(db.getUserRole(listUser));
-        AnchorPane.setLeftAnchor(userName, 5.0);
-        AnchorPane.setBottomAnchor(userRoleLabel, 5.0);
-        AnchorPane.setBottomAnchor(userName, 5.0);
-        AnchorPane.setRightAnchor(userRoleLabel, 5.0);
-        AnchorPane.setTopAnchor(userName, 5.0);
-        AnchorPane.setTopAnchor(userRoleLabel, 5.0);
+        userRoleLabel.setStyle("-fx-font-size: 16px;");
+        userName.setPrefWidth(500);
         listedUser.getChildren().addAll(userName, userRoleLabel);
         // Add to top of list
         content.getChildren().add(0, listedUser);
