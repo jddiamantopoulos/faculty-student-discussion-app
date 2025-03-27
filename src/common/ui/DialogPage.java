@@ -43,13 +43,11 @@ public class DialogPage {
 				HBox buttonBox = new HBox(3);
 				Button yesButton = new Button("Yes");
 				Button noButton = new Button("No");
-				//yesButton.setStyle("-fx-alignment: center; -fx-padding: 2;");
 				yesButton.setOnAction(e -> {
 					returnState = DialogReturns.yes;
 					newStage.close();
 				});
 				buttonBox.getChildren().add(yesButton);
-				//noButton.setStyle("-fx-alignment: center; -fx-padding: 2;");
 				noButton.setOnAction(e -> {
 					returnState = DialogReturns.no;
 					newStage.close();

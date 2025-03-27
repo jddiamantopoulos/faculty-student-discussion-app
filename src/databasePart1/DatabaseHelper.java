@@ -354,7 +354,6 @@ public class DatabaseHelper {
 			ResultSet rs = pstmt.executeQuery();
 			while (rs.next()) {
 				Answer a = new Answer(rs.getInt("id"), rs.getString("text"), rs.getString("author"), rs.getString("votes"));
-				// Somewhere after this point is where the error arises
 				ans.add(a);
 				answerKey++;
 			}

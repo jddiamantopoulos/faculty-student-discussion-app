@@ -77,11 +77,10 @@ public class MessageUserListPage {
 	    Label titleLabel = new Label(pageTitle + ":");
 	    titleLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
 	    titleLabel.setPrefWidth(380);
-	    Button helpButton = new Button("Help");
 	    Button refreshButton = new Button("Refresh");
 	    Button acctButton = new Button("Account");
 	    topBox.setStyle("-fx-alignment: center;");
-	    topBox.getChildren().addAll(titleLabel, helpButton, refreshButton, acctButton);
+	    topBox.getChildren().addAll(titleLabel, refreshButton, acctButton);
 	    
 	    // Error label
 	    Label errorLabel = new Label("");
@@ -134,11 +133,6 @@ public class MessageUserListPage {
         // Refresh the page
         refreshButton.setOnAction(e -> {
         	new MessageUserListPage(db, user).show(primaryStage);
-        });
-        
-        // Get help
-        helpButton.setOnAction(e -> {
-        	/* new MessageHelpDialogPage().show(new Stage()); */
         });
         
         acctButton.setOnAction(e -> {
