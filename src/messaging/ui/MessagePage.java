@@ -29,7 +29,10 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import messaging.util.*;
 
-/* Cloned from questions.ui.questionlistpage */
+/**
+ * This page displays the direct message conversation with a given user and allows 
+ * new messages to be sent.
+ */
 public class MessagePage {
 	
 	private Messages messages;
@@ -38,10 +41,17 @@ public class MessagePage {
 	private String recipient;
 	private DatabaseHelper db;
 	
-	// Used for the page
-    public MessagePage(DatabaseHelper db, User testUser, String recipient) {
+	/**
+	 * Constructs a new MessagePage and fetches the relevant messages from
+	 * the database.
+	 * 
+	 * @param db The application's DatabaseHelper instance
+	 * @param user The current user
+	 * @param recipient The username of the message recipient
+	 */
+    public MessagePage(DatabaseHelper db, User user, String recipient) {
     	this.db = db;
-    	this.user = testUser;
+    	this.user = user;
         this.recipient = recipient;
     	try { 
     		this.messages = db.getMessagesForConvo(user, recipient);
@@ -52,7 +62,9 @@ public class MessagePage {
     	}
         pageTitle = "Direct Messages with " + recipient;
     }
-    
+    /**
+     * Displays the MessagePage on a new stage.
+     */
     public void show() {
     	Stage conversationStage = new Stage();
     	
@@ -121,7 +133,12 @@ public class MessagePage {
 	    conversationStage.show();
     }
     
-    
+    /**
+     * Adds a message to the content VBox that is used in the scrollable pane.
+     * 
+     * @param message The message to be added.
+     * @param content The VBox held in the scrollable pane.
+     */
     private void addToList(Message message, VBox content) {
     	// Now create the display elements
     	// Alternates between darker/lighter backgrounds for contrast

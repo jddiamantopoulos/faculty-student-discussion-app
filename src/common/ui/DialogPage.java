@@ -10,6 +10,9 @@ import javafx.stage.Stage;
 import javafx.event.ActionEvent;
 import common.util.*;
 
+/**
+ * A template for a dialog box.
+ */
 public class DialogPage {
 	
 	DialogReturns returnState = DialogReturns.xOut;
@@ -18,6 +21,14 @@ public class DialogPage {
 		// Nothing to construct
 	}
 	
+	/**
+	 * Shows a new DialogPage.
+	 * 
+	 * @param dialogType DialogTypes enum; which page type?
+	 * @param pageTitle The title of the page.
+	 * @param message The text of the dialog message.
+	 * @return DialogTypes enum; How did the user respond?
+	 */
 	public DialogReturns show(DialogTypes dialogType, String pageTitle, String message) {
 		Stage newStage = new Stage();
 		VBox dialog = new VBox(5);

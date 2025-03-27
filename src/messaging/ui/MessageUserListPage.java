@@ -31,7 +31,9 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import messaging.util.*;
 
-/* Cloned from questions.ui.questionlistpage */
+/**
+ * This page shows the list of users for which a direct message conversation exists with the given user.
+ */
 public class MessageUserListPage {
 	
 	private Messages messages;
@@ -40,18 +42,29 @@ public class MessageUserListPage {
 	private int listIndex = 0;
 	private DatabaseHelper db;
 	
-	// Used for the initial page
-    public MessageUserListPage(DatabaseHelper db, Messages messages, User testUser) {
+	/**
+	 * This constructor is not yet used. It allows the messages to be passed in instead of retrieved.
+	 * 
+	 * @param db The application's DatabaseHelper instance.
+	 * @param messages The list of messages for the given user.
+	 * @param user The current user of the application.
+	 */
+    public MessageUserListPage(DatabaseHelper db, Messages messages, User user) {
     	this.db = db;
         this.messages = messages;
-        this.user = testUser;
+        this.user = user;
         pageTitle = "Direct Messages for " + user;
     }
     
-    // Used to pull messages from the database
-    public MessageUserListPage(DatabaseHelper db, User testUser) {
+    /**
+	 * Constructs a new MessageUserListPage and gets the list of messages from the database.
+	 * 
+	 * @param db The application's DatabaseHelper instance.
+	 * @param user The current user of the application.
+	 */
+    public MessageUserListPage(DatabaseHelper db, User user) {
     	this.db = db;
-    	this.user = testUser;
+    	this.user = user;
     	try { 
     		this.messages = db.getMessages();
     	} 
@@ -62,6 +75,13 @@ public class MessageUserListPage {
         pageTitle = "Direct Messages for " + user.getUserName();
     }
     
+    /**
+     * Shows the MessageUserListPage on the given stage.
+     * <p>
+     * The application's primaryStage is recommended.
+     * 
+     * @param primaryStage The stage that this page will be shown on.
+     */
     public void show(Stage primaryStage) {
     	messages.sortRecent();
     	VBox layout = new VBox(5);
@@ -154,6 +174,12 @@ public class MessageUserListPage {
     	primaryStage.show();
     }
     
+    /**
+     * Adds listUser to the scrollable pane that houses content.
+     * 
+     * @param listUser The user to be listed.
+     * @param content A VBox housed by the scrollable pane.
+     */
     private void addToList(String listUser, VBox content) {
     	// Now create the display elements
     	// Alternates between darker/lighter backgrounds for contrast
@@ -193,7 +219,13 @@ public class MessageUserListPage {
         content.getChildren().add(0, listedUser);
     }
     
-    
+    /**
+     * Gets the list of users from the application's messages.
+     * 
+     * @param messages The list of all messages for this workspace.
+     * @param currUser The current user of the application.
+     * @return
+     */
     private ArrayList<String> getRelevantUsers(Messages messages, User currUser) {
     	ArrayList<String> relevantUsers = new ArrayList<String>();
     	for (int i = 0; i < messages.size(); i++) {
@@ -212,6 +244,12 @@ public class MessageUserListPage {
     	return relevantUsers;
     }
     
+    /**
+     * Determines if there are unread messages between the current user and the provided username.
+     * 
+     * @param username The username of another user.
+     * @return
+     */
     private boolean hasUnread(String username) {
     	try {
     		Messages conversation = db.getMessagesByUser(user, username);
