@@ -1,5 +1,7 @@
 package accounts.ui;
 
+import java.sql.SQLException;
+
 import accounts.util.User;
 import databasePart1.DatabaseHelper;
 import javafx.scene.Scene;
@@ -62,6 +64,7 @@ public class UserHomePage {
 	    	new QuestionListPage(databaseHelper, currentUser).show(primaryStage);
 	    });
 	    
+	    // Button to go to the DMs page
 	    Button messagePageButton = new Button("Direct Messages");
 	    messagePageButton.setOnAction(a -> {
 	    	new MessageUserListPage(databaseHelper, currentUser).show(primaryStage);
@@ -70,8 +73,33 @@ public class UserHomePage {
 	    // Separator between unrelated elements
 	    Separator separator = new Separator();
 	    
-	    // Add it to your layout before the logout button
-	    layout.getChildren().addAll(userLabel, questionPageButton, messagePageButton, separator, updateAccountBtn, back, logout);
+	    // Logic to show the reviewer request button or a link to the reviewer request page
+	    Button reviewerRequestButton = new Button();
+	    if (currentUser.getRole().equals("user")) {
+	    	reviewerRequestButton.setText("Request Reviewer Role");
+	    }
+	    else if (currentUser.getRole().equals("instructor") || currentUser.getRole().equals("admin")) {
+	    	reviewerRequestButton.setText("View Reviewer Requests");
+	    }
+	    // NEXT: Action Listeners
+	    reviewerRequestButton.setOnAction(a -> {
+	    	if (currentUser.getRole().equals("user")) {
+	    		try {
+	    			databaseHelper.requestReviewerRole(currentUser.getUserName());
+	    			userLabel.setText("Request sent!");
+	    		} catch (SQLException e) {
+	    			e.printStackTrace();
+	    			System.err.println("This error could also have been thrown if the user has already requested the role.");
+	    			userLabel.setText("The request could not be sent. You may have already requested the role.");
+	    		}
+		    }
+		    else if (currentUser.getRole().equals("instructor") || currentUser.getRole().equals("admin")) {
+		    	new ReviewerRequestsUsersPage(databaseHelper, currentUser).show(primaryStage);
+		    }
+	    });
+	    
+	    // Add it to your layout before conditional logic
+	    layout.getChildren().addAll(userLabel, questionPageButton, messagePageButton, reviewerRequestButton, separator, updateAccountBtn, back, logout);
 	    
 	    Scene userScene = new Scene(layout, 800, 400);
 

@@ -1,11 +1,11 @@
-package test;
+package test.legacy;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
 import accounts.util.*;
 import databasePart1.DatabaseHelper;
 import questions.util.*;
-import test.*;
+import test.legacy.*;
 
 // Imported from Eli's HW1 for easier testing.
 

@@ -1,4 +1,4 @@
-package test;
+package test.legacy;
 
 import java.io.*;
 
