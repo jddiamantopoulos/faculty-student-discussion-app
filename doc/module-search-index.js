@@ -1,1 +1,1 @@
-moduleSearchIndex = [{"l":"FoundationCode"}];updateSearchResults();
+moduleSearchIndex = [];updateSearchResults();
