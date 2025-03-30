@@ -503,7 +503,95 @@ public class DatabaseHelper {
 	/*
 	 * INVITE CODE METHODS
 	 */
-
+	//checks if User is Reviewer
+	public boolean isReviewer(String userName) {
+		String query = "SELECT role FROM cse360users WHERE userName = ?";
+		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+			pstmt.setString(1,userName);
+			ResultSet rs = pstmt.executeQuery();
+			if (rs.next()) {
+				return "Reviewer".equalsIgnoreCase(rs.getString("role"));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+			}
+		    return false;
+		}
+	//adds a review
+	public boolean addReview(String reviewerName, int questionId, String reviewText, boolean isAnswer) {
+		String query  = "";
+		
+		if (isAnswer) {
+			query = "INSERT INTO reviews(reviewerName, answerId, reviewText) VALUES (?, ?, ?)";
+		} else {
+			query = "INSERT INTO reviews(reviewerName, questionId, reviewText) VALUES (?, ?, ?)";
+		}
+		try(PreparedStatement pstmt = connection.prepareStatement(query)) {
+			pstmt.setString(1,  reviewerName);
+			pstmt.setInt(2, questionId);
+			pstmt.setString(3, reviewText);
+			return pstmt.executeUpdate() > 0;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
+	//Updates the review
+	public boolean updateReview(int reviewId, String reviewText) {
+		String query = "UPDATE reviews SET reviewText = ? WHERE reviewId = ?";
+		try(PreparedStatement pstmt = connection.prepareStatement(query)) {
+			pstmt.setString(1, reviewText);
+			pstmt.setInt(2, reviewId);
+			return pstmt.executeUpdate() > 0;
+	} catch (SQLException e) {
+		e.printStackTrace();
+	}
+		return false;
+	}
+	
+	//Deletes the review 
+	public boolean deleteReview(int reviewId) {
+		String query = "DELETE FROM reviews WHERE reviewId = ?";
+		try(PreparedStatement pstmt = connection.prepareStatement(query)) {
+			pstmt.setInt(1, reviewId);
+			return pstmt.executeUpdate() > 0;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
+	//Obtains all reviews for question and answer
+	public List<Review> getReviewsQA(int id, boolean isAnswer) {
+		List<Review> reviews = new ArrayList<>();
+		String query = "";
+		
+		if (isAnswer) {
+			query = "SELECT * FROM reviews WHERE answerId = ?";
+		} else {
+			query = "SELECT * FROM reviews WHERE questionId = ?";
+		}
+		
+		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+			pstmt.setInt(1,  id);
+			ResultSet rs = pstmt.executeQuery();
+			while (rs.next()) {
+				reviews.add(new Review(
+						rs.getInt("reviewId"),
+						rs.getString("reviewerName"),
+						rs.getInt("questionId"),
+						rs.getString("reviewText"),
+						isAnswer
+						));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return reviews;
+	}
+	
+	
 	/**
 	 * Generates a new invitation code and inserts it into the database.
 	 * @param role The role associated with the code
