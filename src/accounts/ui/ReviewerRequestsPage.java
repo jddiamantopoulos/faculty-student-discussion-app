@@ -130,7 +130,7 @@ public class ReviewerRequestsPage {
         layout.getChildren().addAll(appRej, errorLabel, scroller);
 	    Scene messagesListScene = new Scene(layout, 600, 700);
         
-	    // Set the scene to primary stage
+	    // Set the scene to secondary stage
 	    conversationStage.setScene(messagesListScene);
 	    conversationStage.setTitle("Q&A - " + pageTitle);
 	    conversationStage.show();
@@ -143,9 +143,6 @@ public class ReviewerRequestsPage {
      * @param content The VBox held in the scrollable pane.
      */
     private void addToListQ(Question q, VBox content) {
-    	// Now create the display elements
-    	// Alternates between darker/lighter backgrounds for contrast
-        //AnchorPane messagePane = new AnchorPane();
         VBox msgBox = new VBox(2);
         msgBox.setPrefWidth(550);
         msgBox.setStyle("-fx-background: rgb(225, 225, 225); -fx-background-color: -fx-background;");
@@ -165,9 +162,6 @@ public class ReviewerRequestsPage {
      * @param content The VBox held in the scrollable pane.
      */
     private void addToListA(Answer a, VBox content) {
-    	// Now create the display elements
-    	// Alternates between darker/lighter backgrounds for contrast
-        //AnchorPane messagePane = new AnchorPane();
         VBox msgBox = new VBox(2);
         msgBox.setPrefWidth(550);
         msgBox.setStyle("-fx-background: rgb(210, 210, 210); -fx-background-color: -fx-background;");

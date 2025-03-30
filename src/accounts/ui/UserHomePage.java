@@ -81,7 +81,7 @@ public class UserHomePage {
 	    else if (currentUser.getRole().equals("instructor") || currentUser.getRole().equals("admin")) {
 	    	reviewerRequestButton.setText("View Reviewer Requests");
 	    }
-	    // NEXT: Action Listeners
+	   	
 	    reviewerRequestButton.setOnAction(a -> {
 	    	if (currentUser.getRole().equals("user")) {
 	    		try {
@@ -98,7 +98,7 @@ public class UserHomePage {
 		    }
 	    });
 	    
-	    // Add it to your layout before conditional logic
+	    // Add elements to layout
 	    layout.getChildren().addAll(userLabel, questionPageButton, messagePageButton, reviewerRequestButton, separator, updateAccountBtn, back, logout);
 	    
 	    Scene userScene = new Scene(layout, 800, 400);

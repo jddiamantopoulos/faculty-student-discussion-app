@@ -75,10 +75,9 @@ public class AdminHomePage {
 	    	new AccountUpdatePage(databaseHelper, currentUser).show(primaryStage);
 	    });
 	    
-	    // Logic to show the reviewer request button or a link to the reviewer request page
+	    // Show a link to the reviewer request page
 	    Button reviewerRequestButton = new Button("View Reviewer Requests");
 	    
-	    // NEXT: Action Listeners
 	    reviewerRequestButton.setOnAction(a -> {
 		    new ReviewerRequestsUsersPage(databaseHelper, currentUser).show(primaryStage);
 	    });

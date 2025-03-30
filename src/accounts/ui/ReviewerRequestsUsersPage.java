@@ -128,8 +128,6 @@ public class ReviewerRequestsUsersPage {
      * @param content A VBox housed by the scrollable pane.
      */
     private void addToList(String listUser, VBox content) {
-    	// Now create the display elements
-    	// Alternates between darker/lighter backgrounds for contrast
         HBox listedUser = new HBox();
         if (listIndex % 2 == 0) {
         	listedUser.setStyle("-fx-background: rgb(210, 210, 210); -fx-background-color: -fx-background;");
