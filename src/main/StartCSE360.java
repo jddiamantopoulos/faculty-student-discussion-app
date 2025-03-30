@@ -11,19 +11,29 @@ import accounts.ui.SetupLoginSelectionPage;
 import accounts.util.User;
 import databasePart1.DatabaseHelper;
 
-
+/**
+ * Application Entry point
+ */
 public class StartCSE360 extends Application {
 
 	private static final DatabaseHelper databaseHelper = new DatabaseHelper();
 	private static boolean MESSAGE_DEBUG_FLAG = false; 
-	/* I wish this were C so this could be a macro... conditional compilation of these
-	 * debug options would be a godsend. */
 	
+	/**
+	 * Application mainline. Launches the application.
+	 * @param args The arguments passed by the command line
+	 */
 	public static void main( String[] args )
 	{
 		 launch(args);
 	}
 	
+	/**
+	 * JavaFX start method override. Connects to database, determines
+	 * the page to be opened, and then opens it.
+	 * 
+	 * @param primaryStage The application's main window.
+	 */
 	@Override
     public void start(Stage primaryStage) {
         try {
@@ -42,6 +52,8 @@ public class StartCSE360 extends Application {
             	databaseHelper.register(owner);
             	databaseHelper.register(reviewer);
             	databaseHelper.register(instructor);
+            	// Reviewer request things
+            	databaseHelper.requestReviewerRole(user2.getUserName());
             	Message msg = new Message("Hey, Admin! Test test test!", "user", "Admin");
             	Message msg2 = new Message("Hey, Admin! This message exists too!", "user2", "Admin");
             	Message msg3 = new Message("Hey, user! This is an example from a reviewer!", "reviewerEX", "user");

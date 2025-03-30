@@ -1,5 +1,7 @@
 package accounts.ui;
 
+import java.sql.SQLException;
+
 import accounts.util.User;
 import databasePart1.DatabaseHelper;
 import javafx.scene.Scene;
@@ -73,7 +75,14 @@ public class AdminHomePage {
 	    	new AccountUpdatePage(databaseHelper, currentUser).show(primaryStage);
 	    });
 	    
-	    layout.getChildren().addAll(adminLabel, questionPageButton, messagePageButton, separator, updateAccountBtn, back, logout);
+	    // Show a link to the reviewer request page
+	    Button reviewerRequestButton = new Button("View Reviewer Requests");
+	    
+	    reviewerRequestButton.setOnAction(a -> {
+		    new ReviewerRequestsUsersPage(databaseHelper, currentUser).show(primaryStage);
+	    });
+	    
+	    layout.getChildren().addAll(adminLabel, questionPageButton, messagePageButton, reviewerRequestButton, separator, updateAccountBtn, back, logout);
 
 	    Scene adminScene = new Scene(layout, 800, 400);
 

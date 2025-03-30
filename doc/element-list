@@ -1,4 +1,3 @@
-module:FoundationCode
 accounts.ui
 accounts.util
 common.ui
@@ -9,4 +8,5 @@ messaging.ui
 messaging.util
 questions.ui
 questions.util
-test
+test.database
+test.legacy

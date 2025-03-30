@@ -5,6 +5,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.UUID;
 
 import accounts.util.EmailValidator;
@@ -33,7 +34,11 @@ public class DatabaseHelper {
 
 	private Connection connection = null;
 	private Statement statement = null;
-
+	
+	/**
+	 * Connect to the database and create the framework if not found.
+	 * @throws SQLException Thrown if a connection is not made.
+	 */
 	public void connectToDatabase() throws SQLException {
 		try {
 			Class.forName(JDBC_DRIVER); // Load the JDBC driver
@@ -47,7 +52,10 @@ public class DatabaseHelper {
 			System.err.println("JDBC Driver not found: " + e.getMessage());
 		}
 	}
-
+	
+	/**
+	 * Drops all objects from the database.
+	 */
 	public void clear() {
 		try {
 			statement.execute("DROP ALL OBJECTS");
@@ -56,7 +64,11 @@ public class DatabaseHelper {
 			e.printStackTrace();
 		}
 	}
-
+	
+	/**
+	 * Creates the tables if not found.
+	 * @throws SQLException Should be handled internally, but exists to catch just in case.
+	 */
 	private void createTables() throws SQLException {
 		// First check if we need to update existing table
 		try {
@@ -103,6 +115,11 @@ public class DatabaseHelper {
 						+ "text VARCHAR(500)," + "sender VARCHAR(16), " + "recipient VARCHAR(16), "
 						+ "isread BIT," + "time VARCHAR(20))";
 				statement.execute(messagesTable);
+				
+				// Create the reviewers table
+				String reviewersTable = "CREATE TABLE IF NOT EXISTS reviewerRequests (" 
+						+ "username VARCHAR(16) UNIQUE)";
+				statement.execute(reviewersTable);
 			} catch (SQLException e2) {
 				System.err.println("Multiple database errors.");
 				e2.printStackTrace();
@@ -112,7 +129,11 @@ public class DatabaseHelper {
 		}
 	}
 
-	// Check if the database is empty
+	/**
+	 * Checks if the database is empty.
+	 * @return Is the database empty?
+	 * @throws SQLException Thrown if there is an issue with the connection.
+	 */
 	public boolean isDatabaseEmpty() throws SQLException {
 		String query = "SELECT COUNT(*) AS count FROM cse360users";
 		ResultSet resultSet = statement.executeQuery(query);
@@ -122,7 +143,11 @@ public class DatabaseHelper {
 		return true;
 	}
 
-	// Registers a new user in the database.
+	/**
+	 * Registers a new user. Input validation should be handled by the caller.
+	 * @param user The user to be registered.
+	 * @throws SQLException Thrown if there is an issue with the connection.
+	 */
 	public void register(User user) throws SQLException {
 		String insertUser = "INSERT INTO cse360users (userName, password, role, name, email) VALUES (?, ?, ?, ?, ?)";
 		try (PreparedStatement pstmt = connection.prepareStatement(insertUser)) {
@@ -135,8 +160,12 @@ public class DatabaseHelper {
 		}
 	}
 
-	// Validates a user's login credentials.
-	// No need to validate personal info.
+	/**
+	 * Log in as a user.
+	 * @param user The user to be logged in as.
+	 * @return True if successful, false if not.
+	 * @throws SQLException Thrown if there is an issue with the connection.
+	 */
 	public boolean login(User user) throws SQLException {
 		String query = "SELECT * FROM cse360users WHERE userName = ? AND password = ? AND role = ?";
 		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
@@ -158,7 +187,10 @@ public class DatabaseHelper {
 		}
 	}
 
-	// Determines if there are users in the table
+	/**
+	 * Determines if the database has any users.
+	 * @return True if there are any, false if empty.
+	 */
 	public boolean hasUsers() {
 		try {
 			String query = "SELECT COUNT(*) FROM cse360users";
@@ -172,7 +204,11 @@ public class DatabaseHelper {
 		return false;
 	}
 
-	// Checks if a user already exists in the database based on their userName.
+	/**
+	 * Checks if a user already exists in the database based on their userName.
+	 * @param userName The user to be checked.
+	 * @return True if user exists.
+	 */
 	public boolean doesUserExist(String userName) {
 		String query = "SELECT COUNT(*) FROM cse360users WHERE userName = ?";
 		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
@@ -190,7 +226,12 @@ public class DatabaseHelper {
 		return false; // If an error occurs, assume user doesn't exist
 	}
 
-	// Add method to get full user information
+	/**
+	 * Add method to get full user information
+	 * @param userName The user to be looked up.
+	 * @return A user based on that username.
+	 * @throws SQLException Should be handled internally, just there for coverage.
+	 */
 	public User getUser(String userName) throws SQLException {
 		String query = "SELECT * FROM cse360users WHERE userName = ?";
 		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
@@ -206,7 +247,11 @@ public class DatabaseHelper {
 		return null;
 	}
 
-	// Retrieves the role of a user from the database using their UserName.
+	/**
+	 * Retrieves the role of a user from the database using their UserName.
+	 * @param userName The user that the role should be retrieved for.
+	 * @return A string specifying the user's role.
+	 */
 	public String getUserRole(String userName) {
 		String query = "SELECT role FROM cse360users WHERE userName = ?";
 		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
@@ -221,8 +266,28 @@ public class DatabaseHelper {
 		}
 		return null; // If no user exists or an error occurs
 	}
+	
+	/**
+	 * Sets the role of a user from the database using their UserName.
+	 * @param userName The user to be updated
+	 * @param role The role to be set
+	 */
+	public void setUserRole(String userName, String role) {
+		String query = "UPDATE cse360users SET role = ? WHERE userName = ?";
+		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+			pstmt.setString(1, role);
+			pstmt.setString(2, userName);
+			pstmt.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
 
-	// Retrieves the role associated with a given invite code.
+	/**
+	 * Retrieves the role associated with a given invite code.
+	 * @param code The invitation code to be used
+	 * @return A string specifying the role attached to the code.
+	 */
 	public String getAssociatedRole(String code) {
 		String query = "SELECT role FROM invitationCodes WHERE code = ?";
 		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
@@ -238,7 +303,11 @@ public class DatabaseHelper {
 		return null;
 	}
 
-	// Update the information for a given user
+	/**
+	 * Update the information for a given user
+	 * @param user The user to be updated.
+	 * @throws SQLException Should be handled internally.
+	 */
 	public void updateUserInfo(User user) throws SQLException {
 		String query = "UPDATE cse360users SET name = ?, email = ?, password = ? WHERE userName = ?";
 		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
@@ -256,7 +325,11 @@ public class DatabaseHelper {
 	 * QUESTION METHODS
 	 */
 
-	// Adds a new question to the database
+	/**
+	 * Insert a new question to the database.
+	 * @param q The question to be inserted.
+	 * @throws SQLException Should be handled internally.
+	 */
 	public void insertQuestion(Question q) throws SQLException {
 		String insertQuestion = "INSERT INTO questions (id, text, body, author, tags) VALUES (?, ?, ?, ?, ?)";
 		try (PreparedStatement pstmt = connection.prepareStatement(insertQuestion)) {
@@ -271,7 +344,10 @@ public class DatabaseHelper {
 		}
 	}
 
-	// Update a question by title
+	/**
+	 * Update a question by title
+	 * @param q The question to be updated
+	 */
 	public void updateQuestion(Question q) {
 		String insertQuestion = "UPDATE questions SET body = ?, author = ?, tags = ? WHERE text = ?";
 		try (PreparedStatement pstmt = connection.prepareStatement(insertQuestion)) {
@@ -304,7 +380,10 @@ public class DatabaseHelper {
 	//	}
 	// }
 
-	// Gets all questions from the database
+	/**
+	 *  Gets all questions from the database
+	 *  @throws SQLException Should be handled internally.
+	 */
 	public Questions getQuestions() throws SQLException {
 		String getQuestion = "SELECT * FROM questions";
 		Questions questions = new Questions();
@@ -320,7 +399,12 @@ public class DatabaseHelper {
 		}
 		return questions;
 	}
-
+	
+	/**
+	 * Gets all questions and answers in the database.
+	 * @return A complete questions class with associations to answers.
+	 * @throws SQLException
+	 */
 	public Questions getQuestionsAndAnswers() throws SQLException {
 		Questions q = getQuestions();
 		for (int i = 0; i < q.size(); i++) {
@@ -329,6 +413,11 @@ public class DatabaseHelper {
 		return q;
 	}
 	
+	/**
+	 * Removes a question from the database.
+	 * @param q The question to be removed.
+	 * @throws SQLException Should be handled internally.
+	 */
 	public void removeQuestion(Question q) throws SQLException {
 		String removeQuestion = "DELETE FROM questions WHERE text = ?";
 		try (PreparedStatement pstmt = connection.prepareStatement(removeQuestion)) {
@@ -343,9 +432,11 @@ public class DatabaseHelper {
 	 * ANSWER METHODS
 	 */
 
-	// This could potentially be made more efficient (with a cache of retrieved
-	// answers) but
-	// for now, this is how we'll do it
+	/**
+	 * Gets all the answers for a given question
+	 * @param question The question to be retrieved.
+	 * @throws SQLException Should be handled internally.
+	 */
 	public void getAnswers(Question question) throws SQLException {
 		String getAnswers = "SELECT * FROM answers WHERE question = ?";
 		Answers ans = new Answers();
@@ -365,7 +456,12 @@ public class DatabaseHelper {
 		}
 	}
 
-	// Adds a new answer to the database
+	/**
+	 *  Adds a new answer to the database
+	 * @param q The question associated with the answer
+	 * @param a The answer to be added
+	 * @throws SQLException Should be handled internally.
+	 */
 	public void insertAnswer(Question q, Answer a) throws SQLException {
 		String insertAnswer = "INSERT INTO answers (id, question, text, author, votes) VALUES (?, ?, ?, ?, ?)";
 		try (PreparedStatement pstmt = connection.prepareStatement(insertAnswer)) {
@@ -379,7 +475,12 @@ public class DatabaseHelper {
 			e.printStackTrace();
 		}
 	}
-
+	
+	/**
+	 * Removes an answer from the database.
+	 * @param a The answer to be removed.
+	 * @throws SQLException Should be handled internally.
+	 */
 	public void removeAnswer(Answer a) throws SQLException {
 		String removeAnswer = "DELETE FROM answers WHERE text = ?";
 		try (PreparedStatement pstmt = connection.prepareStatement(removeAnswer)) {
@@ -403,7 +504,11 @@ public class DatabaseHelper {
 	 * INVITE CODE METHODS
 	 */
 
-	// Generates a new invitation code and inserts it into the database.
+	/**
+	 * Generates a new invitation code and inserts it into the database.
+	 * @param role The role associated with the code
+	 * @return The invite code
+	 */
 	public String generateInvitationCode(String role) {
 		String code = UUID.randomUUID().toString().substring(0, 4); // Generate a random 4-character code
 		String query = "INSERT INTO InvitationCodes (code, role) VALUES (?, ?)";
@@ -419,8 +524,14 @@ public class DatabaseHelper {
 		return code;
 	}
 
-
-	 public boolean validateInvitationCode(String code) {
+	/**
+	 * Determines whether the invite code is valid. Input validation is handled by this method.
+	 * <p>
+	 * The code is marked as used when this method is called.
+	 * @param code The code to be checked.
+	 * @return True if it's valid.
+	 */
+	public boolean validateInvitationCode(String code) {
 		 // Before asking the database, we'll check if it's in the right format. 
 		 if (code.length() == 4) {
 			 for (int i = 0; i < 4; i++) { 
@@ -444,7 +555,10 @@ public class DatabaseHelper {
 	}
 
 
-	// Marks the invitation code as used in the database.
+	/**
+	 * Marks the invitation code as used in the database.
+	 * @param code The code to be marked.
+	 */
 	private void markInvitationCodeAsUsed(String code) {
 		String query = "UPDATE InvitationCodes SET isUsed = TRUE WHERE code = ?";
 		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
@@ -455,6 +569,11 @@ public class DatabaseHelper {
 		}
 	}
 	
+	/**
+	 * Gets all messages in the database.
+	 * @return A messages collection.
+	 * @throws SQLException Should be handled internally.
+	 */
 	public Messages getMessages() throws SQLException {
 		String query = "SELECT * FROM messages";
 		Messages messages = new Messages();
@@ -472,6 +591,13 @@ public class DatabaseHelper {
 		return messages;
 	}
 	
+	/**
+	 * Gets all of the messages between two users.
+	 * @param user The application's user
+	 * @param otherUser The username of the other user
+	 * @return A messages collection
+	 * @throws SQLException Should be handled internally.
+	 */
 	public Messages getMessagesByUser(User user, String otherUser) throws SQLException {
 		String query = "SELECT * FROM messages WHERE sender = ? OR recipient = ? OR sender = ? OR recipient = ?";
 		Messages messages = new Messages();
@@ -493,6 +619,13 @@ public class DatabaseHelper {
 		return messages;
 	}
 	
+	/**
+	 * Gets all of the messages in a given conversation.
+	 * @param user The application's user
+	 * @param otherUser The user the conversation is between.
+	 * @return A messages collection.
+	 * @throws SQLException Should be handled internally.
+	 */
 	public Messages getMessagesForConvo(User user, String otherUser) throws SQLException {
 		String query = "SELECT * FROM messages WHERE (sender = ? AND recipient = ?) OR (sender = ? AND recipient = ?)";
 		Messages messages = new Messages();
@@ -514,6 +647,11 @@ public class DatabaseHelper {
 		return messages;
 	}
 	
+	/**
+	 * Inserts a message into the database.
+	 * @param m The message to be inserted.
+	 * @throws SQLException Should be handled internally.
+	 */
 	public void insertMessage(Message m) throws SQLException {
 		String insertQuestion = "INSERT INTO messages (id, text, sender, recipient, time, isread) VALUES (?, ?, ?, ?, ?, ?)";
 		// but first, check if the id will be valid
@@ -541,7 +679,9 @@ public class DatabaseHelper {
 		}
 	}
 
-	// Closes the database connection and statement.
+	/**
+	 *  Closes the database connection and statement.
+	 */
 	public void closeConnection() {
 		try {
 			if (statement != null)
@@ -556,7 +696,11 @@ public class DatabaseHelper {
 			se.printStackTrace();
 		}
 	}
-
+	
+	/**
+	 * Marks a message as read.
+	 * @param message The message to be marked.
+	 */
 	public void setMessageRead(Message message) {
 		String query = "UPDATE messages SET isread = TRUE WHERE id = ?";
 		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
@@ -566,6 +710,108 @@ public class DatabaseHelper {
 			e.printStackTrace();
 		}
 		
+	}
+	
+	/**
+	 * Inserts a user into the reviewerRequests database.
+	 * <p>
+	 * For the sake of error messages, this method requires exception handling by the caller.
+	 * @param username The username of the user to be entered.
+	 * @throws SQLException Handled by the caller. Usually a duplicate entry exception.
+	 */
+	public void requestReviewerRole(String username) throws SQLException {
+		String stmt = "INSERT INTO reviewerRequests (username) VALUES (?)";
+		PreparedStatement pstmt = connection.prepareStatement(stmt);
+		pstmt.setString(1, username);
+		pstmt.executeUpdate();
+	}
+	
+	/**
+	 * Gets an ArrayList of all of the usernames in the reviewerRequests database.
+	 * 
+	 * @return The users in the reviewerRequests database.
+	 * @throws SQLException Should be handled internally, but throws this regardless.
+	 */
+	public ArrayList<String> getReviewerRequests() throws SQLException {
+		ArrayList<String> requests = new ArrayList<String>();
+		String query = "SELECT * FROM reviewerRequests;";
+		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+			ResultSet rs = pstmt.executeQuery();
+			while (rs.next()) {
+				requests.add(rs.getString("username"));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return requests;
+	}
+	
+	/**
+	 * Gets a set of questions written by an author. Should not be used for the main Q and A page.
+	 * 
+	 * @param author The author who wrote the questions.
+	 * @return The questions written by this author.
+	 * @throws SQLException Unlikely to be thrown, but here for safety.
+	 */
+	public Questions getQuestionsByAuthor(String author) throws SQLException {
+		String getQuestion = "SELECT * FROM questions WHERE author = ?";
+		PreparedStatement pstmt = connection.prepareStatement(getQuestion);
+		pstmt.setString(1, author);
+		Questions questions = new Questions();
+		try (ResultSet rs = pstmt.executeQuery()) {
+			while (rs.next()) {
+				Question q = new Question(rs.getInt("id"), rs.getString("text"), rs.getString("body"), rs.getString("author"),
+						rs.getString("tags"));
+				questions.add(q);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return questions;
+	}
+	
+	/**
+	 * Gets a set of answers written by an author. Should not be used for the main Q and A page.
+	 * 
+	 * @param author The author who wrote the answers.
+	 * @return The answers written by this author.
+	 * @throws SQLException Unlikely to be thrown, but here for safety.
+	 */
+	public Answers getAnswersByAuthor(String author) throws SQLException {
+		String getQuestion = "SELECT * FROM answers WHERE author = ?";
+		PreparedStatement pstmt = connection.prepareStatement(getQuestion);
+		pstmt.setString(1, author);
+		Answers as = new Answers();
+		try (ResultSet rs = pstmt.executeQuery()) {
+			while (rs.next()) {
+				Answer a = new Answer(rs.getInt("id"), rs.getString("text"), rs.getString("author"),
+						rs.getString("votes"));
+				as.add(a);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return as;
+	}
+	
+	/**
+	 * Delete a user from the requests database.
+	 * @param requestUser The user who put out the request.
+	 * @return True if the request is processed.
+	 */
+	public boolean rejectReviewerRequest(String requestUser) {
+		String query = "DELETE FROM reviewerRequests WHERE username = ?";
+		PreparedStatement pstmt;
+		try {
+			pstmt = connection.prepareStatement(query);
+			pstmt.setString(1, requestUser);
+			pstmt.executeUpdate();
+			return true;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return false;
+		}
 	}
 
 }
