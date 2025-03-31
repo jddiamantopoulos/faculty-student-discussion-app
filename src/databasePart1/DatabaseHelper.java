@@ -514,16 +514,17 @@ public class DatabaseHelper {
 
 
 	/**
- 	*Retrieves role so that it identifies if user has reviewer role
- 	*/
-	//checks if User is Reviewer
+	 * Checks if the user has the reviewer role
+	 * @param userName The username of the user
+	 * @return True if is reviewer
+	 */
 	public boolean isReviewer(String userName) {
 		String query = "SELECT role FROM cse360users WHERE userName = ?";
 		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
 			pstmt.setString(1,userName);
 			ResultSet rs = pstmt.executeQuery();
 			if (rs.next()) {
-				return "Reviewer".equals(rs.getString("role"));
+				return "reviewer".equals(rs.getString("role"));
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -531,10 +532,13 @@ public class DatabaseHelper {
 		    return false;
 		}
 	/**
- 	*adds the review made by user 
-  	*takes the review whether it is on the question or answer
- 	*/
-	//adds a review
+	 * Adds a review to the database
+	 * @param reviewerName The name of the review author
+	 * @param questionId The ID associated with the question
+	 * @param reviewText The text of the review
+	 * @param isAnswer Is the review of an answer?
+	 * @return True if added successfully.
+	 */
 	public boolean addReview(String reviewerName, int questionId, String reviewText, boolean isAnswer) {
 		String query  = "";
 		
@@ -555,10 +559,11 @@ public class DatabaseHelper {
 	}
 
 	/**
- 	*Allows the user to update the review
- 	*/
-	
-	//Updates the review
+	 * Updates a review in the database
+	 * @param reviewId PKey of the review
+	 * @param reviewText
+	 * @return True if updated successfully.
+	 */
 	public boolean updateReview(int reviewId, String reviewText) {
 		String query = "UPDATE reviews SET reviewText = ? WHERE reviewId = ?";
 		try(PreparedStatement pstmt = connection.prepareStatement(query)) {
@@ -572,9 +577,10 @@ public class DatabaseHelper {
 	}
 
 	/**
- 	*allows user to delete the review 
- 	*/
-	//Deletes the review 
+	 * Allows the user to delete a review
+	 * @param reviewId PKey of the review in the database
+	 * @return True if successfully deleted.
+	 */
 	public boolean deleteReview(int reviewId) {
 		String query = "DELETE FROM reviews WHERE reviewId = ?";
 		try(PreparedStatement pstmt = connection.prepareStatement(query)) {
@@ -587,9 +593,11 @@ public class DatabaseHelper {
 	}
 
 	/**
- 	*Retrives the reviews for all questions and answers 
- 	*/
-	//Obtains all reviews for question and answer
+	 * Retrieves all of the reviews for a question or answer
+	 * @param id The ID of the question or answer
+	 * @param isAnswer True if is answer
+	 * @return A list of all the reviews.
+	 */
 	public List<Review> getReviewsQA(int id, boolean isAnswer) {
 		List<Review> reviews = new ArrayList<>();
 		String query = "";
