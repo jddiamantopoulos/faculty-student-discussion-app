@@ -511,7 +511,7 @@ public class DatabaseHelper {
 			pstmt.setString(1,userName);
 			ResultSet rs = pstmt.executeQuery();
 			if (rs.next()) {
-				return "Reviewer".equalsIgnoreCase(rs.getString("role"));
+				return "Reviewer"(rs.getString("role"));
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
