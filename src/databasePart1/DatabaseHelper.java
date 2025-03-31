@@ -504,6 +504,11 @@ public class DatabaseHelper {
 	/*
 	 * INVITE CODE METHODS
 	 */
+
+
+	/**
+ 	*Retrieves role so that it identifies if user has reviewer role
+ 	*/
 	//checks if User is Reviewer
 	public boolean isReviewer(String userName) {
 		String query = "SELECT role FROM cse360users WHERE userName = ?";
@@ -518,6 +523,10 @@ public class DatabaseHelper {
 			}
 		    return false;
 		}
+	/**
+ 	*adds the review made by user 
+  	*takes the review whether it is on the question or answer
+ 	*/
 	//adds a review
 	public boolean addReview(String reviewerName, int questionId, String reviewText, boolean isAnswer) {
 		String query  = "";
@@ -537,6 +546,10 @@ public class DatabaseHelper {
 		}
 		return false;
 	}
+
+	/**
+ 	*Allows the user to update the review
+ 	*/
 	
 	//Updates the review
 	public boolean updateReview(int reviewId, String reviewText) {
@@ -550,7 +563,10 @@ public class DatabaseHelper {
 	}
 		return false;
 	}
-	
+
+	/**
+ 	*allows user to delete the review 
+ 	*/
 	//Deletes the review 
 	public boolean deleteReview(int reviewId) {
 		String query = "DELETE FROM reviews WHERE reviewId = ?";
@@ -562,7 +578,10 @@ public class DatabaseHelper {
 		}
 		return false;
 	}
-	
+
+	/**
+ 	*Retrives the reviews for all questions and answers 
+ 	*/
 	//Obtains all reviews for question and answer
 	public List<Review> getReviewsQA(int id, boolean isAnswer) {
 		List<Review> reviews = new ArrayList<>();
