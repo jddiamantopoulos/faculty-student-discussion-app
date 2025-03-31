@@ -1,5 +1,8 @@
 package questions.util;
 
+/**
+ * Represents a review of a question or answer
+ */
 public class Review {
 	private int reviewId;
 	private String reviewerName;
@@ -7,7 +10,14 @@ public class Review {
 	private String reviewText;
 	private boolean isAnswer;
 	
-	
+	/**
+	 * Constructs a new review
+	 * @param reviewId The ID of this review in the database
+	 * @param reviewerName The name of the author
+	 * @param qaText The primary key of the question or answer being reviewed
+	 * @param reviewText The text of the review
+	 * @param isAnswer Is this a review of an answer?
+	 */
 	public Review(int reviewId, String reviewerName, int qaText, String reviewText, boolean isAnswer) {
 		this.reviewId = reviewId;
 		this.reviewerName = reviewerName;
@@ -16,12 +26,13 @@ public class Review {
 		this.isAnswer = isAnswer;
 	}
 	
+	// Getters
 	public int getReviewId() { return reviewId; }
 	public String getReviewerName() { return reviewerName;}
 	public int getqaText() { return qaText;}
 	public String getReviewText() { return reviewText; }
 	public boolean isAnswer() { return isAnswer; }
 
-	//allows for the review text to modified
+	// Setters (for updating a review)
 	public void setReviewText(String reviewText) {this.reviewText = reviewText; }
 }

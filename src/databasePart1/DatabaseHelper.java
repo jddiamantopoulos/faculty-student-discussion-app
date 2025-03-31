@@ -77,6 +77,7 @@ public class DatabaseHelper {
 			statement.executeQuery("SELECT name FROM cse360users LIMIT 1");
 			statement.executeQuery("SELECT text FROM questions LIMIT 1");
 			statement.executeQuery("SELECT text FROM messages LIMIT 1");
+			statement.executeQuery("SELECT text FROM reviews LIMIT 1");
 		} catch (SQLException e) {
 			try {
 				// Create tables if they don't exist
@@ -121,6 +122,12 @@ public class DatabaseHelper {
 				String reviewersTable = "CREATE TABLE IF NOT EXISTS reviewerRequests (" 
 						+ "username VARCHAR(16) UNIQUE)";
 				statement.execute(reviewersTable);
+				
+				// Create the reviews table
+				String reviewsTable = "CREATE TABLE IF NOT EXISTS reviews (" 
+						+ "reviewId INT AUTO_INCREMENT PRIMARY KEY, " + "reviewerName VARCHAR(16), "
+						+ "answerId INT, " + "questionId INT, " + "reviewText VARCHAR(2000))";
+				statement.execute(reviewsTable);
 			} catch (SQLException e2) {
 				System.err.println("Multiple database errors.");
 				e2.printStackTrace();
@@ -597,13 +604,24 @@ public class DatabaseHelper {
 			pstmt.setInt(1,  id);
 			ResultSet rs = pstmt.executeQuery();
 			while (rs.next()) {
-				reviews.add(new Review(
-						rs.getInt("reviewId"),
-						rs.getString("reviewerName"),
-						rs.getInt("questionId"),
-						rs.getString("reviewText"),
-						isAnswer
-						));
+				if (isAnswer) {
+					reviews.add(new Review(
+							rs.getInt("reviewId"),
+							rs.getString("reviewerName"),
+							rs.getInt("answerId"),
+							rs.getString("reviewText"),
+							isAnswer
+							));
+				}
+				else {
+					reviews.add(new Review(
+							rs.getInt("reviewId"),
+							rs.getString("reviewerName"),
+							rs.getInt("questionId"),
+							rs.getString("reviewText"),
+							isAnswer
+							));
+				}
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();

@@ -14,12 +14,22 @@ import questions.util.Answer;
 import questions.util.Question;
 import questions.util.Review;
 
+/**
+ * This page houses the reviews for a question or answer.
+ */
 public class ReviewPage {
 	private DatabaseHelper db;
 	private Question parent;
 	private Answer ans;
 	private User currUser;
 	
+	/**
+	 * Constructs a new review page
+	 * @param db The application's DatabaseHelper
+	 * @param parent The question being reviewed (null if isAnswer)
+	 * @param ans The answer being reviewed (null if !isAnswer)
+	 * @param currUser The currently signed in user of the application
+	 */
 	public ReviewPage(DatabaseHelper db, Question parent, Answer ans, User currUser) {
 		this.db = db;
 		this.parent = parent;
@@ -27,11 +37,15 @@ public class ReviewPage {
 		this.currUser = currUser;
 	}
 	
+	/**
+	 * Shows the application on the given stage
+	 * @param tertiaryStage Usually "new Stage()" is passed in.
+	 */
 	public void show(Stage tertiaryStage) {
 		VBox layout = new VBox(10);
 		
 		//review section
-		Label revlabel = new Label("Reviews for " + (ans != null ? "Answer: " + parent.getText() : "Question: " + parent.getText()));
+		Label revlabel = new Label("Reviews for " + (ans != null ? "Answer: " + ans.getText() : "Question: " + parent.getText()));
 		layout.getChildren().add(revlabel);
 		
 		//sees if review for question or answer
@@ -71,7 +85,13 @@ public class ReviewPage {
 					layout.getChildren().remove(reviewBox);
 				}
 			});
-			reviewBox.getChildren().addAll(reviewText, editButton, deleteButton);
+			reviewBox.getChildren().add(reviewText);
+			
+			// Conditional showing/hiding based on status (admins and author)
+			if (currUser.getRole().equals("admin") || currUser.getUserName().equals(review.getReviewerName())) {
+				reviewBox.getChildren().addAll(editButton, deleteButton);
+			}
+			
 			layout.getChildren().add(reviewBox);
 		}
 		
@@ -87,6 +107,9 @@ public class ReviewPage {
 				if (db.addReview(currUser.getUserName(), qaText, reviewText, isAnswer)) {
 					layout.getChildren().add(new Label(currUser.getUserName() + ": " + reviewText));
 					newReviewField.clear();
+				}
+				else {
+					System.err.println("Could not post review.");
 				}
 			}
 		});

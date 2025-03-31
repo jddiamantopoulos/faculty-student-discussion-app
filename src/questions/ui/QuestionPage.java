@@ -71,6 +71,9 @@ public class QuestionPage {
     	questionBody.setWrapText(true);
     	
     	Button questionUpdateButton = new Button("Edit");
+    	Button reviewListButton = new Button("Reviews");
+    	
+    	// Allow users to write reviews if applicable
     	
     	Label usernameAndTags = new Label("Poster: " + question.getAuthor() + " | Tags: " + question.getTagsAsString());
     	usernameAndTags.setStyle("-fx-padding: 5;");
@@ -81,6 +84,11 @@ public class QuestionPage {
     			|| user.getRole().equals("instructor") ) {
     		firstRow.getChildren().add(questionUpdateButton);
     	}
+    	if (user.getRole().equals("admin") ||
+    			(  !user.getRole().equals("user") 
+    			&& !user.getName().equals(question.getAuthor()))) {
+    		firstRow.getChildren().add(reviewListButton);
+    	}
     	questionPane.getChildren().addAll(firstRow, usernameAndTags);
     	if (question.getBody().length() > 0) {
     		questionPane.getChildren().addAll(separator, questionBody);
@@ -89,6 +97,9 @@ public class QuestionPage {
     	
     	questionUpdateButton.setOnAction(e -> {
     		new QuestionUpdatePage(db, parentQuestions, question, user).show(secondaryStage);
+    	});
+    	reviewListButton.setOnAction(e -> {
+    		new ReviewPage(db, question, null, user).show(new Stage());
     	});
     	
     	for (int i = 0; i < question.getAnswers().size(); i++) {
@@ -159,6 +170,8 @@ public class QuestionPage {
         Button button = new Button("Remove");
         Button editButton = new Button("Edit");
         Button likeButton = new Button("Like");
+        Button reviewsButton = new Button("Reviews");
+        reviewsButton.setPrefWidth(80);
         editButton.setPrefWidth(80);
         button.setPrefWidth(80);
         likeButton.setPrefWidth(80);
@@ -169,10 +182,14 @@ public class QuestionPage {
         	buttonContainer.getChildren().addAll(button, editButton);
         }
         else if (user.getRole().equals("admin")) {
-        	buttonContainer.getChildren().addAll(button, editButton, likeButton);
+        	buttonContainer.getChildren().addAll(button, editButton, likeButton, reviewsButton);
         }
         else if (user.getRole().equals("instructor") && !user.getUserName().equals(ans.getAuthor())) {
-        	buttonContainer.getChildren().addAll(button, likeButton);
+        	buttonContainer.getChildren().addAll(button, likeButton, reviewsButton);
+        }
+        // default case for roles above user
+        else if (!user.getRole().equals("user") && !user.getUserName().equals(ans.getAuthor())) {
+        	buttonContainer.getChildren().addAll(button, likeButton, reviewsButton);
         }
         else {
         	buttonContainer.getChildren().add(likeButton);
@@ -219,6 +236,10 @@ public class QuestionPage {
         			ex.printStackTrace();
         		}
         	}
+        });
+        reviewsButton.setOnAction(a -> {
+        	// Show in new window
+        	new ReviewPage(db, null, ans, user).show(new Stage());
         });
         
         // Add to top of list
