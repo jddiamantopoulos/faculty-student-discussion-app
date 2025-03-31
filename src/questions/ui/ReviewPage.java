@@ -1,9 +1,24 @@
+package questions.ui;
 
+import java.util.List;
+
+import accounts.util.User;
+import databasePart1.DatabaseHelper;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
+import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
+import questions.util.Answer;
+import questions.util.Question;
+import questions.util.Review;
+
+public class ReviewPage {
 	private DatabaseHelper db;
 	private Question parent;
 	private Answer ans;
 	private User currUser;
-	
 	
 	public ReviewPage(DatabaseHelper db, Question parent, Answer ans, User currUser) {
 		this.db = db;
@@ -21,7 +36,7 @@
 		
 		//sees if review for question or answer
 		boolean isAnswer = (ans != null);
-		int qaText = isAnswer ? ans.getId() : parent.getId();
+		int qaText = isAnswer ? ans.getKey() : parent.getKey();
 		
 		
 		//gets all the reviews for question or answer
