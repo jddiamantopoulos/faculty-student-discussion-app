@@ -11,7 +11,12 @@ public class User {
     private String name;
     private String email;
 
-    // Constructor to initialize a new User object
+    /**
+     * Constructs a new user. Inputs should be validated BEFORE use.
+     * @param userName The userName to be used.
+     * @param password The password to be used.
+     * @param role The user's role (from invite code).
+     */
     public User(String userName, String password, String role) {
         this.userName = userName;
         this.password = password;
@@ -20,7 +25,15 @@ public class User {
         this.email = "";
     }
     
-    // Constructor with all fields
+    /**
+     * Constructs a new user with more control over user info. Inputs should be
+     * validated BEFORE use.
+     * @param userName The user's provided username.
+     * @param password The user's provided password.
+     * @param role The user's role (from invite code).
+     * @param name The user's provided name.
+     * @param email The user's provided email.
+     */
     public User(String userName, String password, String role, String name, String email) {
         this.userName = userName;
         this.password = password;
@@ -34,6 +47,7 @@ public class User {
     public void setName(String name) { this.name = name; }
     public void setEmail(String email) { this.email = email; }
     public void setPassword(String password) { this.password = password; }
+    /* There is no username setter since this should never be changed */
 
     // Getters
     public String getUserName() { return userName; }
