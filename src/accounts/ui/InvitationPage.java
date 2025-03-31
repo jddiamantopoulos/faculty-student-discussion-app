@@ -13,11 +13,19 @@ import java.util.Arrays;
 
 import accounts.util.User;
 
+/**
+ * Allows admins to generate invite codes for new users.
+ */
 public class InvitationPage {
 
 	private final DatabaseHelper databaseHelper;
 	private final User user;
-
+	
+	/**
+	 * Constructs a new InvitationPage.
+	 * @param databaseHelper The application's DatabaseHelper instance.
+	 * @param user The currently logged in user.
+	 */
 	public InvitationPage(DatabaseHelper databaseHelper, User user) {
 		this.databaseHelper = databaseHelper;
 		this.user = user;

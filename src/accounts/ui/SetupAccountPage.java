@@ -17,7 +17,10 @@ import databasePart1.DatabaseHelper;
 public class SetupAccountPage {
 	
     private final DatabaseHelper databaseHelper;
-    // DatabaseHelper to handle database operations.
+    /**
+     * Constructs a new SetupAccountPage.
+     * @param databaseHelper The application's DatabaseHelper instance.
+     */
     public SetupAccountPage(DatabaseHelper databaseHelper) {
         this.databaseHelper = databaseHelper;
     }

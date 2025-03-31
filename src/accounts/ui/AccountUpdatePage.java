@@ -15,12 +15,20 @@ import javafx.stage.Stage;
 public class AccountUpdatePage {
     private final DatabaseHelper databaseHelper;
     private final User currentUser;
-
+    
+    /**
+     * Constructs a new account update page.
+     * @param databaseHelper The database helper for this instance of the application.
+     * @param currentUser The user who is logged in.
+     */
     public AccountUpdatePage(DatabaseHelper databaseHelper, User currentUser) {
         this.databaseHelper = databaseHelper;
         this.currentUser = currentUser;
     }
-
+    /**
+     * Shows the page on the primaryStage.
+     * @param primaryStage The main stage of the application.
+     */
     public void show(Stage primaryStage) {
         GridPane grid = new GridPane();
         grid.setHgap(10);
@@ -135,7 +143,12 @@ public class AccountUpdatePage {
         primaryStage.setScene(scene);
         primaryStage.setTitle("Update Account Information");
     }
-
+    
+    /**
+     * Shows an error message on the provided messageLabel.
+     * @param messageLabel The label to show the message on.
+     * @param message The error message to be shown.
+     */
     private void showError(Label messageLabel, String message) {
         messageLabel.setStyle("-fx-text-fill: red;");
         messageLabel.setText(message);

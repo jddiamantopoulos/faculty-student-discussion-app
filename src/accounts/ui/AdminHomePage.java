@@ -18,18 +18,23 @@ import questions.ui.QuestionListPage;
  */
 
 public class AdminHomePage {
-	/**
-     * Displays the admin page in the provided primary stage.
-     * @param primaryStage The primary stage where the scene will be displayed.
-     */
 	private DatabaseHelper databaseHelper;
 	private User currentUser;
 	
+	/**
+	 * Constructs a new AdminHomePage.
+	 * @param databaseHelper The DatabaseHelper instance for this instance of the application.
+	 * @param currentUser The user who is logged in.
+	 */
 	public AdminHomePage(DatabaseHelper databaseHelper, User currentUser) {
 		this.databaseHelper = databaseHelper;
 		this.currentUser = currentUser;
 	}
 	
+	/**
+     * Displays the admin page in the provided primary stage.
+     * @param primaryStage The primary stage where the scene will be displayed.
+     */
     public void show(Stage primaryStage) {
     	VBox layout = new VBox(5);
     	
