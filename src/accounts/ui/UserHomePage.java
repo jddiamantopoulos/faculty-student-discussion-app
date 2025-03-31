@@ -108,6 +108,11 @@ public class UserHomePage {
 	    // Add elements to layout
 	    layout.getChildren().addAll(userLabel, questionPageButton, messagePageButton, reviewerRequestButton, separator, updateAccountBtn, back, logout);
 	    
+	    // PATCH: Remove button if user is reviewer
+	    if (currentUser.getRole().equals("reviewer")) {
+	    	layout.getChildren().remove(reviewerRequestButton);
+	    }
+	    
 	    Scene userScene = new Scene(layout, 800, 400);
 
 	    // Set the scene to primary stage

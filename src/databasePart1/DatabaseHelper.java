@@ -77,6 +77,7 @@ public class DatabaseHelper {
 			statement.executeQuery("SELECT name FROM cse360users LIMIT 1");
 			statement.executeQuery("SELECT text FROM questions LIMIT 1");
 			statement.executeQuery("SELECT text FROM messages LIMIT 1");
+			statement.executeQuery("SELECT text FROM reviews LIMIT 1");
 		} catch (SQLException e) {
 			try {
 				// Create tables if they don't exist
@@ -121,6 +122,12 @@ public class DatabaseHelper {
 				String reviewersTable = "CREATE TABLE IF NOT EXISTS reviewerRequests (" 
 						+ "username VARCHAR(16) UNIQUE)";
 				statement.execute(reviewersTable);
+				
+				// Create the reviews table
+				String reviewsTable = "CREATE TABLE IF NOT EXISTS reviews (" 
+						+ "reviewId INT AUTO_INCREMENT PRIMARY KEY, " + "reviewerName VARCHAR(16), "
+						+ "answerId INT, " + "questionId INT, " + "reviewText VARCHAR(2000))";
+				statement.execute(reviewsTable);
 			} catch (SQLException e2) {
 				System.err.println("Multiple database errors.");
 				e2.printStackTrace();
@@ -504,21 +511,34 @@ public class DatabaseHelper {
 	/*
 	 * INVITE CODE METHODS
 	 */
-	//checks if User is Reviewer
+
+
+	/**
+	 * Checks if the user has the reviewer role
+	 * @param userName The username of the user
+	 * @return True if is reviewer
+	 */
 	public boolean isReviewer(String userName) {
 		String query = "SELECT role FROM cse360users WHERE userName = ?";
 		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
 			pstmt.setString(1,userName);
 			ResultSet rs = pstmt.executeQuery();
 			if (rs.next()) {
-				return "Reviewer".equalsIgnoreCase(rs.getString("role"));
+				return "reviewer".equals(rs.getString("role"));
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 			}
 		    return false;
 		}
-	//adds a review
+	/**
+	 * Adds a review to the database
+	 * @param reviewerName The name of the review author
+	 * @param questionId The ID associated with the question
+	 * @param reviewText The text of the review
+	 * @param isAnswer Is the review of an answer?
+	 * @return True if added successfully.
+	 */
 	public boolean addReview(String reviewerName, int questionId, String reviewText, boolean isAnswer) {
 		String query  = "";
 		
@@ -537,8 +557,13 @@ public class DatabaseHelper {
 		}
 		return false;
 	}
-	
-	//Updates the review
+
+	/**
+	 * Updates a review in the database
+	 * @param reviewId PKey of the review
+	 * @param reviewText
+	 * @return True if updated successfully.
+	 */
 	public boolean updateReview(int reviewId, String reviewText) {
 		String query = "UPDATE reviews SET reviewText = ? WHERE reviewId = ?";
 		try(PreparedStatement pstmt = connection.prepareStatement(query)) {
@@ -550,8 +575,12 @@ public class DatabaseHelper {
 	}
 		return false;
 	}
-	
-	//Deletes the review 
+
+	/**
+	 * Allows the user to delete a review
+	 * @param reviewId PKey of the review in the database
+	 * @return True if successfully deleted.
+	 */
 	public boolean deleteReview(int reviewId) {
 		String query = "DELETE FROM reviews WHERE reviewId = ?";
 		try(PreparedStatement pstmt = connection.prepareStatement(query)) {
@@ -562,8 +591,13 @@ public class DatabaseHelper {
 		}
 		return false;
 	}
-	
-	//Obtains all reviews for question and answer
+
+	/**
+	 * Retrieves all of the reviews for a question or answer
+	 * @param id The ID of the question or answer
+	 * @param isAnswer True if is answer
+	 * @return A list of all the reviews.
+	 */
 	public List<Review> getReviewsQA(int id, boolean isAnswer) {
 		List<Review> reviews = new ArrayList<>();
 		String query = "";
@@ -578,13 +612,24 @@ public class DatabaseHelper {
 			pstmt.setInt(1,  id);
 			ResultSet rs = pstmt.executeQuery();
 			while (rs.next()) {
-				reviews.add(new Review(
-						rs.getInt("reviewId"),
-						rs.getString("reviewerName"),
-						rs.getInt("questionId"),
-						rs.getString("reviewText"),
-						isAnswer
-						));
+				if (isAnswer) {
+					reviews.add(new Review(
+							rs.getInt("reviewId"),
+							rs.getString("reviewerName"),
+							rs.getInt("answerId"),
+							rs.getString("reviewText"),
+							isAnswer
+							));
+				}
+				else {
+					reviews.add(new Review(
+							rs.getInt("reviewId"),
+							rs.getString("reviewerName"),
+							rs.getInt("questionId"),
+							rs.getString("reviewText"),
+							isAnswer
+							));
+				}
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
