@@ -1,7 +1,15 @@
 package accounts.util;
 
+/**
+ * A basic validator for provided email addresses.
+ */
 public class EmailValidator {
-	// Determine if the email passes basic validation
+	
+	/**
+	 * Checks if the provided email is valid.
+	 * @param input The email address as a string.
+	 * @return Empty if valid, error message if invalid.
+	 */
 	public static String validateEmail(String input) {
 		int currIndex = 0;
 		int state = 0;
@@ -80,6 +88,11 @@ public class EmailValidator {
 		}
 	}
 	
+	/**
+	 * A helper method to determine if a character is a valid special character for emails.
+	 * @param currChar The char to be checked.
+	 * @return True if char is a valid special character.
+	 */
 	private static boolean isSpChar(char currChar) {
 		if (currChar == '.' || currChar == '+' ||
 				 currChar == '-' || currChar == '_' ||
@@ -91,7 +104,11 @@ public class EmailValidator {
 		}
 	}
 	
-	// Used in the databaseHelper, so it's being left public
+	/**
+	 * Used to determine if a char is alphanumeric.
+	 * @param currChar The char being checked.
+	 * @return True if alphanumeric.
+	 */
 	public static boolean isAlphaNumeric(char currChar) {
 		if ((currChar >= 'A' && currChar <= 'Z') ||
 				(currChar >= 'a' && currChar <= 'z') ||

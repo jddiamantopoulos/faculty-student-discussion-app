@@ -15,10 +15,18 @@ public class SetupLoginSelectionPage {
 	
     private final DatabaseHelper databaseHelper;
 
+    /**
+     * Constructs a new SetupLoginSelectionPage.
+     * @param databaseHelper The application's DatabaseHelper instance.
+     */
     public SetupLoginSelectionPage(DatabaseHelper databaseHelper) {
         this.databaseHelper = databaseHelper;
     }
-
+    
+    /**
+     * Shows the SetupLoginSelectionPage on the provided stage.
+     * @param primaryStage The main stage of the application.
+     */
     public void show(Stage primaryStage) {
         // First check if any users exist in the database
         if (!databaseHelper.hasUsers()) {

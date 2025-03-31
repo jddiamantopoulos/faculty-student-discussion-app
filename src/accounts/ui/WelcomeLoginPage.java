@@ -22,10 +22,19 @@ public class WelcomeLoginPage {
 	
 	private final DatabaseHelper databaseHelper;
 
+	/**
+	 * Constructs a new WelcomeLoginPage.
+	 * @param databaseHelper The application's DatabaseHelper instance.
+	 */
     public WelcomeLoginPage(DatabaseHelper databaseHelper) {
         this.databaseHelper = databaseHelper;
     }
     
+    /**
+     * Shows the page on the provided stage.
+     * @param primaryStage The application's main stage.
+     * @param user The currently logged in user.
+     */
     public void show(Stage primaryStage, User user) {
     	
     	VBox layout = new VBox(5);

@@ -18,11 +18,19 @@ import databasePart1.DatabaseHelper;
 public class UserLoginPage {
 	
     private final DatabaseHelper databaseHelper;
-
+    
+    /**
+     * Constructs a new UserLoginPage
+     * @param databaseHelper The application's DatabaseHelper instance.
+     */
     public UserLoginPage(DatabaseHelper databaseHelper) {
         this.databaseHelper = databaseHelper;
     }
-
+    
+    /**
+     * Shows the page on the provided stage.
+     * @param primaryStage The application's main stage.
+     */
     public void show(Stage primaryStage) {
     	// Input field for the user's userName, password
         TextField userNameField = new TextField();

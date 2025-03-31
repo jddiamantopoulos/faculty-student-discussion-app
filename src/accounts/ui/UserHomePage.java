@@ -14,20 +14,27 @@ import messaging.ui.MessageUserListPage;
 import questions.ui.QuestionListPage;
 
 /**
- * This page displays a simple welcome message for the user.
+ * This page allows users to navigate to different modules of the application.
  */
 
 public class UserHomePage {
 	private DatabaseHelper databaseHelper;
 	private User currentUser;
 	
-	// databaseHelper is not global, needs to be passed 
-	// through here to allow it to be passed back to the first page.
+	/**
+	 * Constructs a new home page for the user.
+	 * @param databaseHelper The application's DatabaseHelper instance.
+	 * @param currentUser The current user of the application.
+	 */
 	public UserHomePage(DatabaseHelper databaseHelper, User currentUser) {
 		this.databaseHelper = databaseHelper;
 		this.currentUser = currentUser;
 	}
-
+	
+	/**
+	 * Shows the page on the provided stage.
+	 * @param primaryStage The application's main stage.
+	 */
     public void show(Stage primaryStage) {
     	VBox layout = new VBox(5);
 	    layout.setStyle("-fx-alignment: center; -fx-padding: 20;");

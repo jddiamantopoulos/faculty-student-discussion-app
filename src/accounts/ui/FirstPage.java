@@ -15,6 +15,11 @@ public class FirstPage {
 	
 	// Reference to the DatabaseHelper for database interactions
 	private final DatabaseHelper databaseHelper;
+	
+	/**
+	 * Constructs a new FirstPage.
+	 * @param databaseHelper The application's DatabaseHelper instance.
+	 */
 	public FirstPage(DatabaseHelper databaseHelper) {
         this.databaseHelper = databaseHelper;
     }

@@ -17,11 +17,19 @@ import databasePart1.DatabaseHelper;
 public class AdminSetupPage {
 	
     private final DatabaseHelper databaseHelper;
-
+    
+    /**
+     * Constructs a new AdminSetupPage
+     * @param databaseHelper The DatabaseHelper instance for this application
+     */
     public AdminSetupPage(DatabaseHelper databaseHelper) {
         this.databaseHelper = databaseHelper;
     }
-
+    
+    /**
+     * Shows the AdminSetupPage on the main stage.
+     * @param primaryStage The application's main stage.
+     */
     public void show(Stage primaryStage) {
     	// Input fields for userName and password
         TextField userNameField = new TextField();
