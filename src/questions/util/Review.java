@@ -21,6 +21,7 @@ public class Review {
 	public int getqaText() { return qaText;}
 	public String getReviewText() { return reviewText; }
 	public boolean isAnswer() { return isAnswer; }
-	
+
+	//allows for the review text to modified
 	public void setReviewText(String reviewText) {this.reviewText = reviewText; }
 }
