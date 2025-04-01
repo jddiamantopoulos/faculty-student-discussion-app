@@ -55,6 +55,12 @@ public class AdminHomePage {
 	    	new MessageUserListPage(databaseHelper, currentUser).show(primaryStage);
 	    });
 	    
+	    // Button to update reviewer scores
+	    Button reviewerScoresPageButton = new Button("Update Reviewer Scores");
+	    reviewerScoresPageButton.setOnAction(a -> {
+	    	new UpdateReviewerScoresPage(databaseHelper, currentUser).show(primaryStage);
+	    });
+	    
 	    // Separator between unrelated elements
 	    Separator separator = new Separator();
 	    
@@ -87,7 +93,7 @@ public class AdminHomePage {
 		    new ReviewerRequestsUsersPage(databaseHelper, currentUser).show(primaryStage);
 	    });
 	    
-	    layout.getChildren().addAll(adminLabel, questionPageButton, messagePageButton, reviewerRequestButton, separator, updateAccountBtn, back, logout);
+	    layout.getChildren().addAll(adminLabel, questionPageButton, messagePageButton, reviewerRequestButton, separator, reviewerScoresPageButton, updateAccountBtn, back, logout);
 
 	    Scene adminScene = new Scene(layout, 800, 400);
 

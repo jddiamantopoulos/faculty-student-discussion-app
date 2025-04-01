@@ -1,7 +1,9 @@
 package questions.ui;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import accounts.util.Reviewer;
 import accounts.util.User;
 import databasePart1.DatabaseHelper;
 import javafx.scene.Scene;
@@ -55,6 +57,9 @@ public class ReviewPage {
 		
 		//gets all the reviews for question or answer
 		List<Review> reviews = db.getReviewsQA(qaText, isAnswer);
+		
+		sortReviews(reviews);
+		reviews = reviews.reversed();
 		
 		for (Review review : reviews) {
 			VBox reviewBox = new VBox();
@@ -121,4 +126,32 @@ public class ReviewPage {
 		tertiaryStage.setTitle("Manage Reviews for " + (isAnswer ? "Answer" : "Question"));
 		tertiaryStage.show();
 	}	
+	
+	/**
+	 * Sorts the list of reviews in O(n^2). Sacrificing performance for simplicity.
+	 * @param reviews A list of reviews.
+	 */
+	private void sortReviews(List<Review> reviews) {
+		for (int i = 0; i < reviews.size(); i++) {
+			for (int j = 0; j < reviews.size(); j++) {
+				if (compareReviews(reviews.get(i), reviews.get(j)) < 0) {
+					Review temp = reviews.get(i);
+					reviews.set(i, reviews.get(j));
+					reviews.set(j, temp);
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Compare two reviews
+	 * @param r1 The original review
+	 * @param r2 The review to compare against
+	 * @return Greater than zero if r1.getScore > r2.getScore
+	 */
+	private int compareReviews(Review r1, Review r2) {
+		int r1s = r1.getReviewerScore(currUser);
+		int r2s = r2.getReviewerScore(currUser);
+		return r1s - r2s;
+	}
 }

@@ -62,7 +62,7 @@ public class QuestionPage {
     	
     	Label questionText = new Label(question.getText());
     	questionText.setStyle("-fx-font-size: 14px; -fx-font-weight: bold; -fx-padding: 5;");
-    	questionText.setPrefWidth(600);
+    	questionText.setPrefWidth(500);
     	questionText.setWrapText(true);
     	
     	Separator separator = new Separator();
@@ -72,6 +72,8 @@ public class QuestionPage {
     	
     	Button questionUpdateButton = new Button("Edit");
     	Button reviewListButton = new Button("Reviews");
+    	reviewListButton.setPrefWidth(100.0);
+    	questionUpdateButton.setPrefWidth(80.0);
     	
     	// Allow users to write reviews if applicable
     	

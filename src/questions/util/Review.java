@@ -1,5 +1,10 @@
 package questions.util;
 
+import java.util.ArrayList;
+
+import accounts.util.Reviewer;
+import accounts.util.User;
+
 /**
  * Represents a review of a question or answer
  */
@@ -35,4 +40,18 @@ public class Review {
 
 	// Setters (for updating a review)
 	public void setReviewText(String reviewText) {this.reviewText = reviewText; }
+	
+	public int getReviewerScore(User user) {
+		ArrayList<Reviewer> reviewers = user.getReviewers();
+		if (reviewers == null) {
+			return 50;
+		}
+		for (int i = 0; i < reviewers.size(); i++) {
+			if (reviewers.get(i).getUsername().equals(reviewerName)) {
+				return reviewers.get(i).getScore();
+			}
+		}
+		return 50;
+	}
+
 }

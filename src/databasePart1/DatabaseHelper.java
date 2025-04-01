@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.UUID;
 
 import accounts.util.EmailValidator;
+import accounts.util.Reviewer;
 import accounts.util.User;
 import messaging.util.*;
 import questions.util.*;
@@ -83,7 +84,7 @@ public class DatabaseHelper {
 				// Create tables if they don't exist
 				String userTable = "CREATE TABLE IF NOT EXISTS cse360users (" + "id INT AUTO_INCREMENT PRIMARY KEY, "
 						+ "userName VARCHAR(255) UNIQUE, " + "password VARCHAR(255), " + "role VARCHAR(20), "
-						+ "name VARCHAR(255), " + "email VARCHAR(255))";
+						+ "name VARCHAR(255), " + "email VARCHAR(255), " + "reviewerScores VARCHAR(2000))";
 				statement.execute(userTable);
 
 				// Create the invitation codes table
@@ -185,8 +186,10 @@ public class DatabaseHelper {
 					// Update the user object with name and email
 					String name = rs.getString("name");
 					String email = rs.getString("email");
+					String reviewers = rs.getString("reviewerScores");
 					user.setName(name != null ? name : "");
 					user.setEmail(email != null ? email : "");
+					user.setReviewers(reviewers);
 					return true;
 				} else {
 					return false;
@@ -945,6 +948,82 @@ public class DatabaseHelper {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return false;
+		}
+	}
+	
+	/**
+	 * Updates the list of reviewers for a user in the database.
+	 * @param user The user to be updated.
+	 * @throws SQLException Permits handling of being unable to update.
+	 */
+	public void updateReviewers(User user) throws SQLException {
+		String query = "UPDATE cse360users SET reviewerScores = ? WHERE userName = ?";
+		PreparedStatement pstmt = connection.prepareStatement(query);
+		pstmt.setString(1, user.getReviewersAsString());
+		pstmt.setString(2, user.getUserName());
+		pstmt.executeUpdate();
+	}
+	
+	/**
+	 * Get an ArrayList of reviewers from the database for a given user.
+	 * @param user The user to get reviewer scores for.
+	 * @return The list of reviewers.
+	 * @throws SQLException Permits error handling if they cannot be found.
+	 */
+	public ArrayList<Reviewer> getReviewersFromDB(User user) throws SQLException {
+		String getQuestion = "SELECT * FROM cse360users WHERE userName = ?";
+		PreparedStatement pstmt = connection.prepareStatement(getQuestion);
+		pstmt.setString(1, user.getUserName());
+		try (ResultSet rs = pstmt.executeQuery()) {
+			if (rs.next()) {
+				user.setReviewers(rs.getString("reviewerScores"));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return user.getReviewers();
+	}
+	
+	/**
+	 * Gets an arraylist of reviewers from the database including those not in the user's list.
+	 * @param user The user to retrieve reviewers for.
+	 * @return A list of reviewers.
+	 * @throws SQLException Permits error handling if they cannot be found.
+	 */
+	public ArrayList<Reviewer> getAllReviewers(User user) throws SQLException {
+		String getQuestion = "SELECT * FROM cse360users WHERE role != 'user'";
+		ArrayList<Reviewer> list = user.getReviewers();
+		PreparedStatement pstmt = connection.prepareStatement(getQuestion);
+		try (ResultSet rs = pstmt.executeQuery()) {
+			if (list != null) {
+				while (rs.next()) {
+					Reviewer temp = new Reviewer(rs.getString("userName"), 50);
+					boolean found = false;
+					// WARNING: very inefficient
+					for (int i = 0; i < list.size(); i++) {
+						if (list.get(i).getUsername().equals(temp.getUsername())) {
+							found = true;
+						}
+					}
+					if (!found) {
+						list.add(temp);
+					}
+				}
+				user.setReviewersList(list);
+				return list;
+			}
+			else {
+				list = new ArrayList<Reviewer>();
+				while (rs.next()) {
+					Reviewer temp = new Reviewer(rs.getString("userName"), 50);
+					list.add(temp);
+				}
+				user.setReviewersList(list);
+				return list;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return user.getReviewers();
 		}
 	}
 

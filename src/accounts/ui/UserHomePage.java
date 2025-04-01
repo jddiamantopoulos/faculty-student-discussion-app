@@ -77,6 +77,12 @@ public class UserHomePage {
 	    	new MessageUserListPage(databaseHelper, currentUser).show(primaryStage);
 	    });
 	    
+	    // Button to update reviewer scores
+	    Button reviewerScoresPageButton = new Button("Update Reviewer Scores");
+	    reviewerScoresPageButton.setOnAction(a -> {
+	    	new UpdateReviewerScoresPage(databaseHelper, currentUser).show(primaryStage);
+	    });
+	    
 	    // Separator between unrelated elements
 	    Separator separator = new Separator();
 	    
@@ -106,7 +112,7 @@ public class UserHomePage {
 	    });
 	    
 	    // Add elements to layout
-	    layout.getChildren().addAll(userLabel, questionPageButton, messagePageButton, reviewerRequestButton, separator, updateAccountBtn, back, logout);
+	    layout.getChildren().addAll(userLabel, questionPageButton, messagePageButton, reviewerRequestButton, separator, reviewerScoresPageButton, updateAccountBtn, back, logout);
 	    
 	    // PATCH: Remove button if user is reviewer
 	    if (currentUser.getRole().equals("reviewer")) {

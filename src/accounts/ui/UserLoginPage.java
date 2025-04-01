@@ -60,6 +60,7 @@ public class UserLoginPage {
             		user.setRole(role);
             		if (databaseHelper.login(user)) {
             			User fullUser = databaseHelper.getUser(userName);
+            			databaseHelper.getReviewersFromDB(fullUser);
             			new WelcomeLoginPage(databaseHelper).show(primaryStage, fullUser);
             		}
             		else {
