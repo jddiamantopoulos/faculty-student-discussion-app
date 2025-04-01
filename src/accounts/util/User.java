@@ -67,7 +67,6 @@ public class User {
      * <p>
      * String format: "[name],[score];[name],[score];"
      * @param dbReviewerString The string stored in the database
-     * @return An ArrayList of reviewers.
      */
     public void setReviewers(String dbReviewerString) {
     	ArrayList<Reviewer> newReviewers = new ArrayList<Reviewer>();
