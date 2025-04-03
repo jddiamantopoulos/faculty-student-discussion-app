@@ -119,7 +119,9 @@ public class ReviewPage {
 			}
 		});
 		
-		layout.getChildren().addAll(newReviewField, submitReviewButton);
+		if (!currUser.getRole().equals("user")) {
+			layout.getChildren().addAll(newReviewField, submitReviewButton);
+		}
 		
 		Scene reviewScene = new Scene(layout, 600, 500);
 		tertiaryStage.setScene(reviewScene);

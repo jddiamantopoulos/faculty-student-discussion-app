@@ -129,9 +129,6 @@ public class MessageUserListPage {
         
         // Execute a search
         searchButton.setOnAction(e -> {
-        	/* LOGIC INCOMPLETE */
-        	/* Should check if user exists, 
-        	 * start a new conversation or open existing if so, or display an error if not */
         	String searchedUser = searchBar.getText();
         	if (UserNameRecognizer.checkForValidUserName(searchedUser).equals("") 
         			&& db.doesUserExist(searchedUser)

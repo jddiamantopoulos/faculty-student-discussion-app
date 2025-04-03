@@ -86,9 +86,7 @@ public class QuestionPage {
     			|| user.getRole().equals("instructor") ) {
     		firstRow.getChildren().add(questionUpdateButton);
     	}
-    	if (user.getRole().equals("admin") ||
-    			(  !user.getRole().equals("user") 
-    			&& !user.getName().equals(question.getAuthor()))) {
+    	if (true) {
     		firstRow.getChildren().add(reviewListButton);
     	}
     	questionPane.getChildren().addAll(firstRow, usernameAndTags);
