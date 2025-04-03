@@ -8,40 +8,42 @@ import java.sql.PreparedStatement;
 import java.util.List;
 
 import org.junit.Test;
+
+import accounts.util.User;
+
 import org.junit.Before;
 import org.junit.After;
 
 import databasePart1.DatabaseHelper;
+import questions.util.Question;
 import questions.util.Review;
 
 public class ReviewTests {
-	DatabaseHelper db; 
-	private Connection connection;
+	private static DatabaseHelper db = new DatabaseHelper();
 
-  /**
+	/**
 	 * Sets up test data
 	 */
 	@Before
 	public void setUpDatabase() {
-		db = new DatabaseHelper();
 		try {
 			db.connectToDatabase();
-			clearDatabase();
-			
+			db.clear();
 			insertUser("testReviewer", "reviewer");
 			insertQuestion(1, "Sample Question");
 			
 		} catch (SQLException e) {
 			e.printStackTrace();
+			fail("SQLException thrown.");
 		}
 	}
 	
 	/**
-	 * resets the database state after each test
+	 * Resets the database state after each test
 	 */
 	@After
 	public void tearDatabase() {
-		clearDatabase();
+		db.clear();
 		db.closeConnection();
 	}
 	
@@ -69,7 +71,7 @@ public class ReviewTests {
 	 */
 	@Test
 	public void testUpdateReview() {
-		insertReview(1, "testReviewer", 1, "Old review");
+		db.addReview("testReviewer", 1, "Old review", false);
 		boolean update = db.updateReview(1, "Updated Review");
 		assertTrue(update);
 	}
@@ -79,8 +81,8 @@ public class ReviewTests {
 	 */
 	@Test
 	public void testDeleteReview() {
-		insertReview(2, "testReviewer", 1, "To be deleted");
-		boolean deleted = db.deleteReview(2);
+		db.addReview("testReviewer", 1, "To be deleted", false);
+		boolean deleted = db.deleteReview(1);
 		assertTrue(deleted);
 	}
 	
@@ -89,8 +91,8 @@ public class ReviewTests {
 	 */
 	@Test
 	public void testGetReviewsQA() {
-		insertReview(3,"testReviewer", 1, "Review 1" );
-		insertReview(4, "testReviewer", 1, "Review 2");
+		db.addReview("testReviewer", 1, "Review 1", false);
+		db.addReview("testReviewer", 1, "Review 2", false);
 		
 		List<Review> reviews = db.getReviewsQA(1, false);
 		assertEquals(2, reviews.size());
@@ -101,15 +103,9 @@ public class ReviewTests {
 	 * @param userName the username of the user
 	 * @param role the role of the user
 	 */
-	private void insertUser(String userName, String role) {
-		String query = "INSERT INTO cse360users (userName, role) VALUES (?, ?)";
-		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
-			pstmt.setString(1, userName);
-			pstmt.setString(2, role);
-			pstmt.executeUpdate();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+	private void insertUser(String userName, String role) throws SQLException {
+		User tempUser = new User(userName, "P4$$word", role);
+		db.register(tempUser);
 	}
 	
 	/**
@@ -117,50 +113,8 @@ public class ReviewTests {
 	 * @param questionId the Id of question
 	 * @param questionText the text of the question
 	 */
-	private void insertQuestion(int questionId, String questionText) {
-		String query = "INSERT INTO questions (questionId, questionText) VALUES (?, ?)";
-		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
-			pstmt.setInt(1, questionId);
-			pstmt.setString(2, questionText);
-			pstmt.executeUpdate();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+	private void insertQuestion(int questionId, String questionText) throws SQLException {
+		db.insertQuestion(new Question(questionId, questionText, "", "testAuthor", ""));
 	}
 
-	
-	/**
-	 * Helper method to insert test review
-	 * @param reviewId the Id of review
-	 * @param reviewerName the username of reviewer
-	 * @param questionId the id of question being reviewed
-	 * @param reviewText the text of the review
-	 */
-	private void insertReview(int reviewId, String reviewerName, int questionId, String reviewText ) {
-		String query = "INSERT INTO reviews (reviewId, reviewerName, questionId, reviewText) VALUES (?, ?, ?, ?)";
-		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
-			pstmt.setInt(1, reviewId);
-			pstmt.setString(2, reviewerName);
-			pstmt.setInt(3, questionId);
-			pstmt.setString(4, reviewText);
-			pstmt.executeUpdate();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	/**
-	 * Helper method to clear all test data
-	 */
-	private void clearDatabase() {
-		try(PreparedStatement pstmt1 = connection.prepareStatement("DELETE FROM reviews");
-			PreparedStatement pstmt2 = connection.prepareStatement("DELETE FROM cse360users");
-			PreparedStatement pstmt3 = connection.prepareStatement("DELETE FROM questions")) {
-			pstmt1.executeUpdate();
-			pstmt2.executeUpdate();
-			pstmt3.executeUpdate();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-	}
 }
