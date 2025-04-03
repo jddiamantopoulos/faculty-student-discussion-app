@@ -37,10 +37,6 @@ public class Review {
 	public int getqaText() { return qaText;}
 	public String getReviewText() { return reviewText; }
 	public boolean isAnswer() { return isAnswer; }
-
-	// Setters (for updating a review)
-	public void setReviewText(String reviewText) {this.reviewText = reviewText; }
-	
 	public int getReviewerScore(User user) {
 		ArrayList<Reviewer> reviewers = user.getReviewers();
 		if (reviewers == null) {
@@ -53,5 +49,8 @@ public class Review {
 		}
 		return 50;
 	}
+
+	// Setters (for updating a review)
+	public void setReviewText(String reviewText) {this.reviewText = reviewText; }
 
 }

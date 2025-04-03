@@ -26,7 +26,7 @@ public class User {
         this.role = role;
         this.name = "";
         this.email = "";
-        this.reviewers = new ArrayList<Reviewer>(); /* Might want to change to pull in reviewers from DB */
+        this.reviewers = new ArrayList<Reviewer>();
     }
     
     /**
