@@ -218,9 +218,9 @@ public class ModerationForUserPage {
     }
     
     /**
-     * Adds an answer to the content VBox that is used in the scrollable pane.
+     * Adds a review to the content VBox that is used in the scrollable pane.
      * 
-     * @param a The answer to be added.
+     * @param r The review to be added.
      * @param content The VBox held in the scrollable pane.
      */
     private void addToListR(Review r, VBox content) {
