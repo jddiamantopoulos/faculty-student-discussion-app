@@ -1,4 +1,4 @@
-package test.accounts.util;
+package test.database;
 
 import static org.junit.Assert.*;
 import org.junit.Before;
@@ -15,6 +15,10 @@ public class ReviewerProfileTest {
     private ReviewerProfile testProfile;
     
     @Before
+    /**
+     * Configures the test environment.
+     * @throws SQLException Fails the test.
+     */
     public void setUp() throws SQLException {
         dbHelper = new DatabaseHelper();
         dbHelper.connectToDatabase();
@@ -27,6 +31,10 @@ public class ReviewerProfileTest {
     }
     
     @Test
+    /**
+     * Tests the createReviewerProfile database method and the getReviewerProfile database method.
+     * @throws SQLException Fails the test.
+     */
     public void testCreateAndRetrieveProfile() throws SQLException {
         // Create profile
         dbHelper.createReviewerProfile(testProfile);
@@ -43,6 +51,10 @@ public class ReviewerProfileTest {
     }
     
     @Test
+    /**
+     * Tests the updateReviewerProfile database method.
+     * @throws SQLException Fails the test.
+     */
     public void testUpdateProfile() throws SQLException {
         // Create initial profile
         dbHelper.createReviewerProfile(testProfile);
@@ -61,6 +73,10 @@ public class ReviewerProfileTest {
     }
     
     @Test
+    /**
+     * Tests the deleteReviewerProfile database method.
+     * @throws SQLException Fails the test.
+     */
     public void testDeleteProfile() throws SQLException {
         // Create profile
         dbHelper.createReviewerProfile(testProfile);
@@ -76,6 +92,10 @@ public class ReviewerProfileTest {
     }
     
     @Test
+    /**
+     * Tests the createReviewerProfile database method.
+     * @throws SQLException Fails the test.
+     */
     public void testProfileWithReviews() throws SQLException {
         // Create profile with reviews
         Review review = new Review(1, "testReviewer", 1, "testContent", false);
