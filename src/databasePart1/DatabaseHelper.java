@@ -61,7 +61,11 @@ public class DatabaseHelper {
 	public void clear() {
 		try {
 			statement.execute("DROP ALL OBJECTS");
+			questionKey = 1;
+			answerKey = 1;
+			messageKey = 1;
 			createTables();
+			
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -484,7 +488,27 @@ public class DatabaseHelper {
 		for (int i = 0; i < question.getAnswers().size(); i++) {
 		}
 	}
-
+	
+	/**
+	 * Gets all the answers for a given question
+	 * @param question The question to be retrieved.
+	 * @throws SQLException Should be handled internally.
+	 */
+	public int getKeyForAnswer(String answerText) throws SQLException {
+		String getAnswers = "SELECT * FROM answers WHERE text = ?";
+		Answers ans = new Answers();
+		try (PreparedStatement pstmt = connection.prepareStatement(getAnswers)) {
+			pstmt.setString(1, answerText);
+			ResultSet rs = pstmt.executeQuery();
+			if (rs.next()) {
+				return rs.getInt("id");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return -1;
+	}
+	
 	/**
 	 *  Adds a new answer to the database
 	 * @param q The question associated with the answer
@@ -500,6 +524,7 @@ public class DatabaseHelper {
 			pstmt.setString(4, a.getAuthor());
 			pstmt.setString(5, a.getLikesCSV());
 			pstmt.executeUpdate();
+			answerKey++;
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}

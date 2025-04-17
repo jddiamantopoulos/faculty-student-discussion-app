@@ -1,5 +1,6 @@
 package questions.util;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,6 +16,11 @@ public class Questions extends ArrayList<Question> {
 	*  the arraylists.
 	*/
 	
+	/**
+	 * Returns the subset of the questions which have a given tag.
+	 * @param tag The tag to search for.
+	 * @return The subset of questions which have a given tag.
+	 */
 	public Questions getByTag(String tag) {
 		Questions returned = new Questions();
 		for (int i = 0; i < size(); i++) {
@@ -25,6 +31,11 @@ public class Questions extends ArrayList<Question> {
 		return returned;
 	}
 	
+	/**
+	 * Searches for the questions written by a particular author.
+	 * @param author The author to search for.
+	 * @return The subset of the questions written by an author.
+	 */
 	public Questions getByAuthor(String author) {
 		Questions returned = new Questions();
 		for (int i = 0; i < size(); i++) {
@@ -35,7 +46,11 @@ public class Questions extends ArrayList<Question> {
 		return returned;
 	}
 	
-	// Could also be described as "getByQuestion()"
+	/**
+	 * Searches for the subset of the questions which have a particular text.
+	 * @param text The text to search for.
+	 * @return The subset of the questions that have that text.
+	 */
 	public Questions getByText(String text) {
 		Questions returned = new Questions();
 		for (int i = 0; i < size(); i++) {
@@ -46,6 +61,10 @@ public class Questions extends ArrayList<Question> {
 		return returned;
 	}
 	
+	/**
+	 * Searches for the subset of questions which do not have answers yet.
+	 * @return The subset of questions which do not have answers yet.
+	 */
 	public Questions getUnanswered() {
 		Questions returned = new Questions();
 		for (int i = 0; i < size(); i++) {
@@ -56,6 +75,10 @@ public class Questions extends ArrayList<Question> {
 		return returned;
 	}
 	
+	/**
+	 * Searches for the subset of questions that have answers.
+	 * @return The subset of questions that have answers.
+	 */
 	public Questions getAnswered() {
 		Questions returned = new Questions();
 		for (int i = 0; i < size(); i++) {
@@ -66,6 +89,14 @@ public class Questions extends ArrayList<Question> {
 		return returned;
 	}
 	
+	/**
+	 * Searches for the subset of questions with reviews by reviewers whose scores are above a certain threshold.
+	 * 
+	 * @param threshold The minimum score to search for.
+	 * @param user The current user of the application.
+	 * @param db The application's database helper.
+	 * @return The subset of questions with reviews by reviewers whose scores are above a certain threshold.
+	 */
 	public Questions getReviewedQuestions(int threshold, User user, DatabaseHelper db) {
 		Questions returned = new Questions();
 		for (int i = 0; i < size(); i++) {
@@ -76,6 +107,14 @@ public class Questions extends ArrayList<Question> {
 		return returned;
 	}
 	
+	/**
+	 * Searches for the subset of questions with answers that have reviews by reviewers whose scores are above a certain threshold.
+	 * 
+	 * @param threshold The minimum score to search for.
+	 * @param user The current user of the application.
+	 * @param db The application's database helper.
+	 * @return The subset of questions with answers that have reviews by reviewers whose scores are above a certain threshold.
+	 */
 	public Questions getReviewedAnswers(int threshold, User user, DatabaseHelper db) {
 		Questions returned = new Questions();
 		for (int i = 0; i < size(); i++) {
@@ -86,6 +125,14 @@ public class Questions extends ArrayList<Question> {
 		return returned;
 	}
 	
+	/**
+	 * Private method: Does a question have reviews w/ scores exceeding the threshold?
+	 * @param q The question being examined.
+	 * @param threshold The minimum reviewer score.
+	 * @param user The user whose scores are used.
+	 * @param db The application's databaseHelper.
+	 * @return True if a question has qualifying reviews.
+	 */
 	private boolean hasQuestionReview(Question q, int threshold, User user, DatabaseHelper db) {
 		List<Review> reviews = db.getReviewsQA(q.getKey(), false);
 		for (int i = 0; i < reviews.size(); i++) {
@@ -97,11 +144,27 @@ public class Questions extends ArrayList<Question> {
 		return false;
 	}
 	
+	/**
+	 * Private method: Does a question's answers have reviews w/ scores exceeding the threshold?
+	 * @param q The question being examined.
+	 * @param threshold The minimum reviewer score.
+	 * @param user The user whose scores are used.
+	 * @param db The application's databaseHelper.
+	 * @return True if a question's answers have qualifying reviews.
+	 */
 	private boolean hasAnswerReview(Question q, int threshold, User user, DatabaseHelper db) {
 		Answers a = q.getAnswers();
 		for (int i = 0; i < a.size(); i++) {
 			Answer temp = a.get(i);
-			List<Review> reviews = db.getReviewsQA(temp.getKey(), true);
+			List<Review> reviews;
+			try {
+				reviews = db.getReviewsQA(db.getKeyForAnswer(temp.getText()), true);
+			} catch (SQLException e) {
+				/* COVERAGE EXCEPTION: Cannot be simulated because keys should be valid. */
+				e.printStackTrace();
+				return false;
+			}
+			System.err.println(reviews.size());
 			for (int j = 0; j < reviews.size(); j++) {
 				Review tempR = reviews.get(j);
 				if (tempR.getReviewerScore(user) >= threshold) {
