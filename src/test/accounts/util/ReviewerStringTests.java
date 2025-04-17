@@ -27,4 +27,13 @@ public class ReviewerStringTests {
 		assertEquals(set, reviewers);
 	}
 
+	@Test
+	/**
+	 * Tests the setScore() method of Reviewer class.
+	 */
+	public void testSetScore() {
+		Reviewer reviewer = new Reviewer("username", 50);
+		reviewer.setScore(75);
+		assertEquals(reviewer.getScore(), 75);
+	}
 }

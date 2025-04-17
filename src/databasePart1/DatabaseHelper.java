@@ -428,7 +428,7 @@ public class DatabaseHelper {
 		}
 		return questions;
 	}
-	
+
 	/**
 	 * Gets all questions and answers in the database.
 	 * @return A complete questions class with associations to answers.
@@ -499,6 +499,21 @@ public class DatabaseHelper {
 			pstmt.setString(3, a.getText());
 			pstmt.setString(4, a.getAuthor());
 			pstmt.setString(5, a.getLikesCSV());
+			pstmt.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * Update an answer by id
+	 * @param a The answer to be updated
+	 */
+	public void updateAnswer(Answer a) {
+		String updateAnswer = "UPDATE answers SET text = ? WHERE id = ?";
+		try (PreparedStatement pstmt = connection.prepareStatement(updateAnswer)) {
+			pstmt.setString(1, a.getText());
+			pstmt.setInt(2, a.getKey());
 			pstmt.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
