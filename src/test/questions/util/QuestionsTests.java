@@ -24,6 +24,10 @@ public class QuestionsTests {
 	User user;
 	
 	@Before
+	/**
+	 * Sets up the test environment.
+	 * @throws Exception Fails when thrown.
+	 */
 	public void setUp() throws Exception {
 		/* Initialize the database */
 		db.connectToDatabase();
@@ -83,12 +87,19 @@ public class QuestionsTests {
 	}
 
 	@After
+	/**
+	 * Tears down the test environment.
+	 * @throws Exception Fails when thrown.
+	 */
 	public void tearDown() throws Exception {
 		db.clear();
 		db.closeConnection();
 	}
 
 	@Test
+	/**
+	 * Tests the "getByTag()" method in Questions.java.
+	 */
 	public void testGetByTag() {
 		try {
 			Questions q = db.getQuestionsAndAnswers();
@@ -103,6 +114,9 @@ public class QuestionsTests {
 	}
 
 	@Test
+	/**
+	 * Tests the "getByAuthor()" method in Questions.java.
+	 */
 	public void testGetByAuthor() {
 		try {
 			Questions q = db.getQuestionsAndAnswers();
@@ -119,6 +133,9 @@ public class QuestionsTests {
 	}
 
 	@Test
+	/**
+	 * Tests the "getByText()" method in Questions.java.
+	 */
 	public void testGetByText() {
 		try {
 			Questions q = db.getQuestionsAndAnswers();
@@ -133,6 +150,9 @@ public class QuestionsTests {
 	}
 
 	@Test
+	/**
+	 * Tests the "getUnanswered()" method in Questions.java.
+	 */
 	public void testGetUnanswered() {
 		try {
 			Questions q = db.getQuestionsAndAnswers();
@@ -149,6 +169,9 @@ public class QuestionsTests {
 	}
 
 	@Test
+	/**
+	 * Tests the "getAnswered()" method in Questions.java.
+	 */
 	public void testGetAnswered() {
 		try {
 			Questions q = db.getQuestionsAndAnswers();
@@ -165,6 +188,9 @@ public class QuestionsTests {
 	}
 
 	@Test
+	/**
+	 * Tests the "getReviewedQuestions()" method in Questions.java.
+	 */
 	public void testGetReviewedQuestions() {
 		try {
 			Questions q = db.getQuestionsAndAnswers();
@@ -179,6 +205,9 @@ public class QuestionsTests {
 	}
 
 	@Test
+	/**
+	 * Tests the "getReviewedAnswers()" method in Questions.java.
+	 */
 	public void testGetReviewedAnswers() {
 		try {
 			Questions q = db.getQuestionsAndAnswers();

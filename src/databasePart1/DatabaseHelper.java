@@ -490,8 +490,8 @@ public class DatabaseHelper {
 	}
 	
 	/**
-	 * Gets all the answers for a given question
-	 * @param question The question to be retrieved.
+	 * Gets the primary key for a given answer.
+	 * @param answerText The text of the answer to search for.
 	 * @throws SQLException Should be handled internally.
 	 */
 	public int getKeyForAnswer(String answerText) throws SQLException {
