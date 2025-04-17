@@ -1,6 +1,7 @@
-package accounts.ui;
+package administration.ui;
 
 import accounts.util.Reviewer;
+import accounts.util.User;
 import databasePart1.DatabaseHelper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -9,7 +10,11 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
+import messaging.util.Message;
+
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -30,9 +35,8 @@ public class LowReviewerPage {
 	 * @param primaryStage the window
 	 * @param currentStaffUsername the username of the staff
 	 */
-	public void start(Stage primaryStage, String currentStaffUsername) {
-		db = new DatabaseHelper();
-		
+	public void show(DatabaseHelper dtb, Stage primaryStage, String currentStaffUsername) {
+		db = dtb;
 		reviewerListView = new ListView<>();
 		reviewerItems = FXCollections.observableArrayList();
 		reviewerListView.setItems(reviewerItems);
@@ -65,11 +69,11 @@ public class LowReviewerPage {
 			if (index >= 0 && !messageText.isEmpty()) {
 				Reviewer selected = lowReviewers.get(index);
 				try {
-					db.sendPrivateMessage(currentStaffUsername, selected.getUsername(), messageText);
-					showAlert(Alert.AlertType.INFORMATION, "Sent", "Suggestion Sent to ", selected.getUsername());
+					db.insertMessage(new Message(messageText, currentStaffUsername, selected.getUsername()));
+					showAlert(Alert.AlertType.INFORMATION, "Sent", "Suggestion Sent to: " + selected.getUsername());
 					suggestionArea.clear();
 				} catch (SQLException ex) {
-					showAlert(Alert.AlertType.ERROR, "Error", "Faield to send : " + ex.getMessage());
+					showAlert(Alert.AlertType.ERROR, "Error", "Failed to send : " + ex.getMessage());
 				}
 			} else {
 				showAlert(Alert.AlertType.WARNING, "Missing Inputs", "Select a reviewer and enter suggestion.");
@@ -90,10 +94,20 @@ public class LowReviewerPage {
 	 */
 	private void populateReviewerList() {
 		try {
-			lowReviewers = db.getLowScoredReviewers(50);
+			ArrayList<String> userNames = db.getAllUsers();
+			ArrayList<Reviewer> reviewers = new ArrayList<Reviewer>();
+			for (int i = 0; i < userNames.size(); i++) {
+				User tempUser = db.getUser(userNames.get(i));
+				ArrayList<Reviewer> tempReviewers = db.getReviewersFromDB(tempUser);
+				for (int j = 0; j < tempReviewers.size(); j++) {
+					tempReviewers.get(j).setScorerName(tempUser.getUserName());
+					reviewers.add(tempReviewers.get(j));
+				}
+			}
+			Collections.sort(reviewers);
 			reviewerItems.clear();
-			for(Reviewer r : lowReviewers) {
-				reviewerItems.add(r.getUsername() + " (Score: " +  r.getScore() + ")");
+			for(Reviewer r : reviewers) {
+				reviewerItems.add(r.getUsername() + " (Score: " +  r.getScore() + " by " + r.getScorerName() + ")");
 			}
 		} catch (SQLException e) {
 			showAlert(Alert.AlertType.ERROR, "Database Error", "Unable to retrieve reviewers: " + e.getMessage());

@@ -80,8 +80,9 @@ public class AdministrationSearchPage {
 	    Button refreshButton = new Button("Refresh");
 	    Button acctButton = new Button("Account");
 	    Button messageSpy = new Button("View DM conversations");
+	    Button reviewerScores = new Button("Reviewer Scores");
 	    topBox.setStyle("-fx-alignment: center;");
-	    topBox.getChildren().addAll(titleLabel, messageSpy, refreshButton, acctButton);
+	    topBox.getChildren().addAll(titleLabel, reviewerScores, messageSpy, refreshButton, acctButton);
 	    
 	    // Search bar
 	    HBox searchBox = new HBox(3);
@@ -125,6 +126,10 @@ public class AdministrationSearchPage {
         
         messageSpy.setOnAction(e -> {
         	new MessageSpyPage(db, user).show();
+        });
+        
+        reviewerScores.setOnAction(e -> {
+        	new LowReviewerPage().show(db, new Stage(), user.getUserName());
         });
         
         // Execute a search

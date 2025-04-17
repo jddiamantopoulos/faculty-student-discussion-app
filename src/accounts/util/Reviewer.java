@@ -6,6 +6,7 @@ package accounts.util;
 public class Reviewer implements Comparable<Reviewer> {
 	
 	private String username;
+	private String scorerName;
 	private int reviewerScore;
 	
 	/**
@@ -15,6 +16,26 @@ public class Reviewer implements Comparable<Reviewer> {
 	 */
 	public Reviewer(String username, int reviewerScore) {
 		this.username = username;
+		if (reviewerScore >= 100) {
+			this.reviewerScore = 100;
+		}
+		else if (reviewerScore <= 0) {
+			this.reviewerScore = 0;
+		}
+		else {
+			this.reviewerScore = reviewerScore;
+		}
+	}
+	
+	/**
+	 * Constructs a new reviewer including the user who scored them.
+	 * @param username
+	 * @param reviewerScore
+	 * @param scorerName
+	 */
+	public Reviewer(String username, int reviewerScore, String scorerName) {
+		this.username = username;
+		this.scorerName = scorerName;
 		if (reviewerScore >= 100) {
 			this.reviewerScore = 100;
 		}
@@ -43,6 +64,9 @@ public class Reviewer implements Comparable<Reviewer> {
 	public String getUsername() {
 		return username;
 	}
+	public String getScorerName() {
+		return scorerName;
+	}
 	public int getScore() {
 		return reviewerScore;
 	}
@@ -50,6 +74,9 @@ public class Reviewer implements Comparable<Reviewer> {
 	// Setters
 	public void setUsername(String username) {
 		this.username = username;
+	}
+	public void setScorerName(String scorerName) {
+		this.scorerName = scorerName;
 	}
 	public void setScore(int reviewerScore) {
 		if (reviewerScore >= 100) {
