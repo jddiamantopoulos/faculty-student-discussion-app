@@ -3,6 +3,8 @@ package accounts.ui;
 import java.sql.SQLException;
 
 import accounts.util.User;
+import administration.ui.AdministrationSearchPage;
+import administration.ui.ReviewerRequestsUsersPage;
 import databasePart1.DatabaseHelper;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -91,7 +93,7 @@ public class UserHomePage {
 	    if (currentUser.getRole().equals("user")) {
 	    	reviewerRequestButton.setText("Request Reviewer Role");
 	    }
-	    else if (currentUser.getRole().equals("instructor") || currentUser.getRole().equals("admin")) {
+	    else if (currentUser.getRole().equals("staff") || currentUser.getRole().equals("instructor") || currentUser.getRole().equals("admin")) {
 	    	reviewerRequestButton.setText("View Reviewer Requests");
 	    }
 	   	
@@ -106,13 +108,23 @@ public class UserHomePage {
 	    			userLabel.setText("The request could not be sent. You may have already requested the role.");
 	    		}
 		    }
-		    else if (currentUser.getRole().equals("instructor") || currentUser.getRole().equals("admin")) {
+		    else if (currentUser.getRole().equals("staff") || currentUser.getRole().equals("instructor") || currentUser.getRole().equals("admin")) {
 		    	new ReviewerRequestsUsersPage(databaseHelper, currentUser).show(primaryStage);
 		    }
 	    });
 	    
+	    Button moderationButton = new Button("Moderation Home");
+	    
+	    moderationButton.setOnAction(a -> {
+	    	new AdministrationSearchPage(databaseHelper, currentUser).show(primaryStage);
+	    });
+	    
 	    // Add elements to layout
-	    layout.getChildren().addAll(userLabel, questionPageButton, messagePageButton, reviewerRequestButton, separator, reviewerScoresPageButton, updateAccountBtn, back, logout);
+	    layout.getChildren().addAll(userLabel, questionPageButton, messagePageButton, reviewerRequestButton);
+	    if (currentUser.getRole().equals("staff") || currentUser.getRole().equals("admin")) {
+	    	layout.getChildren().add(moderationButton);
+	    }
+	    layout.getChildren().addAll(separator, reviewerScoresPageButton, updateAccountBtn, back, logout);
 	    
 	    // PATCH: Remove button if user is reviewer
 	    if (currentUser.getRole().equals("reviewer")) {

@@ -115,7 +115,7 @@ public class DatabaseHelper {
 				
 				// Create the messages table
 				String messagesTable = "CREATE TABLE IF NOT EXISTS messages (" + "id INT PRIMARY KEY,"
-						+ "text VARCHAR(500)," + "sender VARCHAR(16), " + "recipient VARCHAR(16), "
+						+ "text VARCHAR(3000)," + "sender VARCHAR(16), " + "recipient VARCHAR(16), "
 						+ "isread BIT," + "time VARCHAR(20))";
 				statement.execute(messagesTable);
 				
@@ -331,6 +331,24 @@ public class DatabaseHelper {
 			e.printStackTrace();
 		}
 	}
+	
+	/**
+	 *  Gets all users from the database.
+	 *  @throws SQLException Should be handled internally.
+	 *  @return A list of all users in the database.
+	 */
+	public ArrayList<String> getAllUsers() throws SQLException {
+		String getUsers = "SELECT * FROM cse360users";
+		ArrayList<String> users = new ArrayList<String>();
+		try (ResultSet rs = statement.executeQuery(getUsers);) {
+			while (rs.next()) {
+				users.add(rs.getString("userName"));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return users;
+	}
 
 	/*
 	 * QUESTION METHODS
@@ -410,7 +428,7 @@ public class DatabaseHelper {
 		}
 		return questions;
 	}
-	
+
 	/**
 	 * Gets all questions and answers in the database.
 	 * @return A complete questions class with associations to answers.
@@ -481,6 +499,21 @@ public class DatabaseHelper {
 			pstmt.setString(3, a.getText());
 			pstmt.setString(4, a.getAuthor());
 			pstmt.setString(5, a.getLikesCSV());
+			pstmt.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * Update an answer by id
+	 * @param a The answer to be updated
+	 */
+	public void updateAnswer(Answer a) {
+		String updateAnswer = "UPDATE answers SET text = ? WHERE id = ?";
+		try (PreparedStatement pstmt = connection.prepareStatement(updateAnswer)) {
+			pstmt.setString(1, a.getText());
+			pstmt.setInt(2, a.getKey());
 			pstmt.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -785,6 +818,34 @@ public class DatabaseHelper {
 	}
 	
 	/**
+	 * Gets all of the messages in a given conversation. Used in MessageSpy.
+	 * @param user The application's user
+	 * @param otherUser The user the conversation is between.
+	 * @return A messages collection.
+	 * @throws SQLException Should be handled internally.
+	 */
+	public Messages getMessagesForSpy(String user, String otherUser) throws SQLException {
+		String query = "SELECT * FROM messages WHERE (sender = ? AND recipient = ?) OR (sender = ? AND recipient = ?)";
+		Messages messages = new Messages();
+		try (PreparedStatement pstmt = connection.prepareStatement(query);) {
+			pstmt.setString(1, user);
+			pstmt.setString(2, otherUser);
+			pstmt.setString(3, otherUser);
+			pstmt.setString(4, user);
+			ResultSet rs = pstmt.executeQuery();
+			while (rs.next()) {
+				Message m = new Message(rs.getInt("id"), rs.getString("text"), rs.getString("sender"), rs.getString("recipient"),
+						rs.getBoolean("isread"), rs.getString("time"));
+				messages.add(m);
+				//messageKey++;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return messages;
+	}
+	
+	/**
 	 * Inserts a message into the database.
 	 * @param m The message to be inserted.
 	 * @throws SQLException Should be handled internally.
@@ -908,6 +969,29 @@ public class DatabaseHelper {
 	}
 	
 	/**
+	 * Gets a set of messages written by an author. Should not be used for the main message page.
+	 * 
+	 * @param author The author who wrote the questions.
+	 * @return The questions written by this author.
+	 * @throws SQLException Unlikely to be thrown, but here for safety.
+	 */
+	public Messages getMessagesByAuthor(String author) throws SQLException {
+		String getMessage = "SELECT * FROM messages WHERE sender = ?";
+		PreparedStatement pstmt = connection.prepareStatement(getMessage);
+		pstmt.setString(1, author);
+		Messages messages = new Messages();
+		try (ResultSet rs = pstmt.executeQuery()) {
+			while (rs.next()) {
+				Message q = new Message(rs.getInt("id"), rs.getString("text"), rs.getString("sender"), rs.getString("recipient"), rs.getBoolean("isread"), rs.getString("time"));
+				messages.add(q);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return messages;
+	}
+	
+	/**
 	 * Gets a set of answers written by an author. Should not be used for the main Q and A page.
 	 * 
 	 * @param author The author who wrote the answers.
@@ -932,6 +1016,50 @@ public class DatabaseHelper {
 	}
 	
 	/**
+	 * Gets a set of reviews written by an author. Should not be used for the main review pages.
+	 * 
+	 * @param author The author who wrote the questions.
+	 * @return The questions written by this author.
+	 * @throws SQLException Unlikely to be thrown, but here for safety.
+	 */
+	public ArrayList<Review> getReviewsByAuthor(String author) throws SQLException {
+		String getQReviews = "SELECT * FROM reviews WHERE reviewerName = ? AND answerId IS NULL";
+		String getAReviews = "SELECT * FROM reviews WHERE reviewerName = ? AND questionId IS NULL";
+		ArrayList<Review> reviews = new ArrayList<Review>();
+		try (PreparedStatement pstmt = connection.prepareStatement(getQReviews)) {
+			pstmt.setString(1, author);
+			ResultSet rs = pstmt.executeQuery();
+			while (rs.next()) {
+					reviews.add(new Review(
+							rs.getInt("reviewId"),
+							rs.getString("reviewerName"),
+							rs.getInt("questionId"),
+							rs.getString("reviewText"),
+							false
+							));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		try (PreparedStatement pstmt = connection.prepareStatement(getAReviews)) {
+			pstmt.setString(1, author);
+			ResultSet rs = pstmt.executeQuery();
+			while (rs.next()) {
+					reviews.add(new Review(
+							rs.getInt("reviewId"),
+							rs.getString("reviewerName"),
+							rs.getInt("answerId"),
+							rs.getString("reviewText"),
+							true
+							));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return reviews;
+	}
+	
+	/**
 	 * Delete a user from the requests database.
 	 * @param requestUser The user who put out the request.
 	 * @return True if the request is processed.
@@ -945,7 +1073,6 @@ public class DatabaseHelper {
 			pstmt.executeUpdate();
 			return true;
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return false;
 		}

@@ -73,7 +73,7 @@ public class DialogPage {
 				return DialogReturns.xOut;
 		}
 		
-		Scene helpScene = new Scene(dialog, 300, 150);
+		Scene helpScene = new Scene(dialog, 300, 200);
         
 	    // Set the stage to new stage
 	    newStage.setScene(helpScene);

@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import accounts.util.Reviewer;
 
 import accounts.util.User;
 
@@ -27,4 +28,13 @@ public class ReviewerStringTests {
 		assertEquals(set, reviewers);
 	}
 
+	@Test
+	/**
+	 * Tests the setScore() method of Reviewer class.
+	 */
+	public void testSetScore() {
+		Reviewer reviewer = new Reviewer("username", 50);
+		reviewer.setScore(75);
+		assertEquals(reviewer.getScore(), 75);
+	}
 }

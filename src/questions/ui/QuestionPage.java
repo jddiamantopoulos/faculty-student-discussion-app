@@ -83,6 +83,7 @@ public class QuestionPage {
     	firstRow.getChildren().add(questionText);
     	if (question.getAuthor().equals(user.getUserName()) 
     			|| user.getRole().equals("admin") 
+    			|| user.getRole().equals("staff")
     			|| user.getRole().equals("instructor") ) {
     		firstRow.getChildren().add(questionUpdateButton);
     	}
@@ -184,7 +185,7 @@ public class QuestionPage {
         else if (user.getRole().equals("admin")) {
         	buttonContainer.getChildren().addAll(button, editButton, likeButton, reviewsButton);
         }
-        else if (user.getRole().equals("instructor") && !user.getUserName().equals(ans.getAuthor())) {
+        else if ( (user.getRole().equals("instructor") || user.getRole().equals("staff") ) && !user.getUserName().equals(ans.getAuthor())) {
         	buttonContainer.getChildren().addAll(button, likeButton, reviewsButton);
         }
         // default case for roles above user

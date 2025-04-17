@@ -3,6 +3,8 @@ package accounts.ui;
 import java.sql.SQLException;
 
 import accounts.util.User;
+import administration.ui.AdministrationSearchPage;
+import administration.ui.ReviewerRequestsUsersPage;
 import databasePart1.DatabaseHelper;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -93,7 +95,13 @@ public class AdminHomePage {
 		    new ReviewerRequestsUsersPage(databaseHelper, currentUser).show(primaryStage);
 	    });
 	    
-	    layout.getChildren().addAll(adminLabel, questionPageButton, messagePageButton, reviewerRequestButton, separator, reviewerScoresPageButton, updateAccountBtn, back, logout);
+	    Button moderationButton = new Button("Moderation Home");
+	    
+	    moderationButton.setOnAction(a -> {
+	    	new AdministrationSearchPage(databaseHelper, currentUser).show(primaryStage);
+	    });
+	    
+	    layout.getChildren().addAll(adminLabel, questionPageButton, messagePageButton, reviewerRequestButton, moderationButton, separator, reviewerScoresPageButton, updateAccountBtn, back, logout);
 
 	    Scene adminScene = new Scene(layout, 800, 400);
 
