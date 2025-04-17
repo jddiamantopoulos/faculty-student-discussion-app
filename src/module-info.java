@@ -8,4 +8,5 @@ module FoundationCode {
 	requires junit;
 	
 	opens main to javafx.graphics, javafx.fxml;
+	exports main; /* Not sure what this does, but it fixed something I broke a while back */
 }

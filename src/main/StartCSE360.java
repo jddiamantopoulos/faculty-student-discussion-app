@@ -9,6 +9,8 @@ import java.sql.SQLException;
 import accounts.ui.FirstPage;
 import accounts.ui.SetupLoginSelectionPage;
 import accounts.util.User;
+import common.ui.DialogPage;
+import common.util.DialogTypes;
 import databasePart1.DatabaseHelper;
 
 /**
@@ -45,12 +47,14 @@ public class StartCSE360 extends Application {
             	User owner = new User("Owner", "P4$$word", "admin");
             	User user2 = new User("user2", "P4$$word", "user");
             	User reviewer = new User("reviewerEX", "P4$$word", "reviewer");
+            	User staff = new User("staffEX", "P4$$word", "staff");
             	User instructor = new User("instructorEX", "P4$$word", "instructor");
             	databaseHelper.register(user);
             	databaseHelper.register(user2);
             	databaseHelper.register(admin);
             	databaseHelper.register(owner);
             	databaseHelper.register(reviewer);
+            	databaseHelper.register(staff);
             	databaseHelper.register(instructor);
             	// Reviewer request things
             	databaseHelper.requestReviewerRole(user2.getUserName());
@@ -75,6 +79,7 @@ public class StartCSE360 extends Application {
         } catch (SQLException e) {
             System.err.println("Database error: " + e.getMessage());
             e.printStackTrace();
+            new DialogPage().show(DialogTypes.oneButtonOkay, "Error: Cannot access database.", "There was a problem opening the application, likely caused by another instance of the application being opened. Please close your other window and try again.");
         }
     }
 	

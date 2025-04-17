@@ -1,4 +1,4 @@
-package accounts.ui;
+package administration.ui;
 
 import databasePart1.DatabaseHelper;
 

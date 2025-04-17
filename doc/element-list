@@ -1,5 +1,7 @@
 accounts.ui
 accounts.util
+administration.ui
+administration.util
 common.ui
 common.util
 databasePart1

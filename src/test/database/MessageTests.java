@@ -94,6 +94,32 @@ public class MessageTests {
 		fail("SQLException thrown.");
 		}
 	}
+	
+	@Test
+	/**
+	 * Tests the getMessagesForSpy() method.
+	 */
+	public void testGetMessagesForSpy() {
+		setUpMessageEnv();
+		User user = new User("user1", "P4$$word", "user1");
+		Message m1 = new Message("Test 1.", "user1", "user2");
+		Message m2 = new Message("Test 2.", "user2", "user3");
+		Message m3 = new Message("Test 3.", "user3", "user4");
+		Message m4 = new Message("Test 4.", "user2", "user1");
+		try {
+			db.insertMessage(m1);
+			db.insertMessage(m2);
+			db.insertMessage(m3);
+			db.insertMessage(m4);
+			Messages m = db.getMessagesForSpy(user.getUserName(), "user2");
+			assertEquals(m.get(0).getText(), m1.getText());
+			assertEquals(m.get(1).getText(), m4.getText());
+		} catch (SQLException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+		fail("SQLException thrown.");
+		}
+	}
 
 	@Test
 	/**
