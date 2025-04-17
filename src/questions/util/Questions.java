@@ -1,6 +1,10 @@
 package questions.util;
 
 import java.util.ArrayList;
+import java.util.List;
+
+import accounts.util.User;
+import databasePart1.DatabaseHelper;
 
 public class Questions extends ArrayList<Question> {
 	
@@ -61,4 +65,51 @@ public class Questions extends ArrayList<Question> {
 		}
 		return returned;
 	}
+	
+	public Questions getReviewedQuestions(int threshold, User user, DatabaseHelper db) {
+		Questions returned = new Questions();
+		for (int i = 0; i < size(); i++) {
+			if (hasQuestionReview(get(i), threshold, user, db)) {
+				returned.add(get(i));
+			}
+		}
+		return returned;
+	}
+	
+	public Questions getReviewedAnswers(int threshold, User user, DatabaseHelper db) {
+		Questions returned = new Questions();
+		for (int i = 0; i < size(); i++) {
+			if (hasAnswerReview(get(i), threshold, user, db)) {
+				returned.add(get(i));
+			}
+		}
+		return returned;
+	}
+	
+	private boolean hasQuestionReview(Question q, int threshold, User user, DatabaseHelper db) {
+		List<Review> reviews = db.getReviewsQA(q.getKey(), false);
+		for (int i = 0; i < reviews.size(); i++) {
+			Review temp = reviews.get(i);
+			if (temp.getReviewerScore(user) >= threshold) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	private boolean hasAnswerReview(Question q, int threshold, User user, DatabaseHelper db) {
+		Answers a = q.getAnswers();
+		for (int i = 0; i < a.size(); i++) {
+			Answer temp = a.get(i);
+			List<Review> reviews = db.getReviewsQA(temp.getKey(), true);
+			for (int j = 0; j < reviews.size(); j++) {
+				Review tempR = reviews.get(j);
+				if (tempR.getReviewerScore(user) >= threshold) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
 }
