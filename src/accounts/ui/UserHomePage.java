@@ -26,12 +26,21 @@ import questions.util.Review;
 public class UserHomePage {
     private DatabaseHelper databaseHelper;
     private User currentUser;
-
+    
+    /**
+     * Constructs a new UserHomePage.
+     * @param databaseHelper The application's databaseHelper instance.
+     * @param currentUser The application's current user.
+     */
     public UserHomePage(DatabaseHelper databaseHelper, User currentUser) {
         this.databaseHelper = databaseHelper;
         this.currentUser = currentUser;
     }
-
+    
+    /**
+     * Shows the UserHomePage on the provided stage.
+     * @param primaryStage The application's main stage.
+     */
     public void show(Stage primaryStage) {
         VBox layout = new VBox(5);
         layout.setStyle("-fx-alignment: center; -fx-padding: 20;");

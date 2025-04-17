@@ -1,9 +1,10 @@
-package databasePart1;
+package test.accounts.util;
 
 import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 import accounts.util.ReviewerProfile;
+import databasePart1.DatabaseHelper;
 import questions.util.Review;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -16,6 +17,8 @@ public class ReviewerProfileTest {
     @Before
     public void setUp() throws SQLException {
         dbHelper = new DatabaseHelper();
+        dbHelper.connectToDatabase();
+        dbHelper.clear();
         testProfile = new ReviewerProfile("testReviewer");
         testProfile.setBio("Test bio");
         testProfile.addExpertiseArea("Java");
@@ -76,6 +79,7 @@ public class ReviewerProfileTest {
     public void testProfileWithReviews() throws SQLException {
         // Create profile with reviews
         Review review = new Review(1, "testReviewer", 1, "testContent", false);
+        dbHelper.addReview("testReviewer", 1, "testContent", true);
         testProfile.addPastReview(review);
         dbHelper.createReviewerProfile(testProfile);
         
