@@ -1,9 +1,7 @@
 package questions.ui;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import accounts.util.Reviewer;
 import accounts.util.User;
 import databasePart1.DatabaseHelper;
 import javafx.scene.Scene;
@@ -15,6 +13,7 @@ import javafx.stage.Stage;
 import questions.util.Answer;
 import questions.util.Question;
 import questions.util.Review;
+import questions.util.ReviewFeedback;
 
 /**
  * This page houses the reviews for a question or answer.
@@ -62,8 +61,30 @@ public class ReviewPage {
 		reviews = reviews.reversed();
 		
 		for (Review review : reviews) {
-			VBox reviewBox = new VBox();
+			VBox reviewBox = new VBox(5);
 			Label reviewText = new Label(review.getReviewerName() + ": " + review.getReviewText());
+			Label likeLabel = new Label("Likes: " + review.getLikeNum());
+			Button likeButton = new Button ("Like");
+			//like review
+			likeButton.setOnAction(e -> {
+				review.addLike();
+				db.incrementReviewLike(review.getReviewId());
+				likeLabel.setText("Likes: " + review.getLikeNum());
+			});
+			
+			TextArea feedbackArea = new TextArea();
+			feedbackArea.setPromptText("Leave feedback for this review");
+			Button submitFeedback = new Button("Submit Feedback");
+			
+			submitFeedback.setOnAction(e -> {
+				String feedbackText = feedbackArea.getText().trim();
+				if (!feedbackText.isEmpty()) {
+					db.addReviewFeedback(review.getReviewId(), currUser.getUserName(), feedbackText);
+					review.addFeedback(new ReviewFeedback(currUser.getUserName(), feedbackText));
+					feedbackArea.clear();
+				}
+			});
+			
 			Button deleteButton = new Button("Delete Review");
 			Button editButton = new Button("Edit Review");
 			
