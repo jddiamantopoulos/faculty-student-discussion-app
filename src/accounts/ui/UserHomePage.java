@@ -124,9 +124,9 @@ public class UserHomePage {
         moderationButton.setOnAction(a -> new AdministrationSearchPage(databaseHelper, currentUser).show(primaryStage));
 
         layout.getChildren().addAll(userLabel, questionPageButton, messagePageButton, reviewerRequestButton);
-        if (currentUser.getRole().equals("staff") || currentUser.getRole().equals("admin")) {
-            layout.getChildren().add(moderationButton);
-        }
+        if (currentUser.getRole().equals("staff") || currentUser.getRole().equals("instructor") || currentUser.getRole().equals("admin")) { 
+            layout.getChildren().add(moderationButton);}
+  }
 
         if (currentUser.getRole().equals("reviewer")) {
             layout.getChildren().add(reviewerProfileButton);
