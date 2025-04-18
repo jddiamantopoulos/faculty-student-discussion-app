@@ -29,6 +29,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import javafx.scene.control.Alert;
 import messaging.ui.MessagePage;
 import messaging.util.*;
 
@@ -63,7 +64,20 @@ public class AdministrationSearchPage {
      * 
      * @param primaryStage The stage that this page will be shown on.
      */
-    public void show(Stage primaryStage) {
+    public void show(Stage primaryStage) {    
+	// enforce only staff, instructor, or admin can view this page
+	if (!user.getRole().equals("staff")
+     	&& !user.getRole().equals("instructor")
+     	&& !user.getRole().equals("admin")) {
+        	Alert alert = new Alert(Alert.AlertType.ERROR);
+        	alert.setTitle("Unauthorized");
+        	alert.setHeaderText("Access Denied");
+        	alert.setContentText("You do not have permission to view this page.");
+        	alert.showAndWait();
+        	return;
+	}
+	    
+	
     	VBox layout = new VBox(5);
     	
     	// Create the scrollable pane
