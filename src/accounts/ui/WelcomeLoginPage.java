@@ -49,6 +49,9 @@ public class WelcomeLoginPage {
 	    ArrayList<String> rawList;
 	    // Set the list of roles
 	    if (user.getRole().equals("admin")) {
+	    	rawList = new ArrayList<String>(Arrays.asList("user", "reviewer", "instructor", "staff", user.getRole()));
+	    }
+	    else if (user.getRole().equals("staff")) {
 	    	rawList = new ArrayList<String>(Arrays.asList("user", "reviewer", "instructor", user.getRole()));
 	    }
 	    else if (user.getRole().equals("instructor")) {

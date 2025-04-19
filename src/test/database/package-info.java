@@ -1,4 +1,4 @@
 /**
- * JUnit tests for databasePart1
+ * Contains JUnit tests for the database helper.
  */
 package test.database;

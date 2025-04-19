@@ -1,10 +1,15 @@
 package accounts.ui;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 import accounts.util.User;
+import accounts.util.ReviewerProfile;
+import administration.ui.AdministrationSearchPage;
+import administration.ui.ReviewerRequestsUsersPage;
 import databasePart1.DatabaseHelper;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
@@ -13,11 +18,12 @@ import javafx.stage.Stage;
 import messaging.ui.MessageUserListPage;
 import questions.ui.QuestionListPage;
 import taskmessaging.ui.TaskMessageListPage;
+import accounts.ui.ReviewerProfilePage;
+import questions.util.Review;
 
 /**
  * This page allows users to navigate to different modules of the application.
  */
-
 public class UserHomePage {
 	private DatabaseHelper databaseHelper;
 	private User currentUser;
@@ -111,6 +117,36 @@ public class UserHomePage {
 		    	new ReviewerRequestsUsersPage(databaseHelper, currentUser).show(primaryStage);
 		    }
 	    });
+
+        Button reviewerProfileButton = new Button("Reviewer Profile");
+        reviewerProfileButton.setOnAction(e -> {
+            try {
+                ReviewerProfile profile = databaseHelper.getReviewerProfile(currentUser.getUserName());
+                if (profile == null) {
+                    Alert createPrompt = new Alert(Alert.AlertType.CONFIRMATION);
+                    createPrompt.setTitle("Create Profile");
+                    createPrompt.setHeaderText("No reviewer profile found.");
+                    createPrompt.setContentText("Creating a default profile for testing.");
+                    createPrompt.showAndWait();
+
+                    profile = new ReviewerProfile(currentUser.getUserName());
+                    profile.setBio("This is a default bio.");
+                    profile.setExpertiseAreas(new ArrayList<>());
+                    profile.setPastReviews(new ArrayList<Review>());
+                    profile.setStudentFeedback(new ArrayList<>());
+
+                    databaseHelper.createDefaultReviewerProfile(profile);
+                }
+                ReviewerProfilePage profilePage = new ReviewerProfilePage(databaseHelper, currentUser.getUserName());
+                profilePage.show(new Stage());
+            } catch (Exception ex) {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Profile Error");
+                alert.setHeaderText("Could not load or create reviewer profile");
+                alert.setContentText(ex.getMessage());
+                alert.showAndWait();
+            }
+        });
 	    
 	    // Button to request an admin to perform a task
 	    Button adminTaskRequestButton = new Button("Request Task For Admin");
@@ -122,6 +158,10 @@ public class UserHomePage {
 	    // Add elements to layout
 	    layout.getChildren().addAll(userLabel, questionPageButton, messagePageButton, reviewerRequestButton);
 	    
+        if (!currentUser.getRole().equals("user")) {
+            layout.getChildren().add(reviewerProfileButton);
+        }
+
 	    if (currentUser.getRole().equals("staff") || currentUser.getRole().equals("instructor")) {
 	    	layout.getChildren().add(adminTaskRequestButton);
 	    }
