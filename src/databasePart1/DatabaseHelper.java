@@ -16,6 +16,7 @@ import accounts.util.ReviewerProfile;
 import accounts.util.User;
 import messaging.util.*;
 import questions.util.*;
+import taskmessaging.util.*;
 
 /**
  * The DatabaseHelper class is responsible for managing the connection to the
@@ -35,6 +36,7 @@ public class DatabaseHelper {
 	public static int questionKey = 1;
 	public static int answerKey = 1;
 	public static int messageKey = 1;
+	public static int taskMessageKey = 1;
 
 	private Connection connection = null;
 	private Statement statement = null;
@@ -50,7 +52,7 @@ public class DatabaseHelper {
 			connection = DriverManager.getConnection(DB_URL, USER, PASS);
 			statement = connection.createStatement();
 			// You can use this command to clear the database and restart from fresh.
-			// statement.execute("DROP ALL OBJECTS");
+			//statement.execute("DROP ALL OBJECTS");
 			createTables(); // Create the necessary tables if they don't exist
 		} catch (ClassNotFoundException e) {
 			System.err.println("JDBC Driver not found: " + e.getMessage());
@@ -80,6 +82,7 @@ public class DatabaseHelper {
 			statement.executeQuery("SELECT name FROM cse360users LIMIT 1");
 			statement.executeQuery("SELECT text FROM questions LIMIT 1");
 			statement.executeQuery("SELECT text FROM messages LIMIT 1");
+			statement.executeQuery("SELECT text FROM taskMessages LIMIT 1");
 			statement.executeQuery("SELECT text FROM reviews LIMIT 1");
 		} catch (SQLException e) {
 			try {
@@ -120,6 +123,12 @@ public class DatabaseHelper {
 						+ "text VARCHAR(3000)," + "sender VARCHAR(16), " + "recipient VARCHAR(16), "
 						+ "isread BIT," + "time VARCHAR(20))";
 				statement.execute(messagesTable);
+				
+				// Create the task messages table
+				String taskMessagesTable = "CREATE TABLE IF NOT EXISTS taskMessages (" + "id INT PRIMARY KEY,"
+						+ "request VARCHAR(16)," + "requester VARCHAR(16), " + "sender VARCHAR(16), " + "text VARCHAR(500), "
+						+ "requestisopen BIT," + "time VARCHAR(20))";
+				statement.execute(taskMessagesTable);
 				
 				// Create the reviewers table
 				String reviewersTable = "CREATE TABLE IF NOT EXISTS reviewerRequests (" 
@@ -439,19 +448,6 @@ public class DatabaseHelper {
 		}
 		return questions;
 	}
-
-	/**
-	 * Gets all questions and answers in the database.
-	 * @return A complete questions class with associations to answers.
-	 * @throws SQLException
-	 */
-	public Questions getQuestionsAndAnswers() throws SQLException {
-		Questions q = getQuestions();
-		for (int i = 0; i < q.size(); i++) {
-			getAnswers(q.get(i));
-		}
-		return q;
-	}
 	
 	/**
 	 * Removes a question from the database.
@@ -466,6 +462,19 @@ public class DatabaseHelper {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	/**
+	 * Gets all questions and answers in the database.
+	 * @return A complete questions class with associations to answers.
+	 * @throws SQLException
+	 */
+	public Questions getQuestionsAndAnswers() throws SQLException {
+		Questions q = getQuestions();
+		for (int i = 0; i < q.size(); i++) {
+			getAnswers(q.get(i));
+		}
+		return q;
 	}
 
 	/*
@@ -515,7 +524,7 @@ public class DatabaseHelper {
 			e.printStackTrace();
 		}
 	}
-
+	
 	/**
 	 * Update an answer by id
 	 * @param a The answer to be updated
@@ -545,7 +554,7 @@ public class DatabaseHelper {
 			e.printStackTrace();
 		}
 	}
-
+	
 	/*
 	 * // Update an answer by title public void updateQuestion(Answer a, ) throws
 	 * SQLException { String insertQuestion =
@@ -773,6 +782,49 @@ public class DatabaseHelper {
 	}
 	
 	/**
+	 * Gets all task messages in the database.
+	 * @return A task messages collection.
+	 * @throws SQLException Should be handled internally.
+	 */
+	public TaskMessages getTaskMessages() throws SQLException {
+		String query = "SELECT * FROM taskMessages";
+		TaskMessages taskMessages = new TaskMessages();
+		try (PreparedStatement pstmt = connection.prepareStatement(query);) {
+			ResultSet rs = pstmt.executeQuery();
+			while (rs.next()) {
+				TaskMessage tm = new TaskMessage(rs.getInt("id"), rs.getString("request"), rs.getString("requester"), rs.getString("sender"), rs.getString("text"),
+						rs.getBoolean("requestisopen"), rs.getString("time"));
+				taskMessages.add(tm);
+				taskMessageKey++;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return taskMessages;
+	}
+	
+	/**
+	 * Gets the requester of a given request.
+	 * 
+	 * @param request The request whose requester will be found.
+	 * @return The requester of this request.
+	 */
+	public String getRequesterByRequest(String request) {
+		String getRequester = "SELECT requester FROM taskMessages WHERE request = ?";
+		try (PreparedStatement pstmt = connection.prepareStatement(getRequester)) {
+			pstmt.setString(1, request);
+			ResultSet rs = pstmt.executeQuery();
+
+			if (rs.next()) {
+				return rs.getString("requester");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	/**
 	 * Gets all of the messages between two users.
 	 * @param user The application's user
 	 * @param otherUser The username of the other user
@@ -828,6 +880,30 @@ public class DatabaseHelper {
 		return messages;
 	}
 	
+	/**
+	 * Gets all of the task messages in a given conversation.
+	 * @param request The task messages' request.
+	 * @return A task messages collection.
+	 * @throws SQLException Should be handled internally.
+	 */
+	public TaskMessages getTaskMessagesForConvo(String request) throws SQLException {
+		String query = "SELECT * FROM taskMessages WHERE request = ?";
+		TaskMessages taskMessages = new TaskMessages();
+		try (PreparedStatement pstmt = connection.prepareStatement(query);) {
+			pstmt.setString(1, request);
+			ResultSet rs = pstmt.executeQuery();
+			while (rs.next()) {
+				TaskMessage tm = new TaskMessage(rs.getInt("id"), rs.getString("request"), rs.getString("requester"), rs.getString("sender"), rs.getString("text"),
+						rs.getBoolean("requestisopen"), rs.getString("time"));
+				taskMessages.add(tm);
+				//taskMessageKey++;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return taskMessages;
+	}
+
 	/**
 	 * Gets all of the messages in a given conversation. Used in MessageSpy.
 	 * @param user The application's user
@@ -887,6 +963,39 @@ public class DatabaseHelper {
 			e.printStackTrace();
 		}
 	}
+	
+	/**
+	 * Inserts a task message into the database.
+	 * @param tm The task message to be inserted.
+	 * @throws SQLException Should be handled internally.
+	 */
+	public void insertTaskMessage(TaskMessage tm) throws SQLException {
+		String insertTaskMessage = "INSERT INTO taskMessages (id, request, requester, sender, text, time, requestisopen) VALUES (?, ?, ?, ?, ?, ?, ?)";
+		// but first, check if the id will be valid
+		String maximumID = "SELECT MAX(id) AS maximum FROM taskMessages;";
+		int max;
+		try (PreparedStatement stmt = connection.prepareStatement(maximumID)) {
+			ResultSet rs = stmt.executeQuery();
+			if (rs.next()) {
+				max = rs.getInt("maximum");
+				tm.setKey(max + 1);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		try (PreparedStatement pstmt = connection.prepareStatement(insertTaskMessage)) {
+			pstmt.setInt(1, tm.getKey());
+			pstmt.setString(2, tm.getRequest());
+			pstmt.setString(3, tm.getRequester());
+			pstmt.setString(4, tm.getSender());
+			pstmt.setString(5, tm.getText());
+			pstmt.setString(6, tm.getTimeAsString());
+			pstmt.setBoolean(7, tm.getRequestIsOpen());
+			pstmt.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
 
 	/**
 	 *  Closes the database connection and statement.
@@ -914,6 +1023,56 @@ public class DatabaseHelper {
 		String query = "UPDATE messages SET isread = TRUE WHERE id = ?";
 		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
 			pstmt.setInt(1, message.getKey());
+			pstmt.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+	}
+	
+	/**
+	 * Gets a task message request's open status.
+	 * @param request The task message request.
+	 */
+	public boolean getTaskMessageRequestOpenStatus(String request) {
+		String query = "SELECT requestisopen FROM taskMessages WHERE request = ?";
+		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+			pstmt.setString(1, request);
+			ResultSet rs = pstmt.executeQuery();
+			if (rs.next()) {
+				return getTaskMessagesForConvo(request).get(0).getRequestIsOpen();
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return false;
+		
+	}
+	
+	/**
+	 * Marks a task message request as closed.
+	 * @param request The task message request to be marked closed.
+	 */
+	public void setTaskMessageRequestClosed(String request) {
+		String query = "UPDATE taskMessages SET requestisopen = FALSE WHERE request = ?";
+		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+			pstmt.setString(1, request);
+			pstmt.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+	}
+	
+	/**
+	 * Marks a task message request as open.
+	 * @param request The task message request to be marked open.
+	 */
+	public void setTaskMessageRequestOpen(String request) {
+		String query = "UPDATE taskMessages SET requestisopen = TRUE WHERE request = ?";
+		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+			pstmt.setString(1, request);
 			pstmt.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
