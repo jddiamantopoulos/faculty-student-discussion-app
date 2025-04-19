@@ -12,6 +12,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import messaging.ui.MessageUserListPage;
 import questions.ui.QuestionListPage;
+import taskmessaging.ui.TaskMessageListPage;
 
 /**
  * This page allows users to navigate to different modules of the application.
@@ -91,7 +92,7 @@ public class UserHomePage {
 	    if (currentUser.getRole().equals("user")) {
 	    	reviewerRequestButton.setText("Request Reviewer Role");
 	    }
-	    else if (currentUser.getRole().equals("instructor") || currentUser.getRole().equals("admin")) {
+	    else if (currentUser.getRole().equals("staff") || currentUser.getRole().equals("instructor") || currentUser.getRole().equals("admin")) {
 	    	reviewerRequestButton.setText("View Reviewer Requests");
 	    }
 	   	
@@ -106,13 +107,26 @@ public class UserHomePage {
 	    			userLabel.setText("The request could not be sent. You may have already requested the role.");
 	    		}
 		    }
-		    else if (currentUser.getRole().equals("instructor") || currentUser.getRole().equals("admin")) {
+		    else if (currentUser.getRole().equals("staff") || currentUser.getRole().equals("instructor") || currentUser.getRole().equals("admin")) {
 		    	new ReviewerRequestsUsersPage(databaseHelper, currentUser).show(primaryStage);
 		    }
 	    });
 	    
+	    // Button to request an admin to perform a task
+	    Button adminTaskRequestButton = new Button("Request Task For Admin");
+	    
+	    adminTaskRequestButton.setOnAction(a -> {
+	    	new TaskMessageListPage(databaseHelper, currentUser).show(primaryStage);
+	    });
+	    
 	    // Add elements to layout
-	    layout.getChildren().addAll(userLabel, questionPageButton, messagePageButton, reviewerRequestButton, separator, reviewerScoresPageButton, updateAccountBtn, back, logout);
+	    layout.getChildren().addAll(userLabel, questionPageButton, messagePageButton, reviewerRequestButton);
+	    
+	    if (currentUser.getRole().equals("staff") || currentUser.getRole().equals("instructor")) {
+	    	layout.getChildren().add(adminTaskRequestButton);
+	    }
+	    
+	    layout.getChildren().addAll(separator, reviewerScoresPageButton, updateAccountBtn, back, logout);
 	    
 	    // PATCH: Remove button if user is reviewer
 	    if (currentUser.getRole().equals("reviewer")) {
