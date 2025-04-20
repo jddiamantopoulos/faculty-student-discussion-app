@@ -12,6 +12,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import messaging.ui.MessageUserListPage;
 import questions.ui.QuestionListPage;
+import taskmessaging.ui.TaskMessageListPage;
 
 
 /**
@@ -95,13 +96,20 @@ public class AdminHomePage {
 		    new ReviewerRequestsUsersPage(databaseHelper, currentUser).show(primaryStage);
 	    });
 	    
+	    // Button to view requested admin tasks
+	    Button adminTaskRequestButton = new Button("View Admin Request Tasks");
+	    
+	    adminTaskRequestButton.setOnAction(a -> {
+	    	new TaskMessageListPage(databaseHelper, currentUser).show(primaryStage);
+	    });
+	    
 	    Button moderationButton = new Button("Moderation Home");
 	    
 	    moderationButton.setOnAction(a -> {
 	    	new AdministrationSearchPage(databaseHelper, currentUser).show(primaryStage);
 	    });
 	    
-	    layout.getChildren().addAll(adminLabel, questionPageButton, messagePageButton, reviewerRequestButton, moderationButton, separator, reviewerScoresPageButton, updateAccountBtn, back, logout);
+	    layout.getChildren().addAll(adminLabel, questionPageButton, messagePageButton, reviewerRequestButton, moderationButton, adminTaskRequestButton, separator, reviewerScoresPageButton, updateAccountBtn, back, logout);
 
 	    Scene adminScene = new Scene(layout, 800, 400);
 
