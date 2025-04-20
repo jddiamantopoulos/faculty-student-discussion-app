@@ -65,6 +65,16 @@ public class ReviewPage {
 			Label reviewText = new Label(review.getReviewerName() + ": " + review.getReviewText());
 			Label likeLabel = new Label("Likes: " + review.getLikeNum());
 			Button likeButton = new Button ("Like");
+
+			//Existing review
+			VBox fbBox = new VBox(5);
+			int reviewId = review.getReviewId();
+			List<String> feedbackList = db.getReviewFeedback(reviewId);
+			for (String feedback : feedbackList) {
+			    Label feedbackLabel = new Label(feedback);
+			    fbBox.getChildren().add(feedbackLabel);
+			}
+			
 			//like review
 			likeButton.setOnAction(e -> {
 				review.addLike();
