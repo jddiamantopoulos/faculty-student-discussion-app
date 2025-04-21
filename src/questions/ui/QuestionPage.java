@@ -193,7 +193,7 @@ public class QuestionPage {
         	buttonContainer.getChildren().addAll(button, likeButton, reviewsButton);
         }
         else {
-        	buttonContainer.getChildren().add(likeButton);
+        	buttonContainer.getChildren().addAll(likeButton, reviewsButton);
         }
         
         Label usernameAndTags = new Label("Poster: " + ans.getAuthor() + " | Marked Helpful: " + ans.getHelpfulAsString(60 - ans.getAuthor().length()));

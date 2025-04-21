@@ -141,6 +141,14 @@ public class DatabaseHelper {
 						+ "answerId INT, " + "questionId INT, " + "reviewText VARCHAR(2000))";
 				statement.execute(reviewsTable);
 				
+				//adds likeNum column if it doesn't exist
+				try {
+					statement.executeQuery("SELECT likeNum FROM reviews LIMIT 1");
+	           		} catch (SQLException e3) {
+	                	    String alterReviewsTable = "ALTER TABLE reviews ADD COLUMN likeNum INT DEFAULT 0";
+	                            statement.execute(alterReviewsTable);
+	                            System.out.println("Added 'likeNum' column to reviews table.");
+				}
 				// Create the reviewer profiles table
 				String reviewerProfilesTable = "CREATE TABLE IF NOT EXISTS reviewer_profiles (" +
 						"username VARCHAR(16) PRIMARY KEY, " +
@@ -148,6 +156,18 @@ public class DatabaseHelper {
 						"expertise_areas VARCHAR(2000), " +
 						"student_feedback VARCHAR(2000))";
 				statement.execute(reviewerProfilesTable);
+				
+				// Create table for review likes 
+				String reviewLikesTable = "CREATE TABLE IF NOT EXISTS reviewLikes ("
+				        + "reviewId INT, " + "likedBy VARCHAR(16), " + "PRIMARY KEY (reviewId, likedBy))";
+				statement.execute(reviewLikesTable);
+
+				// Create table for review feedback
+				String reviewFeedbackTable = "CREATE TABLE IF NOT EXISTS reviewFeedback ("
+				        + "feedbackId INT AUTO_INCREMENT PRIMARY KEY, " + "reviewId INT, " 
+						+ "feedbackBy VARCHAR(16), " + "feedbackText VARCHAR(2000))";
+				statement.execute(reviewFeedbackTable);
+				
 			} catch (SQLException e2) {
 				System.err.println("Multiple database errors.");
 				e2.printStackTrace();
@@ -1476,6 +1496,105 @@ public class DatabaseHelper {
 			// ... existing code ...
 		} catch (SQLException e) {
 			e.printStackTrace();
+		}
+	}
+
+
+	/**
+	 * Adds like to review from user
+	 * @param reviewId the id of the review being liked
+	 * @param likedBy the username of the user who liked
+	 * @return true if like has been added, false if not
+	 */
+	public boolean likeReview(int reviewId, String likedBy) {
+		String query = "INSERT INTO reviewLikes (reviewId, likedBy) VALUES (?, ?)";
+		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+			pstmt.setInt(1, reviewId);
+			pstmt.setString(2, likedBy);
+			pstmt.executeUpdate();
+			return true;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
+	/**
+	 * Removes the like from a review that the user had previously liked
+	 * @param reviewId the id of the review being unliked
+	 * @param likedBy the username of the user removing the like
+	 * @return true if the like was removed, false if not
+	 */
+	public boolean unlikeReview (int reviewId, String likedBy) {
+		String query = "DELETE FROM reviewLikes WHERE reviewId = ? AND likedBy = ?";
+		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+			pstmt.setInt(1, reviewId);
+			pstmt.setString(2, likedBy);
+			pstmt.executeUpdate();
+			return true;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
+	/**
+	 *Adds feedback on a review from one user to another
+	 * @param reviewId the id of the review the feedback is going to
+	 * @param feedbackBy username of the user giving feedback
+	 * @param feedbackText the text of the feedback
+	 * @return
+	 */
+	public boolean addReviewFeedback(int reviewId, String feedbackBy, String feedbackText) {
+		String query = "INSERT INTO reviewFeedback (reviewId, feedbackBy, feedbackText) VALUES (?, ?, ?)";
+		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+			pstmt.setInt(1, reviewId);
+			pstmt.setString(2, feedbackBy);
+			pstmt.setString(3, feedbackText);
+			pstmt.executeUpdate();
+			return true;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
+	/**
+	 * retrieves the list of feedback strings for the review
+	 * @param reviewId the id of the review
+	 * @return a list of the feedback strings or an empty list if none are present or an error
+	 */
+	public List<String> getReviewFeedback(int reviewId) {
+		List<String> feedbackList = new ArrayList<>();
+		String query = "SELECT feedbackBy, feedbackText FROM reviewFeedback WHERE reviewId = ?";
+		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+			pstmt.setInt(1, reviewId);
+			ResultSet rs = pstmt.executeQuery();
+			while (rs.next()) {
+				String feedbackBy = rs.getString("feedbackBy");
+				String feedbackText = rs.getString("feedbackText");
+				feedbackList.add(feedbackBy + ": " + feedbackText);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return feedbackList;
+	}
+	
+	/**
+	 * Counts the number of likes the count increases for a review
+	 * @param reviewId the id of the review to increment likes 
+	 * @return true if successful, false if not
+	 */
+	public boolean incrementReviewLike(int reviewId) {
+		String query = "UPDATE reviews SET likeNum = likeNum + 1 WHERE reviewId = ?";
+		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+			pstmt.setInt(1, reviewId);
+			pstmt.executeUpdate();
+			return true;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
 		}
 	}
 

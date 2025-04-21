@@ -1,12 +1,15 @@
 package questions.util;
 import databasePart1.DatabaseHelper;
 import java.util.List;
+import java.util.ArrayList;
 
 /**
  * Wrappers for database functions
  */
 public class ReviewManage {
 	private DatabaseHelper db;
+	private List<Review> reviews = new ArrayList<>();
+	private int feedbackIdNum = 1;
 	
 	/**
 	 * Constructs a new review manager
@@ -55,5 +58,43 @@ public class ReviewManage {
 	 */
 	public List<Review> getReviewsQA(int id, boolean isAnswer) {
 		return db.getReviewsQA(id, isAnswer);
+	}
+
+	/**
+	 * adds to the like count for the review
+	 * @param reviewId the id of the liked review
+	 */
+	public void addLikeToReview(int reviewId) {
+		Review r = findReviewById(reviewId);
+		if (r != null) {
+			r.addLike();
+		}
+	}
+	
+	/**
+	 * adds feedback to the review
+	 * @param reviewId the id of the review to add feedback
+	 * @param studentId the id of the student giving the feedback
+	 * @param text the text of the feedback
+	 */
+	public void addFeedbackToReview(int reviewId, int studentId, String text) {
+		Review r = findReviewById(reviewId);
+		if (r != null) {
+			ReviewFeedback feedback = new ReviewFeedback(++feedbackIdNum, reviewId, studentId, text);
+			r.addFeedback(feedback);
+		}
+	}
+	
+	/**
+	 * finds the review by id
+	 * @param id the id of the review to find
+	 * @return r the review is found, null if no match is found
+	 */
+	public Review findReviewById(int id) {
+		for (Review r : reviews) {
+			if (r.getReviewId() == id) 
+				return r;
+		}
+		return null;
 	}
 }

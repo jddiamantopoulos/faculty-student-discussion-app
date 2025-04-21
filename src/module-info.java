@@ -6,6 +6,7 @@ module FoundationCode {
 	requires java.sql;
 	requires javafx.graphics;
 	requires junit;
+	requires javafx.base;
 	
 	opens main to javafx.graphics, javafx.fxml;
 }
