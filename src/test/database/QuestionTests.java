@@ -170,6 +170,31 @@ public class QuestionTests {
 		tearDownQuestionEnv();
 	}
 	
+	@Test
+	/**
+	 * Tests the getKeyForAnswer() method.
+	 */
+	public void testGetKeyForAnswer() {
+		setUpQuestionEnv();
+		
+		Question q = new Question("text", "body", "author", new ArrayList<String>());
+		try {
+			db.insertQuestion(q);
+			Answer answer1 = new Answer("text1", "author1");
+			db.insertAnswer(q, answer1);
+			assertEquals(1, db.getKeyForAnswer("text1"));
+			db.removeAnswer(answer1);
+			assertEquals(-1, db.getKeyForAnswer("text1"));
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			fail("SQLException thrown.");
+		}
+		
+		tearDownQuestionEnv();
+	}
+	
+	
 	/**
 	 * Helper method to set up the environment for messaging.
 	 */

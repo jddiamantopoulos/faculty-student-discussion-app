@@ -155,6 +155,8 @@ public class QuestionListPage {
         searchTypeL.add("Question");
         searchTypeL.add("Answered");
         searchTypeL.add("Unanswered");
+        searchTypeL.add("Question Reviewed");
+        searchTypeL.add("Answer Reviewed");
         ChoiceBox<String> searchType = new ChoiceBox<String>(FXCollections.observableArrayList(searchTypeL));
         searchType.setValue("(Search Type)");
         searchType.setPrefWidth(120.0);
@@ -171,7 +173,7 @@ public class QuestionListPage {
         searchTags.setPrefWidth(120.0);
         // Search bar (if "author" or "question" search)
         TextField searchBar = new TextField();
-        searchBar.setPromptText("Enter Search Parameters (Author / Question)");
+        searchBar.setPromptText("Enter Search Parameters (Author / Question / Minimum Reviewer Score)");
         searchBar.setPrefWidth(400.0);
         // Search button
         Button searchButton = new Button("Search");
@@ -390,6 +392,36 @@ public class QuestionListPage {
     			Questions newPgQuestions1 = parentQuestions.getAnswered(); // Got local variable issues with this one for some reason :/
     			if (newPgQuestions1.size() > 0) {
 					new QuestionListPage(db, newPgQuestions1, parentQuestions, user).show(primaryStage);
+					return "";
+				}
+				else {
+					return "No results found for those search parameters.";
+				} 
+    		case "Question Reviewed":
+    			int threshold = 50;
+    			try {
+    				threshold = Integer.parseInt(searchBar);
+    			} catch (NumberFormatException e) {
+    				return "Must enter an integer!";
+    			}
+    			Questions newPgQuestions2 = parentQuestions.getReviewedQuestions(threshold, user, db);
+    			if (newPgQuestions2.size() > 0 && threshold <= 100 && threshold >= 0) {
+					new QuestionListPage(db, newPgQuestions2, parentQuestions, user).show(primaryStage);
+					return "";
+				}
+				else {
+					return "No results found for those search parameters.";
+				} 
+    		case "Answer Reviewed":
+    			int threshold1 = 50;
+    			try {
+    				threshold1 = Integer.parseInt(searchBar);
+    			} catch (NumberFormatException e) {
+    				return "Must enter an integer!";
+    			}
+    			Questions newPgQuestions3 = parentQuestions.getReviewedAnswers(threshold1, user, db);
+    			if (newPgQuestions3.size() > 0 && threshold1 <= 100 && threshold1 >= 0) {
+					new QuestionListPage(db, newPgQuestions3, parentQuestions, user).show(primaryStage);
 					return "";
 				}
 				else {
