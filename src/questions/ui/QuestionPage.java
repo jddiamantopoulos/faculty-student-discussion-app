@@ -172,28 +172,34 @@ public class QuestionPage {
         Button editButton = new Button("Edit");
         Button likeButton = new Button("Like");
         Button reviewsButton = new Button("Reviews");
+        Button bookmarkButton = new Button("Bookmark");
         reviewsButton.setPrefWidth(80);
         editButton.setPrefWidth(80);
         button.setPrefWidth(80);
         likeButton.setPrefWidth(80);
+        bookmarkButton.setPrefWidth(80);
+        
+        if (db.isReviewerBookmarked(user.getUserName(), ans.getAuthor())) {
+			bookmarkButton.setText("Remove Bookmark");
+		}
         
         // Show/hide depending on settings
-        VBox buttonContainer = new VBox(1);
+        VBox buttonContainer = new VBox(3);
         if (user.getUserName().equals(ans.getAuthor())) {
-        	buttonContainer.getChildren().addAll(button, editButton, reviewsButton);
+        	buttonContainer.getChildren().addAll(button, editButton, reviewsButton, bookmarkButton);
         }
         else if (user.getRole().equals("admin")) {
-        	buttonContainer.getChildren().addAll(button, editButton, likeButton, reviewsButton);
+        	buttonContainer.getChildren().addAll(button, editButton, likeButton, bookmarkButton, reviewsButton);
         }
         else if ( (user.getRole().equals("instructor") || user.getRole().equals("staff") ) && !user.getUserName().equals(ans.getAuthor())) {
-        	buttonContainer.getChildren().addAll(button, likeButton, reviewsButton);
+        	buttonContainer.getChildren().addAll(button, likeButton, bookmarkButton, reviewsButton);
         }
         // default case for roles above user
         else if (!user.getRole().equals("user") && !user.getUserName().equals(ans.getAuthor())) {
-        	buttonContainer.getChildren().addAll(button, likeButton, reviewsButton);
+        	buttonContainer.getChildren().addAll(button, likeButton, bookmarkButton, reviewsButton);
         }
         else {
-        	buttonContainer.getChildren().addAll(likeButton, reviewsButton);
+        	buttonContainer.getChildren().addAll(likeButton, bookmarkButton, reviewsButton);
         }
         
         Label usernameAndTags = new Label("Poster: " + ans.getAuthor() + " | Marked Helpful: " + ans.getHelpfulAsString(60 - ans.getAuthor().length()));
@@ -242,6 +248,16 @@ public class QuestionPage {
         	// Show in new window
         	new ReviewPage(db, null, ans, user).show(new Stage());
         });
+        bookmarkButton.setOnAction(e -> {
+	        boolean success = db.addAnswerBookmark(user.getUserName(), ans.getKey());
+	        if (success) {
+	            bookmarkButton.setText("Remove Bookmark");
+	        } else {
+	            System.err.println("Could not bookmark reviewer.");
+	            bookmarkButton.setText("Bookmark");
+	            
+	        }
+		});
         
         // Add to top of list
         content.getChildren().add(0, answer);

@@ -157,6 +157,7 @@ public class QuestionListPage {
         searchTypeL.add("Unanswered");
         searchTypeL.add("Question Reviewed");
         searchTypeL.add("Answer Reviewed");
+        searchTypeL.add("Answer Bookmarked");
         ChoiceBox<String> searchType = new ChoiceBox<String>(FXCollections.observableArrayList(searchTypeL));
         searchType.setValue("(Search Type)");
         searchType.setPrefWidth(120.0);
@@ -427,6 +428,15 @@ public class QuestionListPage {
 				else {
 					return "No results found for those search parameters.";
 				} 
+    		case "Answer Bookmarked":
+    			Questions newPgQuestions4 = parentQuestions.getBookmarkedAnswers(user, db);
+    			if (newPgQuestions4.size() > 0) {
+					new QuestionListPage(db, newPgQuestions4, parentQuestions, user).show(primaryStage);
+					return "";
+				}
+				else {
+					return "No results found for those search parameters.";
+				}
     		case "(Search Type)":
     			return "Be sure to enter a search type!";
     		default:

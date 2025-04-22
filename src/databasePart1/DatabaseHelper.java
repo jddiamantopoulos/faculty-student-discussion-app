@@ -172,6 +172,20 @@ public class DatabaseHelper {
 						+ "feedbackBy VARCHAR(16), " + "feedbackText VARCHAR(2000))";
 				statement.execute(reviewFeedbackTable);
 				
+				// Create table for reviewers book mark
+				String bookmarkedReviewersTable = "CREATE TABLE IF NOT EXISTS ReviewerBookmarks (" + "userId VARCHAR(16), " +  "reviewerId VARCHAR(16), " + "PRIMARY KEY (userId, reviewerId))";
+				statement.execute(bookmarkedReviewersTable);
+				
+				// Create table for book marked answers
+				String bookmarkedAnswersTable = "CREATE TABLE IF NOT EXISTS AnswerBookmarks (" +
+				        "userId VARCHAR(16), " + "answerId INT, " + "PRIMARY KEY (userId, answerId))";
+				statement.execute(bookmarkedAnswersTable);
+
+
+
+				
+				
+				
 			} catch (SQLException e2) {
 				System.err.println("Multiple database errors.");
 				e2.printStackTrace();
@@ -518,6 +532,9 @@ public class DatabaseHelper {
 			ResultSet rs = pstmt.executeQuery();
 			while (rs.next()) {
 				Answer a = new Answer(rs.getInt("id"), rs.getString("text"), rs.getString("author"), rs.getString("votes"));
+				if (a.getKey() == 0) {
+					a.setKey(answerKey);
+				}
 				ans.add(a);
 				answerKey++;
 			}
@@ -525,8 +542,6 @@ public class DatabaseHelper {
 			e.printStackTrace();
 		}
 		question.setAnswers(ans);
-		for (int i = 0; i < question.getAnswers().size(); i++) {
-		}
 	}
 	
 	/**
@@ -1622,5 +1637,171 @@ public class DatabaseHelper {
 			return false;
 		}
 	}
+	/**
+	 * 1. 
+	 * @param userId
+	 * @param answerId
+	 * @return
+	 */
+	public boolean addAnswerBookmark(String userId, int answerId) {
+	    String query = "INSERT INTO AnswerBookmarks (userId, answerId) VALUES (?, ?)";
+	    try (PreparedStatement pstmt = connection.prepareStatement(query))
+	        {
+	        pstmt.setString(1, userId);
+	        pstmt.setInt(2, answerId);
+	        pstmt.executeUpdate();
+	        return true;
+	    } catch (SQLException e) {
+	    	try {
+				removeAnswerBookmark(userId, answerId);
+			} catch (SQLException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+	        return false;
+	    }
+	}
+	
+	public boolean isAnswerBookmarked(String userId, int answerId) {
+		String getReviewer = "SELECT * FROM AnswerBookmarks WHERE userId = ? AND answerId = ?";
+		try {
+			PreparedStatement pstmt = connection.prepareStatement(getReviewer);
+			pstmt.setString(1, userId);
+			pstmt.setInt(2, answerId);
+			try (ResultSet rs = pstmt.executeQuery()) {
+				if (rs.next()) {
+					return true;
+				}
+				else {
+					return false;
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+				return false;
+			}
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+			return false;
+		}
+	}
+	
+	/**
+	 * 2.
+	 * @param userId
+	 * @return
+	 */
 
+	public List<Integer> getBookmarkedAnswers(int userId){
+	    List<Integer> answers = new ArrayList<>();
+	    String query = "SELECT answerId FROM AnswerBookmarks WHERE userId = ?";
+	    try (PreparedStatement pstmt = connection.prepareStatement(query))
+	          {
+	        pstmt.setInt(1, userId);
+	        ResultSet rs = pstmt.executeQuery();
+	        while (rs.next()) {
+	        	answers.add(rs.getInt("answerId"));
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+	    return answers;
+	}
+	
+	/**
+	 * 3.
+	 * @param userId
+	 * @param answerId
+	 * @return
+	 */
+	public void removeAnswerBookmark(String userId, int answerId) throws SQLException {
+	    String query = "DELETE FROM AnswerBookmarks WHERE userId = ? AND answerId = ?";
+	    PreparedStatement pstmt = connection.prepareStatement(query);
+        pstmt.setString(1, userId);
+        pstmt.setInt(2, answerId);
+        pstmt.executeUpdate();
+	}
+	/**
+	 * 1.
+	 * @param userId
+	 * @param reviewerId
+	 * @return
+	 */
+	public boolean addReviewerBookmark(String userId, String reviewerId) {
+	    String query = "INSERT INTO ReviewerBookmarks (userId, reviewerId) VALUES (?, ?)";
+	    try (PreparedStatement pstmt = connection.prepareStatement(query))
+	         {
+	        pstmt.setString(1, userId);
+	        pstmt.setString(2, reviewerId);
+	        pstmt.executeUpdate();
+	        return true;
+	    } catch (SQLException e) {
+	        try {
+				removeReviewerBookmark(userId, reviewerId);
+			} catch (SQLException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+	        return false;
+	    }
+	}
+	
+/**
+ * 2.
+ * @param userId
+ * @return
+ */
+	public List<Integer> getBookmarkedReviews(int userId) {
+	    List<Integer> reviewerIds = new ArrayList<>();
+	    String query = "SELECT reviewerId FROM ReviewerBookmarks WHERE userId =?";
+	    try (PreparedStatement pstmt = connection.prepareStatement(query))
+	        {
+	        pstmt.setInt(1, userId);
+	        ResultSet rs = pstmt.executeQuery();
+	        while (rs.next()) {
+	        	reviewerIds.add(rs.getInt("reviewerId"));
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+	    return reviewerIds;
+	}
+	
+	public boolean isReviewerBookmarked(String userId, String reviewerId) {
+		String getReviewer = "SELECT * FROM ReviewerBookmarks WHERE userId = ? AND reviewerId = ?";
+		try {
+			PreparedStatement pstmt = connection.prepareStatement(getReviewer);
+			pstmt.setString(1, userId);
+			pstmt.setString(2, reviewerId);
+			try (ResultSet rs = pstmt.executeQuery()) {
+				if (rs.next()) {
+					return true;
+				}
+				else {
+					return false;
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+				return false;
+			}
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+			return false;
+		}
+	}
+	
+	/**
+	 * 3.
+	 * @param userId
+	 * @param reviewerId
+	 * @return
+	 */
+	    
+	public void removeReviewerBookmark(String userId, String reviewerId) throws SQLException {
+	    String query = "DELETE FROM ReviewerBookmarks WHERE userId = ? AND reviewerId = ?";
+	    PreparedStatement pstmt = connection.prepareStatement(query);
+        pstmt.setString(1, userId);
+        pstmt.setString(2, reviewerId);
+        pstmt.executeUpdate();
+	}
 }
+	

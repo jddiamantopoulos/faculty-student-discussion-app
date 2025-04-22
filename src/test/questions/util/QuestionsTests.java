@@ -220,5 +220,23 @@ public class QuestionsTests {
 			e.printStackTrace();
 		}
 	}
+	
+	@Test
+	/**
+	 * Tests the "getBookmarkedAnswers()" method in Questions.java.
+	 */
+	public void testGetBookmarkedAnswers() {
+		try {
+			Questions q = db.getQuestionsAndAnswers();
+			db.addAnswerBookmark(user.getUserName(), 7);
+			Questions returned = q.getBookmarkedAnswers(user, db);
+			assertEquals(1, returned.size()); /* all questions w/ reviews */
+			assertEquals("Question 1", returned.get(0).getText());
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			fail("SQLException thrown.");
+			e.printStackTrace();
+		}
+	}
 
 }
