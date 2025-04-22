@@ -1754,7 +1754,8 @@ public class DatabaseHelper {
 		}
 		return users;
 	}
-
+	
+	/**
 	 * Removes a bookmark from a reviewer.
 	 * @param userId The username of the current user.
 	 * @param reviewerId The username of the reviewer.
@@ -1767,5 +1768,6 @@ public class DatabaseHelper {
         pstmt.setString(2, reviewerId);
         pstmt.executeUpdate();
 	}
+	 
 }
 	
