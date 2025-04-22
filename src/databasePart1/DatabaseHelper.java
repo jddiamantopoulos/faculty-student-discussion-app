@@ -1623,32 +1623,33 @@ public class DatabaseHelper {
 		}
 	}
 	/**
-	 * Answer Bookmark Methods 
-	 * Add bookmark 
-	 * @param bookmarkerUsername
+	 * 1. 
+	 * @param userId
 	 * @param answerId
 	 * @return
 	 */
 	public boolean addAnswerBookmark(String userId, int answerId) {
-	    String query = "INSERT IGNORE INTO AnswerBookmarks (user_id, answer_id) VALUES (?, ?)";
+	    String query = "INSERT IGNORE INTO AnswerBookmarks (userId, answerId) VALUES (?, ?)";
 	    try (PreparedStatement pstmt = connection.prepareStatement(query))
 	        {
 	        pstmt.setString(1, userId);
 	        pstmt.setInt(2, answerId);
-	        return pstmt.executeUpdate() > 0;
+	        pstmt.executeUpdate();
+	        return true;
 	    } catch (SQLException e) {
 	        e.printStackTrace();
 	        return false;
 	    }
 	}
+	
 	/**
-	 * Gets all answers that are bookmarked
-	 * @param bookmarkerUsername
+	 * 2.
+	 * @param userId
 	 * @return
 	 */
-	
-	public static List<Integer> getBookmarkedAnswers(int userId) throws SQLException {
-	    List<Answer> answers = new ArrayList<>();
+
+	public List<Integer> getBookmarkedAnswers(int userId){
+	    List<Integer> answers = new ArrayList<>();
 	    String query = "SELECT answerId FROM AnswerBookmarks WHERE userId = ?";
 	    try (PreparedStatement pstmt = connection.prepareStatement(query))
 	          {
@@ -1662,100 +1663,86 @@ public class DatabaseHelper {
 	    }
 	    return answers;
 	}
+	
 	/**
-	 * remove bookmark 
-	 * @param bookmarkerUsername
+	 * 3.
+	 * @param userId
 	 * @param answerId
 	 * @return
 	 */
-	public boolean removeAnswerBookmark(String userId, int answerId) {
-	    String query = "DELETE FROM AnswerBookmarks WHERE bookmarker_username = ? AND answer_id = ?";
+	public boolean removeAnswerBookmark(int userId, int answerId) {
+	    String query = "DELETE FROM AnswerBookmarks WHERE userId = ? AND answerId = ?";
 	    try (PreparedStatement pstmt = connection.prepareStatement(query))
 	         {
-	        pstmt.setString(1, bookmarkerUsername);
+	        pstmt.setInt(1, userId);
 	        pstmt.setInt(2, answerId);
-	        return pstmt.executeUpdate() > 0;
+	        pstmt.executeUpdate();
+	        return true;
 	    } catch (SQLException e) {
 	        e.printStackTrace();
 	        return false;
 	    }
 	}
 	/**
-	 * Reviewer Bookmark Methods 
-	 * @param bookmarkerUsername
-	 * @param reviewerUsername
+	 * 1.
+	 * @param userId
+	 * @param reviewerId
 	 * @return
 	 */
-	
-	public boolean addReviewerBookmark(String bookmarkerUsername, String reviewerUsername) {
-	    String query = "INSERT IGNORE INTO ReviewerBookmarks (bookmarker_username, reviewer_username) VALUES (?, ?)";
+	public boolean addReviewerBookmark(int userId, int reviewerId) {
+	    String query = "INSERT IGNORE INTO ReviewerBookmarks (userId, reviewerId) VALUES (?, ?)";
 	    try (PreparedStatement pstmt = connection.prepareStatement(query))
 	         {
-	        pstmt.setString(1, bookmarkerUsername);
-	        pstmt.setString(2, reviewerUsername);
-	        return pstmt.executeUpdate() > 0;
+	        pstmt.setInt(1, userId);
+	        pstmt.setInt(2, reviewerId);
+	        pstmt.executeUpdate();
+	        return true;
 	    } catch (SQLException e) {
 	        e.printStackTrace();
 	        return false;
 	    }
 	}
 	
-	/**
-	 * 
-	 * @param bookmarkerUsername
-	 * @return
-	 */
-	public List<Answer> getBookmarkedAnswers(String bookmarkerUsername) {
-	    List<Answer> answers = new ArrayList<>();
-	    String query = "SELECT a.* FROM AnswerBookmarks ab JOIN Answers a ON ab.answer_id = a.id WHERE ab.bookmarker_username = ?";
+/**
+ * 2.
+ * @param userId
+ * @return
+ */
+	public List<Integer> getBookmarkedReviews(int userId) {
+	    List<Integer> reviewerIds = new ArrayList<>();
+	    String query = "SELECT reviewerId FROM ReviewerBookmarks WHERE userId =?";
 	    try (PreparedStatement pstmt = connection.prepareStatement(query))
 	        {
-	        pstmt.setString(1, bookmarkerUsername);
-	        ResultSet rs = stmt.executeQuery();
+	        pstmt.setInt(1, userId);
+	        ResultSet rs = pstmt.executeQuery();
 	        while (rs.next()) {
-	            Answer answer = new Answer(
-	                rs.getInt("id"),
-	                rs.getString("content"),
-	                rs.getString("author"),
-	                rs.getInt("question_id")
-	                // Add more fields if needed
-	            );
-	            answers.add(answer);
+	        	reviewerIds.add(rs.getInt("reviewerId"));
 	        }
 	    } catch (SQLException e) {
 	        e.printStackTrace();
 	    }
-	    return answers;
+	    return reviewerIds;
 	}
+	
 	/**
-	 * 
-	 * @param bookmarkerUsername
-	 * @param answerId
+	 * 3.
+	 * @param userId
+	 * @param reviewerId
 	 * @return
 	 */
-	public boolean removeAnswerBookmark(String bookmarkerUsername, int answerId) {
-	    String query = "DELETE FROM AnswerBookmarks WHERE bookmarker_username = ? AND answer_id = ?";
+	    
+	public boolean removeReviewBookmark(int userId, int reviewerId) {
+	    String query = "DELETE FROM ReviewBookmarks WHERE userId = ? AND reviewerId = ?";
 	    try (PreparedStatement pstmt = connection.prepareStatement(query))
 	         {
-	        pstmt.setString(1, bookmarkerUsername);
-	        pstmt.setInt(2, answerId);
-	        return pstmt.executeUpdate() > 0;
+	        pstmt.setInt(1, userId);
+	        pstmt.setInt(2, reviewerId);
+	        pstmt.executeUpdate();
+	        return true;
 	    } catch (SQLException e) {
 	        e.printStackTrace();
 	        return false;
 	    }
 	}
-
-	
-	
-
-
-	
-	
-
-	
-	
-
-
-
 }
+	
