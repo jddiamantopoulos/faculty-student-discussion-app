@@ -63,7 +63,13 @@ public class ReviewFeedbackLikesTests {
 
 	@Test
 	public void testIncrementLikeCount() {
-		assertTrue(db.incrementReviewLike(reviewId));
+		try {
+			assertTrue(db.incrementReviewLike(db.getReviewsByAuthor("reviewer").get(0), "user"));
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			fail("SQLException");
+		}
 	}
 
 	//Helpers

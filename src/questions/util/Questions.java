@@ -130,7 +130,7 @@ public class Questions extends ArrayList<Question> {
 	 * 
 	 * @param user The current user of the application.
 	 * @param db The application's database helper.
-	 * @return The subset of questions with answers bookmarked answers.
+	 * @return The subset of questions with bookmarked answers.
 	 */
 	public Questions getBookmarkedAnswers(User user, DatabaseHelper db) {
 		Questions returned = new Questions();
@@ -193,6 +193,13 @@ public class Questions extends ArrayList<Question> {
 		return false;
 	}
 	
+	/**
+	 * Checks if a question has a bookmarked answer
+	 * @param q The question to check.
+	 * @param user The user whose bookmarks will be checked.
+	 * @param db The application's database helper.
+	 * @return True if present.
+	 */
 	private boolean hasBookmarkedAnswer(Question q, User user, DatabaseHelper db) {
 		Answers a = q.getAnswers();
 		boolean retVal = false;

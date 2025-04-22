@@ -88,9 +88,7 @@ public class UpdateReviewerScoresPage {
         // Add reviewers
 	    ArrayList<Reviewer> reviewers;
 		try {
-			System.out.println(user.getReviewersAsString());
 			reviewers = db.getAllReviewers(user);
-			System.out.println(user.getReviewersAsString());
 		} catch (SQLException e) {
 			e.printStackTrace();
 			reviewers = new ArrayList<Reviewer>();

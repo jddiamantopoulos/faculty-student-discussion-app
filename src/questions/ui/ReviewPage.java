@@ -68,7 +68,7 @@ public class ReviewPage {
 			VBox reviewBox = new VBox(5);
 			reviewBox.setStyle("-fx-background-color: rgb(225, 225, 225);");
 			Label reviewText = new Label(review.getReviewerName() + ": " + review.getReviewText());
-			Label likeLabel = new Label("Likes: " + review.getLikeNum());
+			Label likeLabel = new Label("Likes: " + db.getReviewLikes(review.getReviewId()));
 			Button likeButton = new Button ("Like");
 			Button feedbackButton = new Button("Feedback");
 			Button bookmarkButton = new Button("Bookmark");
@@ -91,8 +91,8 @@ public class ReviewPage {
 			//like review
 			likeButton.setOnAction(e -> {
 				review.addLike();
-				if (db.incrementReviewLike(review.getReviewId())) {
-					likeLabel.setText("Likes: " + review.getLikeNum());
+				if (db.incrementReviewLike(review, currUser.getUserName())) {
+					likeLabel.setText("Likes: " + db.getReviewLikes(reviewId));
 				}
 			});
 			

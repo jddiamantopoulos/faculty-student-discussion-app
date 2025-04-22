@@ -103,49 +103,5 @@ public class ReviewManage {
 		return null;
 	}
 	
-	
-	/**
-	 * 0.
-	 * @param reviewerId
-	 * @return
-	 */
-	public boolean bookmarkReview(int reviewerId) {
-		
-	if (!ReviewerBookmarkIds.contains(reviewerId)) {
-		ReviewerBookmarkIds.add(reviewerId);
-		return true;
-	}
-	return false;
-}
-	/**
-	 * 1.checks id of the review and then gives that review id that special case that bookmark 
-	 * @param userId
-	 * @param reviewerId
-	 * @return
-	 */
-	public boolean isReviewerBookmark(int reviewerId) {
-		return ReviewerBookmarkIds.contains(reviewerId);
-}
- 
-/**
- * 2.
- * @param usersId
- * @return
- */
-	public List<Integer> getBookmarkedReviews(){
-		return new ArrayList<>(ReviewerBookmarkIds);
-	}
-	
-	/**
-	 * 3.
-	 * @param userId
-	 * @param reviewerId
-	 * @return
-	 */
-	    
-	public boolean removeReviewBookmark(int reviewersId) {
-		return ReviewerBookmarkIds.remove(Integer.valueOf(reviewersId));
-		
-	}
 	   
 }
