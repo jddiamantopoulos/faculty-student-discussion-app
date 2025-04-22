@@ -173,12 +173,12 @@ public class DatabaseHelper {
 				statement.execute(reviewFeedbackTable);
 				
 				// Create table for reviewers book mark
-				String bookmarkedReviewersTable = "CREATE TABLE IF NOT EXISTS ReviewerBookmarks (" + "userId INT, " +  "reviewerId INT, " + "PRIMARY KEY (userId, reviewerId))";
+				String bookmarkedReviewersTable = "CREATE TABLE IF NOT EXISTS ReviewerBookmarks (" + "userId VARCHAR(16), " +  "reviewerId VARCHAR(16), " + "PRIMARY KEY (userId, reviewerId))";
 				statement.execute(bookmarkedReviewersTable);
 				
 				// Create table for book marked answers
 				String bookmarkedAnswersTable = "CREATE TABLE IF NOT EXISTS AnswerBookmarks (" +
-				        "userId INT, " + "answerId INT, " + "PRIMARY KEY (userId, answerId))";
+				        "userId VARCHAR(16), " + "answerId INT, " + "PRIMARY KEY (userId, answerId))";
 				statement.execute(bookmarkedAnswersTable);
 
 
@@ -1643,7 +1643,7 @@ public class DatabaseHelper {
 	 * @return
 	 */
 	public boolean addAnswerBookmark(String userId, int answerId) {
-	    String query = "INSERT IGNORE INTO AnswerBookmarks (userId, answerId) VALUES (?, ?)";
+	    String query = "INSERT INTO AnswerBookmarks (userId, answerId) VALUES (?, ?)";
 	    try (PreparedStatement pstmt = connection.prepareStatement(query))
 	        {
 	        pstmt.setString(1, userId);
@@ -1651,9 +1651,37 @@ public class DatabaseHelper {
 	        pstmt.executeUpdate();
 	        return true;
 	    } catch (SQLException e) {
-	        e.printStackTrace();
+	    	try {
+				removeAnswerBookmark(userId, answerId);
+			} catch (SQLException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 	        return false;
 	    }
+	}
+	
+	public boolean isAnswerBookmarked(String userId, int answerId) {
+		String getReviewer = "SELECT * FROM AnswerBookmarks WHERE userId = ? AND answerId = ?";
+		try {
+			PreparedStatement pstmt = connection.prepareStatement(getReviewer);
+			pstmt.setString(1, userId);
+			pstmt.setInt(2, answerId);
+			try (ResultSet rs = pstmt.executeQuery()) {
+				if (rs.next()) {
+					return true;
+				}
+				else {
+					return false;
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+				return false;
+			}
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+			return false;
+		}
 	}
 	
 	/**
@@ -1684,18 +1712,12 @@ public class DatabaseHelper {
 	 * @param answerId
 	 * @return
 	 */
-	public boolean removeAnswerBookmark(int userId, int answerId) {
+	public void removeAnswerBookmark(String userId, int answerId) throws SQLException {
 	    String query = "DELETE FROM AnswerBookmarks WHERE userId = ? AND answerId = ?";
-	    try (PreparedStatement pstmt = connection.prepareStatement(query))
-	         {
-	        pstmt.setInt(1, userId);
-	        pstmt.setInt(2, answerId);
-	        pstmt.executeUpdate();
-	        return true;
-	    } catch (SQLException e) {
-	        e.printStackTrace();
-	        return false;
-	    }
+	    PreparedStatement pstmt = connection.prepareStatement(query);
+        pstmt.setString(1, userId);
+        pstmt.setInt(2, answerId);
+        pstmt.executeUpdate();
 	}
 	/**
 	 * 1.
@@ -1703,16 +1725,21 @@ public class DatabaseHelper {
 	 * @param reviewerId
 	 * @return
 	 */
-	public boolean addReviewerBookmark(int userId, int reviewerId) {
-	    String query = "INSERT IGNORE INTO ReviewerBookmarks (userId, reviewerId) VALUES (?, ?)";
+	public boolean addReviewerBookmark(String userId, String reviewerId) {
+	    String query = "INSERT INTO ReviewerBookmarks (userId, reviewerId) VALUES (?, ?)";
 	    try (PreparedStatement pstmt = connection.prepareStatement(query))
 	         {
-	        pstmt.setInt(1, userId);
-	        pstmt.setInt(2, reviewerId);
+	        pstmt.setString(1, userId);
+	        pstmt.setString(2, reviewerId);
 	        pstmt.executeUpdate();
 	        return true;
 	    } catch (SQLException e) {
-	        e.printStackTrace();
+	        try {
+				removeReviewerBookmark(userId, reviewerId);
+			} catch (SQLException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 	        return false;
 	    }
 	}
@@ -1738,6 +1765,29 @@ public class DatabaseHelper {
 	    return reviewerIds;
 	}
 	
+	public boolean isReviewerBookmarked(String userId, String reviewerId) {
+		String getReviewer = "SELECT * FROM ReviewerBookmarks WHERE userId = ? AND reviewerId = ?";
+		try {
+			PreparedStatement pstmt = connection.prepareStatement(getReviewer);
+			pstmt.setString(1, userId);
+			pstmt.setString(2, reviewerId);
+			try (ResultSet rs = pstmt.executeQuery()) {
+				if (rs.next()) {
+					return true;
+				}
+				else {
+					return false;
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+				return false;
+			}
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+			return false;
+		}
+	}
+	
 	/**
 	 * 3.
 	 * @param userId
@@ -1745,18 +1795,12 @@ public class DatabaseHelper {
 	 * @return
 	 */
 	    
-	public boolean removeReviewBookmark(int userId, int reviewerId) {
-	    String query = "DELETE FROM ReviewBookmarks WHERE userId = ? AND reviewerId = ?";
-	    try (PreparedStatement pstmt = connection.prepareStatement(query))
-	         {
-	        pstmt.setInt(1, userId);
-	        pstmt.setInt(2, reviewerId);
-	        pstmt.executeUpdate();
-	        return true;
-	    } catch (SQLException e) {
-	        e.printStackTrace();
-	        return false;
-	    }
+	public void removeReviewerBookmark(String userId, String reviewerId) throws SQLException {
+	    String query = "DELETE FROM ReviewerBookmarks WHERE userId = ? AND reviewerId = ?";
+	    PreparedStatement pstmt = connection.prepareStatement(query);
+        pstmt.setString(1, userId);
+        pstmt.setString(2, reviewerId);
+        pstmt.executeUpdate();
 	}
 }
 	

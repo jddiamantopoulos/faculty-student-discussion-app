@@ -73,6 +73,10 @@ public class ReviewPage {
 			Button feedbackButton = new Button("Feedback");
 			Button bookmarkButton = new Button("Bookmark");
 			
+			if (db.isReviewerBookmarked(currUser.getUserName(), review.getReviewerName())) {
+				bookmarkButton.setText("Remove Bookmark");
+			}
+			
 
 			//Existing review
 			VBox fbBox = new VBox(5);
@@ -114,10 +118,11 @@ public class ReviewPage {
 			    if (!review.getReviewerName().equals(currUser.getUserName())) {
 			        boolean success = db.addReviewerBookmark(currUser.getUserName(), review.getReviewerName());
 			        if (success) {
-			            bookmarkButton.setText("Bookmarked!");
-			            bookmarkButton.setDisable(true);
+			            bookmarkButton.setText("Remove Bookmark");
 			        } else {
 			            System.err.println("Could not bookmark reviewer.");
+			            bookmarkButton.setText("Bookmark");
+			            
 			        }
 			    }
 			});
@@ -163,6 +168,7 @@ public class ReviewPage {
 				bottomBox.getChildren().addAll(editButton, deleteButton);
 			}
 			
+			bottomBox.getChildren().add(bookmarkButton);
 			reviewBox.getChildren().addAll(bottomBox, feedbackButton);
 			layout.getChildren().add(reviewBox);
 			
