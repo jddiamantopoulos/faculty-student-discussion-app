@@ -203,6 +203,7 @@ public class RefMessageDialogPage {
 					e1.printStackTrace();
 					return;
 				}
+				errorLabel.setText("Sent!");
 				return;
 			}
 			else {

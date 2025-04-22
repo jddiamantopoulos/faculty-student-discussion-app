@@ -186,7 +186,7 @@ public class QuestionPage {
         // Show/hide depending on settings
         VBox buttonContainer = new VBox(3);
         if (user.getUserName().equals(ans.getAuthor())) {
-        	buttonContainer.getChildren().addAll(button, editButton, bookmarkButton);
+        	buttonContainer.getChildren().addAll(button, editButton, reviewsButton, bookmarkButton);
         }
         else if (user.getRole().equals("admin")) {
         	buttonContainer.getChildren().addAll(button, editButton, likeButton, bookmarkButton, reviewsButton);
