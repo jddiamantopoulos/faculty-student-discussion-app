@@ -98,14 +98,32 @@ public class ReviewPage {
 			}
 			
 			submitFeedback.setOnAction(e -> {
-				String feedbackText = feedbackArea.getText().trim();
-				if (!feedbackText.isEmpty()) {
-					db.addReviewFeedback(review.getReviewId(), currUser.getUserName(), feedbackText);
-					review.addFeedback(new ReviewFeedback(currUser.getUserName(), feedbackText));
-					feedbackArea.clear();
-					fbBox.getChildren().addFirst(new Label(currUser.getUserName() + ": " + feedbackText));
-				}
-			});
+			    String feedbackText = feedbackArea.getText().trim();
+			    if (!feedbackText.isEmpty()) {
+			        db.addReviewFeedback(review.getReviewId(), currUser.getUserName(), feedbackText);
+			        review.addFeedback(new ReviewFeedback(currUser.getUserName(), feedbackText));
+			        feedbackArea.clear();
+			        fbBox.getChildren().addFirst(new Label(currUser.getUserName() + ": " + feedbackText));
+
+			        try {
+			            if (!currUser.getUserName().equals(review.getReviewerName())) {
+			                accounts.util.ReviewerProfile reviewerProfile = db.getReviewerProfile(review.getReviewerName());
+
+			                // If profile doesn't exist yet, create one!
+			                if (reviewerProfile == null) {
+			                    reviewerProfile = new accounts.util.ReviewerProfile(review.getReviewerName());
+			                }
+
+			                reviewerProfile.addStudentFeedback(feedbackText);
+			                db.updateReviewerProfile(reviewerProfile);
+			            }
+			        } catch (Exception ex) {
+			            System.err.println("Could not add feedback to reviewer profile: " + ex.getMessage());
+			        }
+}
+			    }
+			);
+
 			
 			Button deleteButton = new Button("Delete Review");
 			Button editButton = new Button("Edit Review");
@@ -177,6 +195,19 @@ public class ReviewPage {
 				if (db.addReview(currUser.getUserName(), qaText, reviewText, isAnswer)) {
 					layout.getChildren().add(new Label(currUser.getUserName() + ": " + reviewText));
 					newReviewField.clear();
+					try {
+					    String originalAuthorUsername = (ans != null) ? ans.getAuthor() : parent.getAuthor();
+
+					    // Only add feedback if the reviewer is not giving feedback on their own post
+					    if (!currUser.getUserName().equals(originalAuthorUsername)) {
+					        accounts.util.ReviewerProfile reviewerProfile = db.getReviewerProfile(originalAuthorUsername);
+					        reviewerProfile.addStudentFeedback(reviewText);
+					        db.updateReviewerProfile(reviewerProfile);
+					    }
+					} catch (Exception ex) {
+					    System.err.println("Could not save feedback to reviewer profile: " + ex.getMessage());
+					}
+
 				}
 				else {
 					System.err.println("Could not post review.");
