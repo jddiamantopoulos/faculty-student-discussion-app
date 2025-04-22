@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import accounts.util.User;
 import administration.ui.AdministrationSearchPage;
 import administration.ui.ReviewerRequestsUsersPage;
+import administration.ui.ReviewerScorecardPage;
 import databasePart1.DatabaseHelper;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -109,7 +110,13 @@ public class AdminHomePage {
 	    	new AdministrationSearchPage(databaseHelper, currentUser).show(primaryStage);
 	    });
 	    
-	    layout.getChildren().addAll(adminLabel, questionPageButton, messagePageButton, reviewerRequestButton, moderationButton, adminTaskRequestButton, separator, reviewerScoresPageButton, updateAccountBtn, back, logout);
+	    Button reviewerScorecardButton = new Button("Set up reviewer scorecards");
+	    
+	    reviewerScorecardButton.setOnAction(a -> {
+	    	new ReviewerScorecardPage(databaseHelper, currentUser).show(primaryStage);
+	    });
+	    
+	    layout.getChildren().addAll(adminLabel, questionPageButton, messagePageButton, reviewerRequestButton, moderationButton, adminTaskRequestButton, reviewerScorecardButton, separator, reviewerScoresPageButton, updateAccountBtn, back, logout);
 
 	    Scene adminScene = new Scene(layout, 800, 400);
 

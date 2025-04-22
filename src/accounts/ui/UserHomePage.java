@@ -7,6 +7,7 @@ import accounts.util.User;
 import accounts.util.ReviewerProfile;
 import administration.ui.AdministrationSearchPage;
 import administration.ui.ReviewerRequestsUsersPage;
+import administration.ui.ReviewerScorecardPage;
 import databasePart1.DatabaseHelper;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -155,6 +156,12 @@ public class UserHomePage {
 	    	new TaskMessageListPage(databaseHelper, currentUser).show(primaryStage);
 	    });
 	    
+	    Button reviewerScorecardButton = new Button("Set up reviewer scorecards");
+	    
+	    reviewerScorecardButton.setOnAction(a -> {
+	    	new ReviewerScorecardPage(databaseHelper, currentUser).show(primaryStage);
+	    });
+	    
 	    // Add elements to layout
 	    layout.getChildren().addAll(userLabel, questionPageButton, messagePageButton, reviewerRequestButton);
 	    
@@ -163,7 +170,7 @@ public class UserHomePage {
         }
 
 	    if (currentUser.getRole().equals("staff") || currentUser.getRole().equals("instructor")) {
-	    	layout.getChildren().add(adminTaskRequestButton);
+	    	layout.getChildren().addAll(adminTaskRequestButton, reviewerScorecardButton);
 	    }
 	    
 	    layout.getChildren().addAll(separator, reviewerScoresPageButton, updateAccountBtn, back, logout);
