@@ -1622,5 +1622,140 @@ public class DatabaseHelper {
 			return false;
 		}
 	}
+	/**
+	 * Answer Bookmark Methods 
+	 * Add bookmark 
+	 * @param bookmarkerUsername
+	 * @param answerId
+	 * @return
+	 */
+	public boolean addAnswerBookmark(String userId, int answerId) {
+	    String query = "INSERT IGNORE INTO AnswerBookmarks (user_id, answer_id) VALUES (?, ?)";
+	    try (PreparedStatement pstmt = connection.prepareStatement(query))
+	        {
+	        pstmt.setString(1, userId);
+	        pstmt.setInt(2, answerId);
+	        return pstmt.executeUpdate() > 0;
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	        return false;
+	    }
+	}
+	/**
+	 * Gets all answers that are bookmarked
+	 * @param bookmarkerUsername
+	 * @return
+	 */
+	
+	public static List<Integer> getBookmarkedAnswers(int userId) throws SQLException {
+	    List<Answer> answers = new ArrayList<>();
+	    String query = "SELECT answerId FROM AnswerBookmarks WHERE userId = ?";
+	    try (PreparedStatement pstmt = connection.prepareStatement(query))
+	          {
+	        pstmt.setInt(1, userId);
+	        ResultSet rs = pstmt.executeQuery();
+	        while (rs.next()) {
+	        	answers.add(rs.getInt("answerId"));
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+	    return answers;
+	}
+	/**
+	 * remove bookmark 
+	 * @param bookmarkerUsername
+	 * @param answerId
+	 * @return
+	 */
+	public boolean removeAnswerBookmark(String userId, int answerId) {
+	    String query = "DELETE FROM AnswerBookmarks WHERE bookmarker_username = ? AND answer_id = ?";
+	    try (PreparedStatement pstmt = connection.prepareStatement(query))
+	         {
+	        pstmt.setString(1, bookmarkerUsername);
+	        pstmt.setInt(2, answerId);
+	        return pstmt.executeUpdate() > 0;
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	        return false;
+	    }
+	}
+	/**
+	 * Reviewer Bookmark Methods 
+	 * @param bookmarkerUsername
+	 * @param reviewerUsername
+	 * @return
+	 */
+	
+	public boolean addReviewerBookmark(String bookmarkerUsername, String reviewerUsername) {
+	    String query = "INSERT IGNORE INTO ReviewerBookmarks (bookmarker_username, reviewer_username) VALUES (?, ?)";
+	    try (PreparedStatement pstmt = connection.prepareStatement(query))
+	         {
+	        pstmt.setString(1, bookmarkerUsername);
+	        pstmt.setString(2, reviewerUsername);
+	        return pstmt.executeUpdate() > 0;
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	        return false;
+	    }
+	}
+	
+	/**
+	 * 
+	 * @param bookmarkerUsername
+	 * @return
+	 */
+	public List<Answer> getBookmarkedAnswers(String bookmarkerUsername) {
+	    List<Answer> answers = new ArrayList<>();
+	    String query = "SELECT a.* FROM AnswerBookmarks ab JOIN Answers a ON ab.answer_id = a.id WHERE ab.bookmarker_username = ?";
+	    try (PreparedStatement pstmt = connection.prepareStatement(query))
+	        {
+	        pstmt.setString(1, bookmarkerUsername);
+	        ResultSet rs = stmt.executeQuery();
+	        while (rs.next()) {
+	            Answer answer = new Answer(
+	                rs.getInt("id"),
+	                rs.getString("content"),
+	                rs.getString("author"),
+	                rs.getInt("question_id")
+	                // Add more fields if needed
+	            );
+	            answers.add(answer);
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+	    return answers;
+	}
+	/**
+	 * 
+	 * @param bookmarkerUsername
+	 * @param answerId
+	 * @return
+	 */
+	public boolean removeAnswerBookmark(String bookmarkerUsername, int answerId) {
+	    String query = "DELETE FROM AnswerBookmarks WHERE bookmarker_username = ? AND answer_id = ?";
+	    try (PreparedStatement pstmt = connection.prepareStatement(query))
+	         {
+	        pstmt.setString(1, bookmarkerUsername);
+	        pstmt.setInt(2, answerId);
+	        return pstmt.executeUpdate() > 0;
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	        return false;
+	    }
+	}
+
+	
+	
+
+
+	
+	
+
+	
+	
+
+
 
 }
