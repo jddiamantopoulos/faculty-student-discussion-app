@@ -148,6 +148,38 @@ public class UserHomePage {
                 alert.showAndWait();
             }
         });
+
+
+        reviewerRequestButton.setOnAction(a -> {
+            if (currentUser.getRole().equals("user")) {
+                try {
+                    databaseHelper.requestReviewerRole(currentUser.getUserName());
+                    userLabel.setText("Request sent!");
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                    userLabel.setText("The request could not be sent. You may have already requested the role.");
+                }
+            } else {
+                new ReviewerRequestsUsersPage(databaseHelper, currentUser).show(primaryStage);
+            }
+        });
+
+        Button moderationButton = new Button("Moderation Home");
+        moderationButton.setOnAction(a -> new AdministrationSearchPage(databaseHelper, currentUser).show(primaryStage));
+
+        layout.getChildren().addAll(userLabel, questionPageButton, messagePageButton);
+        
+        if (currentUser.getRole().equals("user")) {
+            reviewerRequestButton.setText("Request Reviewer Role");
+            layout.getChildren().add(reviewerRequestButton);
+        } else if (currentUser.getRole().equals("staff") || currentUser.getRole().equals("instructor") || currentUser.getRole().equals("admin")) {
+            reviewerRequestButton.setText("View Reviewer Requests");
+            layout.getChildren().add(reviewerRequestButton);
+        }
+        
+        if (currentUser.getRole().equals("staff") || currentUser.getRole().equals("instructor") || currentUser.getRole().equals("admin")) { 
+            layout.getChildren().add(moderationButton);
+		}
 	    
 	    // Button to request an admin to perform a task
 	    Button adminTaskRequestButton = new Button("Request Task For Admin");
@@ -174,11 +206,6 @@ public class UserHomePage {
 	    }
 	    
 	    layout.getChildren().addAll(separator, reviewerScoresPageButton, updateAccountBtn, back, logout);
-	    
-	    // PATCH: Remove button if user is reviewer
-	    if (currentUser.getRole().equals("reviewer")) {
-	    	layout.getChildren().remove(reviewerRequestButton);
-	    }
 	    
 	    Scene userScene = new Scene(layout, 800, 400);
 

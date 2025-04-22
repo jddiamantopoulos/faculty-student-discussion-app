@@ -1,6 +1,9 @@
 package questions.util;
 import databasePart1.DatabaseHelper;
 import java.util.List;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 /**
@@ -10,6 +13,8 @@ public class ReviewManage {
 	private DatabaseHelper db;
 	private List<Review> reviews = new ArrayList<>();
 	private int feedbackIdNum = 1;
+	private List<Integer> ReviewerBookmarkIds = new ArrayList<>();
+
 	
 	/**
 	 * Constructs a new review manager
@@ -97,4 +102,6 @@ public class ReviewManage {
 		}
 		return null;
 	}
+	
+	   
 }

@@ -1,7 +1,9 @@
 package accounts.ui;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 
+import accounts.util.ReviewerProfile;
 import accounts.util.User;
 import administration.ui.AdministrationSearchPage;
 import administration.ui.ReviewerRequestsUsersPage;
@@ -13,6 +15,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import messaging.ui.MessageUserListPage;
 import questions.ui.QuestionListPage;
+import questions.util.Review;
 import taskmessaging.ui.TaskMessageListPage;
 
 
@@ -110,13 +113,44 @@ public class AdminHomePage {
 	    	new AdministrationSearchPage(databaseHelper, currentUser).show(primaryStage);
 	    });
 	    
-	    Button reviewerScorecardButton = new Button("Set up reviewer scorecards");
+		Button reviewerScorecardButton = new Button("Set up reviewer scorecards");
+				
+		reviewerScorecardButton.setOnAction(a -> {
+			new ReviewerScorecardPage(databaseHelper, currentUser).show(primaryStage);
+		});
+
+		Button reviewerProfileButton = new Button("Reviewer Profile");
+        reviewerProfileButton.setOnAction(e -> {
+            try {
+                ReviewerProfile profile = databaseHelper.getReviewerProfile(currentUser.getUserName());
+                if (profile == null) {
+                    Alert createPrompt = new Alert(Alert.AlertType.CONFIRMATION);
+                    createPrompt.setTitle("Create Profile");
+                    createPrompt.setHeaderText("No reviewer profile found.");
+                    createPrompt.setContentText("Creating a default profile for testing.");
+                    createPrompt.showAndWait();
+
+                    profile = new ReviewerProfile(currentUser.getUserName());
+                    profile.setBio("This is a default bio.");
+                    profile.setExpertiseAreas(new ArrayList<>());
+                    profile.setPastReviews(new ArrayList<Review>());
+                    profile.setStudentFeedback(new ArrayList<>());
+
+                    databaseHelper.createDefaultReviewerProfile(profile);
+                }
+                ReviewerProfilePage profilePage = new ReviewerProfilePage(databaseHelper, currentUser.getUserName());
+                profilePage.show(new Stage());
+            } catch (Exception ex) {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Profile Error");
+                alert.setHeaderText("Could not load or create reviewer profile");
+                alert.setContentText(ex.getMessage());
+                alert.showAndWait();
+            }
+        });
 	    
-	    reviewerScorecardButton.setOnAction(a -> {
-	    	new ReviewerScorecardPage(databaseHelper, currentUser).show(primaryStage);
-	    });
 	    
-	    layout.getChildren().addAll(adminLabel, questionPageButton, messagePageButton, reviewerRequestButton, moderationButton, adminTaskRequestButton, reviewerScorecardButton, separator, reviewerScoresPageButton, updateAccountBtn, back, logout);
+	    layout.getChildren().addAll(adminLabel, questionPageButton, messagePageButton, reviewerRequestButton, moderationButton, adminTaskRequestButton, separator, reviewerProfileButton, reviewerScoresPageButton, reviewerScorecardButton, updateAccountBtn, back, logout);
 
 	    Scene adminScene = new Scene(layout, 800, 400);
 

@@ -126,6 +126,24 @@ public class Questions extends ArrayList<Question> {
 	}
 	
 	/**
+	 * Searches for the subset of questions with bookmarked answers.
+	 * 
+	 * @param user The current user of the application.
+	 * @param db The application's database helper.
+	 * @return The subset of questions with bookmarked answers.
+	 */
+	public Questions getBookmarkedAnswers(User user, DatabaseHelper db) {
+		Questions returned = new Questions();
+		for (int i = 0; i < size(); i++) {
+			Question tempQ = get(i);
+			if (hasBookmarkedAnswer(tempQ, user, db)) {
+				returned.add(tempQ);
+			}
+		}
+		return returned;
+	}
+	
+	/**
 	 * Private method: Does a question have reviews w/ scores exceeding the threshold?
 	 * @param q The question being examined.
 	 * @param threshold The minimum reviewer score.
@@ -170,6 +188,24 @@ public class Questions extends ArrayList<Question> {
 				if (tempR.getReviewerScore(user) >= threshold) {
 					return true;
 				}
+			}
+		}
+		return false;
+	}
+	
+	/**
+	 * Checks if a question has a bookmarked answer
+	 * @param q The question to check.
+	 * @param user The user whose bookmarks will be checked.
+	 * @param db The application's database helper.
+	 * @return True if present.
+	 */
+	private boolean hasBookmarkedAnswer(Question q, User user, DatabaseHelper db) {
+		Answers a = q.getAnswers();
+		boolean retVal = false;
+		for (int i = 0; i < a.size(); i++) {
+			if (db.isAnswerBookmarked(user.getUserName(), a.get(i).getKey())) {
+				return true;
 			}
 		}
 		return false;

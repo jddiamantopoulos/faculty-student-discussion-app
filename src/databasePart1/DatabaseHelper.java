@@ -178,6 +178,15 @@ public class DatabaseHelper {
 						+ "score INT)";
 				statement.execute(reviewerScorecards);
 				
+				// Create table for reviewers book mark
+				String bookmarkedReviewersTable = "CREATE TABLE IF NOT EXISTS ReviewerBookmarks (" + "userId VARCHAR(16), " +  "reviewerId VARCHAR(16), " + "PRIMARY KEY (userId, reviewerId))";
+				statement.execute(bookmarkedReviewersTable);
+				
+				// Create table for book marked answers
+				String bookmarkedAnswersTable = "CREATE TABLE IF NOT EXISTS AnswerBookmarks (" +
+				        "userId VARCHAR(16), " + "answerId INT, " + "PRIMARY KEY (userId, answerId))";
+				statement.execute(bookmarkedAnswersTable);
+				
 			} catch (SQLException e2) {
 				System.err.println("Multiple database errors.");
 				e2.printStackTrace();
@@ -524,6 +533,9 @@ public class DatabaseHelper {
 			ResultSet rs = pstmt.executeQuery();
 			while (rs.next()) {
 				Answer a = new Answer(rs.getInt("id"), rs.getString("text"), rs.getString("author"), rs.getString("votes"));
+				if (a.getKey() == 0) {
+					a.setKey(answerKey);
+				}
 				ans.add(a);
 				answerKey++;
 			}
@@ -531,8 +543,6 @@ public class DatabaseHelper {
 			e.printStackTrace();
 		}
 		question.setAnswers(ans);
-		for (int i = 0; i < question.getAnswers().size(); i++) {
-		}
 	}
 	
 	/**
@@ -1745,4 +1755,17 @@ public class DatabaseHelper {
 		return users;
 	}
 
+	 * Removes a bookmark from a reviewer.
+	 * @param userId The username of the current user.
+	 * @param reviewerId The username of the reviewer.
+	 * @throws SQLException Thrown if cannot be removed (not present?)
+	 */
+	public void removeReviewerBookmark(String userId, String reviewerId) throws SQLException {
+	    String query = "DELETE FROM ReviewerBookmarks WHERE userId = ? AND reviewerId = ?";
+	    PreparedStatement pstmt = connection.prepareStatement(query);
+        pstmt.setString(1, userId);
+        pstmt.setString(2, reviewerId);
+        pstmt.executeUpdate();
+	}
 }
+	
