@@ -7,6 +7,7 @@ import org.junit.Before;
 import org.junit.Test;
 import accounts.util.Reviewer;
 
+import accounts.util.Reviewer;
 import accounts.util.User;
 
 public class ReviewerStringTests {

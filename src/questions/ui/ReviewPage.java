@@ -1,20 +1,22 @@
 package questions.ui;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import accounts.util.Reviewer;
 import accounts.util.User;
 import databasePart1.DatabaseHelper;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import questions.util.Answer;
 import questions.util.Question;
 import questions.util.Review;
+import questions.util.ReviewFeedback;
 
 /**
  * This page houses the reviews for a question or answer.
@@ -62,8 +64,49 @@ public class ReviewPage {
 		reviews = reviews.reversed();
 		
 		for (Review review : reviews) {
-			VBox reviewBox = new VBox();
+			VBox reviewBox = new VBox(5);
+			reviewBox.setStyle("-fx-background-color: rgb(225, 225, 225);");
 			Label reviewText = new Label(review.getReviewerName() + ": " + review.getReviewText());
+			Label likeLabel = new Label("Likes: " + review.getLikeNum());
+			Button likeButton = new Button ("Like");
+			Button feedbackButton = new Button("Feedback");
+
+			//Existing review
+			VBox fbBox = new VBox(5);
+			int reviewId = review.getReviewId();
+			List<String> feedbackList = db.getReviewFeedback(reviewId);
+			for (String feedback : feedbackList) {
+			    Label feedbackLabel = new Label(feedback);
+			    fbBox.getChildren().add(feedbackLabel);
+			}
+			
+			
+			//like review
+			likeButton.setOnAction(e -> {
+				review.addLike();
+				if (db.incrementReviewLike(review.getReviewId())) {
+					likeLabel.setText("Likes: " + review.getLikeNum());
+				}
+			});
+			
+			TextArea feedbackArea = new TextArea();
+			feedbackArea.setPromptText("Leave feedback for this review");
+			Button submitFeedback = new Button("Submit Feedback");
+			
+			if (!currUser.getUserName().equals(review.getReviewerName())) {
+				fbBox.getChildren().addAll(feedbackArea, submitFeedback);
+			}
+			
+			submitFeedback.setOnAction(e -> {
+				String feedbackText = feedbackArea.getText().trim();
+				if (!feedbackText.isEmpty()) {
+					db.addReviewFeedback(review.getReviewId(), currUser.getUserName(), feedbackText);
+					review.addFeedback(new ReviewFeedback(currUser.getUserName(), feedbackText));
+					feedbackArea.clear();
+					fbBox.getChildren().addFirst(new Label(currUser.getUserName() + ": " + feedbackText));
+				}
+			});
+			
 			Button deleteButton = new Button("Delete Review");
 			Button editButton = new Button("Edit Review");
 			
@@ -90,14 +133,36 @@ public class ReviewPage {
 					layout.getChildren().remove(reviewBox);
 				}
 			});
+			
+			HBox bottomBox = new HBox(5);
+			if (!currUser.getUserName().equals(review.getReviewerName())) {
+				bottomBox.getChildren().add(likeButton);
+			}
+			bottomBox.getChildren().addAll(likeLabel);
 			reviewBox.getChildren().add(reviewText);
 			
 			// Conditional showing/hiding based on status (admins and author)
 			if (currUser.getRole().equals("admin") || currUser.getUserName().equals(review.getReviewerName())) {
-				reviewBox.getChildren().addAll(editButton, deleteButton);
+				bottomBox.getChildren().addAll(editButton, deleteButton);
 			}
 			
+			reviewBox.getChildren().addAll(bottomBox, feedbackButton);
 			layout.getChildren().add(reviewBox);
+			
+			/* https://docs.oracle.com/javase/8/javafx/api/javafx/beans/property/BooleanProperty.html */
+			/* needs to be wrapped because of the lambda */
+			BooleanProperty fbShown = new SimpleBooleanProperty(false);
+			feedbackButton.setOnAction(e -> {
+				if (fbShown.get()) {
+					reviewBox.getChildren().remove(fbBox);
+					fbShown.set(false);
+				}
+				else {
+					reviewBox.getChildren().add(fbBox);
+					fbShown.set(true);
+				}
+			});
+			
 		}
 		
 		TextArea newReviewField = new TextArea();

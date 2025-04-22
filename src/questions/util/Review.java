@@ -1,6 +1,7 @@
 package questions.util;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import accounts.util.Reviewer;
 import accounts.util.User;
@@ -14,6 +15,8 @@ public class Review {
 	private int qaText;
 	private String reviewText;
 	private boolean isAnswer;
+	private int likeNum = 0;
+	private List<ReviewFeedback> feedbackList = new ArrayList<>();
 	
 	/**
 	 * Constructs a new review
@@ -30,6 +33,9 @@ public class Review {
 		this.reviewText = reviewText;
 		this.isAnswer = isAnswer;
 	}
+	
+	public void addLike() { ++likeNum;}
+	public void addFeedback(ReviewFeedback feedback) { feedbackList.add(feedback); }
 	
 	// Getters
 	public int getReviewId() { return reviewId; }
@@ -49,6 +55,9 @@ public class Review {
 		}
 		return 50;
 	}
+	
+	public int getLikeNum() { return likeNum;}
+	public List<ReviewFeedback> getFeedbackList() { return feedbackList; }
 
 	// Setters (for updating a review)
 	public void setReviewText(String reviewText) {this.reviewText = reviewText; }

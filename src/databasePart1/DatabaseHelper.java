@@ -16,6 +16,7 @@ import accounts.util.ReviewerProfile;
 import accounts.util.User;
 import messaging.util.*;
 import questions.util.*;
+import taskmessaging.util.*;
 
 /**
  * The DatabaseHelper class is responsible for managing the connection to the
@@ -35,6 +36,7 @@ public class DatabaseHelper {
 	public static int questionKey = 1;
 	public static int answerKey = 1;
 	public static int messageKey = 1;
+	public static int taskMessageKey = 1;
 
 	private Connection connection = null;
 	private Statement statement = null;
@@ -50,7 +52,7 @@ public class DatabaseHelper {
 			connection = DriverManager.getConnection(DB_URL, USER, PASS);
 			statement = connection.createStatement();
 			// You can use this command to clear the database and restart from fresh.
-			// statement.execute("DROP ALL OBJECTS");
+			//statement.execute("DROP ALL OBJECTS");
 			createTables(); // Create the necessary tables if they don't exist
 		} catch (ClassNotFoundException e) {
 			System.err.println("JDBC Driver not found: " + e.getMessage());
@@ -63,7 +65,11 @@ public class DatabaseHelper {
 	public void clear() {
 		try {
 			statement.execute("DROP ALL OBJECTS");
+			questionKey = 1;
+			answerKey = 1;
+			messageKey = 1;
 			createTables();
+			
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -80,6 +86,7 @@ public class DatabaseHelper {
 			statement.executeQuery("SELECT name FROM cse360users LIMIT 1");
 			statement.executeQuery("SELECT text FROM questions LIMIT 1");
 			statement.executeQuery("SELECT text FROM messages LIMIT 1");
+			statement.executeQuery("SELECT text FROM taskMessages LIMIT 1");
 			statement.executeQuery("SELECT text FROM reviews LIMIT 1");
 		} catch (SQLException e) {
 			try {
@@ -121,6 +128,12 @@ public class DatabaseHelper {
 						+ "isread BIT," + "time VARCHAR(20))";
 				statement.execute(messagesTable);
 				
+				// Create the task messages table
+				String taskMessagesTable = "CREATE TABLE IF NOT EXISTS taskMessages (" + "id INT PRIMARY KEY,"
+						+ "request VARCHAR(16)," + "requester VARCHAR(16), " + "sender VARCHAR(16), " + "text VARCHAR(500), "
+						+ "requestisopen BIT," + "time VARCHAR(20))";
+				statement.execute(taskMessagesTable);
+				
 				// Create the reviewers table
 				String reviewersTable = "CREATE TABLE IF NOT EXISTS reviewerRequests (" 
 						+ "username VARCHAR(16) UNIQUE)";
@@ -132,6 +145,14 @@ public class DatabaseHelper {
 						+ "answerId INT, " + "questionId INT, " + "reviewText VARCHAR(2000))";
 				statement.execute(reviewsTable);
 				
+				//adds likeNum column if it doesn't exist
+				try {
+					statement.executeQuery("SELECT likeNum FROM reviews LIMIT 1");
+	           		} catch (SQLException e3) {
+	                	    String alterReviewsTable = "ALTER TABLE reviews ADD COLUMN likeNum INT DEFAULT 0";
+	                            statement.execute(alterReviewsTable);
+	                            System.out.println("Added 'likeNum' column to reviews table.");
+				}
 				// Create the reviewer profiles table
 				String reviewerProfilesTable = "CREATE TABLE IF NOT EXISTS reviewer_profiles (" +
 						"username VARCHAR(16) PRIMARY KEY, " +
@@ -139,6 +160,18 @@ public class DatabaseHelper {
 						"expertise_areas VARCHAR(2000), " +
 						"student_feedback VARCHAR(2000))";
 				statement.execute(reviewerProfilesTable);
+				
+				// Create table for review likes 
+				String reviewLikesTable = "CREATE TABLE IF NOT EXISTS reviewLikes ("
+				        + "reviewId INT, " + "likedBy VARCHAR(16), " + "PRIMARY KEY (reviewId, likedBy))";
+				statement.execute(reviewLikesTable);
+
+				// Create table for review feedback
+				String reviewFeedbackTable = "CREATE TABLE IF NOT EXISTS reviewFeedback ("
+				        + "feedbackId INT AUTO_INCREMENT PRIMARY KEY, " + "reviewId INT, " 
+						+ "feedbackBy VARCHAR(16), " + "feedbackText VARCHAR(2000))";
+				statement.execute(reviewFeedbackTable);
+				
 			} catch (SQLException e2) {
 				System.err.println("Multiple database errors.");
 				e2.printStackTrace();
@@ -439,19 +472,6 @@ public class DatabaseHelper {
 		}
 		return questions;
 	}
-
-	/**
-	 * Gets all questions and answers in the database.
-	 * @return A complete questions class with associations to answers.
-	 * @throws SQLException
-	 */
-	public Questions getQuestionsAndAnswers() throws SQLException {
-		Questions q = getQuestions();
-		for (int i = 0; i < q.size(); i++) {
-			getAnswers(q.get(i));
-		}
-		return q;
-	}
 	
 	/**
 	 * Removes a question from the database.
@@ -466,6 +486,19 @@ public class DatabaseHelper {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	/**
+	 * Gets all questions and answers in the database.
+	 * @return A complete questions class with associations to answers.
+	 * @throws SQLException
+	 */
+	public Questions getQuestionsAndAnswers() throws SQLException {
+		Questions q = getQuestions();
+		for (int i = 0; i < q.size(); i++) {
+			getAnswers(q.get(i));
+		}
+		return q;
 	}
 
 	/*
@@ -495,7 +528,27 @@ public class DatabaseHelper {
 		for (int i = 0; i < question.getAnswers().size(); i++) {
 		}
 	}
-
+	
+	/**
+	 * Gets the primary key for a given answer.
+	 * @param answerText The text of the answer to search for.
+	 * @throws SQLException Should be handled internally.
+	 */
+	public int getKeyForAnswer(String answerText) throws SQLException {
+		String getAnswers = "SELECT * FROM answers WHERE text = ?";
+		Answers ans = new Answers();
+		try (PreparedStatement pstmt = connection.prepareStatement(getAnswers)) {
+			pstmt.setString(1, answerText);
+			ResultSet rs = pstmt.executeQuery();
+			if (rs.next()) {
+				return rs.getInt("id");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return -1;
+	}
+	
 	/**
 	 *  Adds a new answer to the database
 	 * @param q The question associated with the answer
@@ -511,11 +564,12 @@ public class DatabaseHelper {
 			pstmt.setString(4, a.getAuthor());
 			pstmt.setString(5, a.getLikesCSV());
 			pstmt.executeUpdate();
+			answerKey++;
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 	}
-
+	
 	/**
 	 * Update an answer by id
 	 * @param a The answer to be updated
@@ -545,7 +599,7 @@ public class DatabaseHelper {
 			e.printStackTrace();
 		}
 	}
-
+	
 	/*
 	 * // Update an answer by title public void updateQuestion(Answer a, ) throws
 	 * SQLException { String insertQuestion =
@@ -773,6 +827,49 @@ public class DatabaseHelper {
 	}
 	
 	/**
+	 * Gets all task messages in the database.
+	 * @return A task messages collection.
+	 * @throws SQLException Should be handled internally.
+	 */
+	public TaskMessages getTaskMessages() throws SQLException {
+		String query = "SELECT * FROM taskMessages";
+		TaskMessages taskMessages = new TaskMessages();
+		try (PreparedStatement pstmt = connection.prepareStatement(query);) {
+			ResultSet rs = pstmt.executeQuery();
+			while (rs.next()) {
+				TaskMessage tm = new TaskMessage(rs.getInt("id"), rs.getString("request"), rs.getString("requester"), rs.getString("sender"), rs.getString("text"),
+						rs.getBoolean("requestisopen"), rs.getString("time"));
+				taskMessages.add(tm);
+				taskMessageKey++;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return taskMessages;
+	}
+	
+	/**
+	 * Gets the requester of a given request.
+	 * 
+	 * @param request The request whose requester will be found.
+	 * @return The requester of this request.
+	 */
+	public String getRequesterByRequest(String request) {
+		String getRequester = "SELECT requester FROM taskMessages WHERE request = ?";
+		try (PreparedStatement pstmt = connection.prepareStatement(getRequester)) {
+			pstmt.setString(1, request);
+			ResultSet rs = pstmt.executeQuery();
+
+			if (rs.next()) {
+				return rs.getString("requester");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	/**
 	 * Gets all of the messages between two users.
 	 * @param user The application's user
 	 * @param otherUser The username of the other user
@@ -828,6 +925,30 @@ public class DatabaseHelper {
 		return messages;
 	}
 	
+	/**
+	 * Gets all of the task messages in a given conversation.
+	 * @param request The task messages' request.
+	 * @return A task messages collection.
+	 * @throws SQLException Should be handled internally.
+	 */
+	public TaskMessages getTaskMessagesForConvo(String request) throws SQLException {
+		String query = "SELECT * FROM taskMessages WHERE request = ?";
+		TaskMessages taskMessages = new TaskMessages();
+		try (PreparedStatement pstmt = connection.prepareStatement(query);) {
+			pstmt.setString(1, request);
+			ResultSet rs = pstmt.executeQuery();
+			while (rs.next()) {
+				TaskMessage tm = new TaskMessage(rs.getInt("id"), rs.getString("request"), rs.getString("requester"), rs.getString("sender"), rs.getString("text"),
+						rs.getBoolean("requestisopen"), rs.getString("time"));
+				taskMessages.add(tm);
+				//taskMessageKey++;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return taskMessages;
+	}
+
 	/**
 	 * Gets all of the messages in a given conversation. Used in MessageSpy.
 	 * @param user The application's user
@@ -887,6 +1008,39 @@ public class DatabaseHelper {
 			e.printStackTrace();
 		}
 	}
+	
+	/**
+	 * Inserts a task message into the database.
+	 * @param tm The task message to be inserted.
+	 * @throws SQLException Should be handled internally.
+	 */
+	public void insertTaskMessage(TaskMessage tm) throws SQLException {
+		String insertTaskMessage = "INSERT INTO taskMessages (id, request, requester, sender, text, time, requestisopen) VALUES (?, ?, ?, ?, ?, ?, ?)";
+		// but first, check if the id will be valid
+		String maximumID = "SELECT MAX(id) AS maximum FROM taskMessages;";
+		int max;
+		try (PreparedStatement stmt = connection.prepareStatement(maximumID)) {
+			ResultSet rs = stmt.executeQuery();
+			if (rs.next()) {
+				max = rs.getInt("maximum");
+				tm.setKey(max + 1);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		try (PreparedStatement pstmt = connection.prepareStatement(insertTaskMessage)) {
+			pstmt.setInt(1, tm.getKey());
+			pstmt.setString(2, tm.getRequest());
+			pstmt.setString(3, tm.getRequester());
+			pstmt.setString(4, tm.getSender());
+			pstmt.setString(5, tm.getText());
+			pstmt.setString(6, tm.getTimeAsString());
+			pstmt.setBoolean(7, tm.getRequestIsOpen());
+			pstmt.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
 
 	/**
 	 *  Closes the database connection and statement.
@@ -914,6 +1068,56 @@ public class DatabaseHelper {
 		String query = "UPDATE messages SET isread = TRUE WHERE id = ?";
 		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
 			pstmt.setInt(1, message.getKey());
+			pstmt.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+	}
+	
+	/**
+	 * Gets a task message request's open status.
+	 * @param request The task message request.
+	 */
+	public boolean getTaskMessageRequestOpenStatus(String request) {
+		String query = "SELECT requestisopen FROM taskMessages WHERE request = ?";
+		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+			pstmt.setString(1, request);
+			ResultSet rs = pstmt.executeQuery();
+			if (rs.next()) {
+				return getTaskMessagesForConvo(request).get(0).getRequestIsOpen();
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return false;
+		
+	}
+	
+	/**
+	 * Marks a task message request as closed.
+	 * @param request The task message request to be marked closed.
+	 */
+	public void setTaskMessageRequestClosed(String request) {
+		String query = "UPDATE taskMessages SET requestisopen = FALSE WHERE request = ?";
+		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+			pstmt.setString(1, request);
+			pstmt.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+	}
+	
+	/**
+	 * Marks a task message request as open.
+	 * @param request The task message request to be marked open.
+	 */
+	public void setTaskMessageRequestOpen(String request) {
+		String query = "UPDATE taskMessages SET requestisopen = TRUE WHERE request = ?";
+		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+			pstmt.setString(1, request);
 			pstmt.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -1317,6 +1521,105 @@ public class DatabaseHelper {
 			// ... existing code ...
 		} catch (SQLException e) {
 			e.printStackTrace();
+		}
+	}
+
+
+	/**
+	 * Adds like to review from user
+	 * @param reviewId the id of the review being liked
+	 * @param likedBy the username of the user who liked
+	 * @return true if like has been added, false if not
+	 */
+	public boolean likeReview(int reviewId, String likedBy) {
+		String query = "INSERT INTO reviewLikes (reviewId, likedBy) VALUES (?, ?)";
+		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+			pstmt.setInt(1, reviewId);
+			pstmt.setString(2, likedBy);
+			pstmt.executeUpdate();
+			return true;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
+	/**
+	 * Removes the like from a review that the user had previously liked
+	 * @param reviewId the id of the review being unliked
+	 * @param likedBy the username of the user removing the like
+	 * @return true if the like was removed, false if not
+	 */
+	public boolean unlikeReview (int reviewId, String likedBy) {
+		String query = "DELETE FROM reviewLikes WHERE reviewId = ? AND likedBy = ?";
+		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+			pstmt.setInt(1, reviewId);
+			pstmt.setString(2, likedBy);
+			pstmt.executeUpdate();
+			return true;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
+	/**
+	 *Adds feedback on a review from one user to another
+	 * @param reviewId the id of the review the feedback is going to
+	 * @param feedbackBy username of the user giving feedback
+	 * @param feedbackText the text of the feedback
+	 * @return
+	 */
+	public boolean addReviewFeedback(int reviewId, String feedbackBy, String feedbackText) {
+		String query = "INSERT INTO reviewFeedback (reviewId, feedbackBy, feedbackText) VALUES (?, ?, ?)";
+		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+			pstmt.setInt(1, reviewId);
+			pstmt.setString(2, feedbackBy);
+			pstmt.setString(3, feedbackText);
+			pstmt.executeUpdate();
+			return true;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
+	/**
+	 * retrieves the list of feedback strings for the review
+	 * @param reviewId the id of the review
+	 * @return a list of the feedback strings or an empty list if none are present or an error
+	 */
+	public List<String> getReviewFeedback(int reviewId) {
+		List<String> feedbackList = new ArrayList<>();
+		String query = "SELECT feedbackBy, feedbackText FROM reviewFeedback WHERE reviewId = ?";
+		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+			pstmt.setInt(1, reviewId);
+			ResultSet rs = pstmt.executeQuery();
+			while (rs.next()) {
+				String feedbackBy = rs.getString("feedbackBy");
+				String feedbackText = rs.getString("feedbackText");
+				feedbackList.add(feedbackBy + ": " + feedbackText);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return feedbackList;
+	}
+	
+	/**
+	 * Counts the number of likes the count increases for a review
+	 * @param reviewId the id of the review to increment likes 
+	 * @return true if successful, false if not
+	 */
+	public boolean incrementReviewLike(int reviewId) {
+		String query = "UPDATE reviews SET likeNum = likeNum + 1 WHERE reviewId = ?";
+		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+			pstmt.setInt(1, reviewId);
+			pstmt.executeUpdate();
+			return true;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
 		}
 	}
 
