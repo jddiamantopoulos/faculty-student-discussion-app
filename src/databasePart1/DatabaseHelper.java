@@ -1638,10 +1638,10 @@ public class DatabaseHelper {
 		}
 	}
 	/**
-	 * 1. 
-	 * @param userId
-	 * @param answerId
-	 * @return
+	 * Adds a bookmark to an answer and removes it if already present.
+	 * @param userId The username of the application's current user.
+	 * @param answerId The primary key of the answer.
+	 * @return True if added, false if removed/unsuccessful.
 	 */
 	public boolean addAnswerBookmark(String userId, int answerId) {
 	    String query = "INSERT INTO AnswerBookmarks (userId, answerId) VALUES (?, ?)";
@@ -1662,6 +1662,12 @@ public class DatabaseHelper {
 	    }
 	}
 	
+	/**
+	 * Checks if an answer is bookmarked.
+	 * @param userId The username of the current user.
+	 * @param answerId The ID of the answer being checked.
+	 * @return True if bookmarked.
+	 */
 	public boolean isAnswerBookmarked(String userId, int answerId) {
 		String getReviewer = "SELECT * FROM AnswerBookmarks WHERE userId = ? AND answerId = ?";
 		try {
@@ -1686,11 +1692,10 @@ public class DatabaseHelper {
 	}
 	
 	/**
-	 * 2.
-	 * @param userId
-	 * @return
+	 * Gets a list of bookmarked answer IDs (deprecated).
+	 * @param userId The ID of the current user.
+	 * @return A list of bookmarked answer IDs.
 	 */
-
 	public List<Integer> getBookmarkedAnswers(int userId){
 	    List<Integer> answers = new ArrayList<>();
 	    String query = "SELECT answerId FROM AnswerBookmarks WHERE userId = ?";
@@ -1708,10 +1713,9 @@ public class DatabaseHelper {
 	}
 	
 	/**
-	 * 3.
-	 * @param userId
-	 * @param answerId
-	 * @return
+	 * Removes a bookmark from an answer. 
+	 * @param userId The current user's username.
+	 * @param answerId The primary key of the answer.
 	 */
 	public void removeAnswerBookmark(String userId, int answerId) throws SQLException {
 	    String query = "DELETE FROM AnswerBookmarks WHERE userId = ? AND answerId = ?";
@@ -1721,10 +1725,10 @@ public class DatabaseHelper {
         pstmt.executeUpdate();
 	}
 	/**
-	 * 1.
-	 * @param userId
-	 * @param reviewerId
-	 * @return
+	 * Adds a bookmark to a reviewer.
+	 * @param userId The application's user.
+	 * @param reviewerId The reviewer being marked.
+	 * @return True if marked, false if removed or unable.
 	 */
 	public boolean addReviewerBookmark(String userId, String reviewerId) {
 	    String query = "INSERT INTO ReviewerBookmarks (userId, reviewerId) VALUES (?, ?)";
@@ -1745,11 +1749,11 @@ public class DatabaseHelper {
 	    }
 	}
 	
-/**
- * 2.
- * @param userId
- * @return
- */
+	/**
+	 * Gets a list of bookmarked reviewer IDs (deprecated).
+	 * @param userId The ID of the current user.
+	 * @return A list of bookmarked reviewer IDs.
+	 */
 	public List<Integer> getBookmarkedReviews(int userId) {
 	    List<Integer> reviewerIds = new ArrayList<>();
 	    String query = "SELECT reviewerId FROM ReviewerBookmarks WHERE userId =?";
@@ -1766,6 +1770,12 @@ public class DatabaseHelper {
 	    return reviewerIds;
 	}
 	
+	/**
+	 * Checks if a reviewer is bookmarked.
+	 * @param userId The username of the current user.
+	 * @param reviewerId The username of the reviewer.
+	 * @return True if bookmarked.
+	 */
 	public boolean isReviewerBookmarked(String userId, String reviewerId) {
 		String getReviewer = "SELECT * FROM ReviewerBookmarks WHERE userId = ? AND reviewerId = ?";
 		try {
@@ -1790,12 +1800,11 @@ public class DatabaseHelper {
 	}
 	
 	/**
-	 * 3.
-	 * @param userId
-	 * @param reviewerId
-	 * @return
+	 * Removes a bookmark from a reviewer.
+	 * @param userId The username of the current user.
+	 * @param reviewerId The username of the reviewer.
+	 * @throws SQLException Thrown if cannot be removed (not present?)
 	 */
-	    
 	public void removeReviewerBookmark(String userId, String reviewerId) throws SQLException {
 	    String query = "DELETE FROM ReviewerBookmarks WHERE userId = ? AND reviewerId = ?";
 	    PreparedStatement pstmt = connection.prepareStatement(query);

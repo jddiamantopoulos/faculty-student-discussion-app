@@ -10,6 +10,8 @@ messaging.ui
 messaging.util
 questions.ui
 questions.util
+taskmessaging.ui
+taskmessaging.util
 test.accounts.util
 test.database
 test.legacy
