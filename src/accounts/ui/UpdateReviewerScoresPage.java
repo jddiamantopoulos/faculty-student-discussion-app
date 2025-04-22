@@ -15,6 +15,7 @@ import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
@@ -30,6 +31,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import messaging.util.*;
+import questions.util.Review;
 
 /**
  * This page shows the list of users that have requested the reviewer role.
@@ -140,7 +142,7 @@ public class UpdateReviewerScoresPage {
         }
         listIndex++;
         listedUser.setPrefSize(550,40);
-        Label userName = new Label(reviewer.getUsername());
+        Hyperlink userName = new Hyperlink(reviewer.getUsername());
         
         TextField updateScore = new TextField();
         updateScore.setText(Integer.toString(reviewer.getScore()));
@@ -173,6 +175,34 @@ public class UpdateReviewerScoresPage {
         		errorLabel.setText("You must enter an integer between 0 and 100!");
         		errorLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: red");
         	}
+        });
+        
+        userName.setOnAction(a -> {
+        	try {
+                ReviewerProfile profile = db.getReviewerProfile(reviewer.getUsername());
+                if (profile == null) {
+                    Alert createPrompt = new Alert(Alert.AlertType.CONFIRMATION);
+                    createPrompt.setTitle("Create Profile");
+                    createPrompt.setHeaderText("No reviewer profile found.");
+                    createPrompt.setContentText("Creating a default profile for testing.");
+                    createPrompt.showAndWait();
+
+                    profile = new ReviewerProfile(reviewer.getUsername());
+                    profile.setBio("This is a default bio.");
+                    profile.setExpertiseAreas(new ArrayList<>());
+                    profile.setPastReviews(new ArrayList<Review>());
+                    profile.setStudentFeedback(new ArrayList<>());
+
+                    db.createDefaultReviewerProfile(profile);
+                }
+                new ViewReviewerProfilePage(db, reviewer.getUsername()).show(new Stage());
+            } catch (Exception ex) {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Profile Error");
+                alert.setHeaderText("Could not load or create reviewer profile");
+                alert.setContentText(ex.getMessage());
+                alert.showAndWait();
+            }
         });
         
         userName.setPrefWidth(400);
