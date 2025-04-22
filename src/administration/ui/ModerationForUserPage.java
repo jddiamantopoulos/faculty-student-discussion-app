@@ -27,6 +27,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import javafx.scene.control.Alert;
 import messaging.util.*;
 import questions.util.Answer;
 import questions.util.Answers;
@@ -62,7 +63,18 @@ public class ModerationForUserPage {
      * Displays the ModerationForUserPage on a new stage.
      */
     public void show() {
-    	Stage conversationStage = new Stage();
+	    // only staff, instructors, or admins may open this moderation pane
+	if (!user.getRole().equals("staff")
+	    && !user.getRole().equals("instructor")
+	    && !user.getRole().equals("admin")) {
+		Alert alert = new Alert(Alert.AlertType.ERROR);
+		alert.setTitle("Unauthorized");
+		alert.setHeaderText("Access Denied");
+		alert.setContentText("You do not have permission to view this page.");
+		alert.showAndWait();
+		return;  // bail out before any UI is built
+	    }
+	Stage conversationStage = new Stage();
 
     	VBox layout = new VBox(5);
     	
