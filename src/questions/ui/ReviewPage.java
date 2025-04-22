@@ -62,6 +62,7 @@ public class ReviewPage {
 		
 		sortReviews(reviews);
 		reviews = reviews.reversed();
+
 		
 		for (Review review : reviews) {
 			VBox reviewBox = new VBox(5);
@@ -70,6 +71,8 @@ public class ReviewPage {
 			Label likeLabel = new Label("Likes: " + review.getLikeNum());
 			Button likeButton = new Button ("Like");
 			Button feedbackButton = new Button("Feedback");
+			Button bookmarkButton = new Button("Bookmark");
+			
 
 			//Existing review
 			VBox fbBox = new VBox(5);
@@ -106,6 +109,20 @@ public class ReviewPage {
 					fbBox.getChildren().addFirst(new Label(currUser.getUserName() + ": " + feedbackText));
 				}
 			});
+			
+			bookmarkButton.setOnAction(e -> {
+			    if (!review.getReviewerName().equals(currUser.getUserName())) {
+			        boolean success = db.addReviewerBookmark(currUser.getUserName(), review.getReviewerName());
+			        if (success) {
+			            bookmarkButton.setText("Bookmarked!");
+			            bookmarkButton.setDisable(true);
+			        } else {
+			            System.err.println("Could not bookmark reviewer.");
+			        }
+			    }
+			});
+
+			
 			
 			Button deleteButton = new Button("Delete Review");
 			Button editButton = new Button("Edit Review");
