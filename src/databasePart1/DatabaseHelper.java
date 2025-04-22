@@ -172,6 +172,20 @@ public class DatabaseHelper {
 						+ "feedbackBy VARCHAR(16), " + "feedbackText VARCHAR(2000))";
 				statement.execute(reviewFeedbackTable);
 				
+				// Create table for reviewers book mark
+				String bookmarkedReviewersTable = "CREATE TABLE IF NOT EXISTS ReviewerBookmarks (" + "userId INT, " +  "reviewerId INT, " + "PRIMARY KEY (userId, reviewerId))";
+				statement.execute(bookmarkedReviewersTable);
+				
+				// Create table for book marked answers
+				String bookmarkedAnswersTable = "CREATE TABLE IF NOT EXISTS AnswerBookmarks (" +
+				        "userId INT, " + "answerId INT, " + "PRIMARY KEY (userId, answerId))";
+				statement.execute(bookmarkedAnswersTable);
+
+
+
+				
+				
+				
 			} catch (SQLException e2) {
 				System.err.println("Multiple database errors.");
 				e2.printStackTrace();

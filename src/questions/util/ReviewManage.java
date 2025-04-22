@@ -1,6 +1,9 @@
 package questions.util;
 import databasePart1.DatabaseHelper;
 import java.util.List;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 /**
@@ -10,6 +13,8 @@ public class ReviewManage {
 	private DatabaseHelper db;
 	private List<Review> reviews = new ArrayList<>();
 	private int feedbackIdNum = 1;
+	private List<Integer> ReviewerBookmarkIds = new ArrayList<>();
+
 	
 	/**
 	 * Constructs a new review manager
@@ -97,4 +102,50 @@ public class ReviewManage {
 		}
 		return null;
 	}
+	
+	
+	/**
+	 * 0.
+	 * @param reviewerId
+	 * @return
+	 */
+	public boolean bookmarkReview(int reviewerId) {
+		
+	if (!ReviewerBookmarkIds.contains(reviewerId)) {
+		ReviewerBookmarkIds.add(reviewerId);
+		return true;
+	}
+	return false;
+}
+	/**
+	 * 1.checks id of the review and then gives that review id that special case that bookmark 
+	 * @param userId
+	 * @param reviewerId
+	 * @return
+	 */
+	public boolean isReviewerBookmark(int reviewerId) {
+		return ReviewerBookmarkIds.contains(reviewerId);
+}
+ 
+/**
+ * 2.
+ * @param usersId
+ * @return
+ */
+	public List<Integer> getBookmarkedReviews(){
+		return new ArrayList<>(ReviewerBookmarkIds);
+	}
+	
+	/**
+	 * 3.
+	 * @param userId
+	 * @param reviewerId
+	 * @return
+	 */
+	    
+	public boolean removeReviewBookmark(int reviewersId) {
+		return ReviewerBookmarkIds.remove(Integer.valueOf(reviewersId));
+		
+	}
+	   
 }
