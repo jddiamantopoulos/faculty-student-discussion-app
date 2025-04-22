@@ -532,6 +532,9 @@ public class DatabaseHelper {
 			ResultSet rs = pstmt.executeQuery();
 			while (rs.next()) {
 				Answer a = new Answer(rs.getInt("id"), rs.getString("text"), rs.getString("author"), rs.getString("votes"));
+				if (a.getKey() == 0) {
+					a.setKey(answerKey);
+				}
 				ans.add(a);
 				answerKey++;
 			}
@@ -539,8 +542,6 @@ public class DatabaseHelper {
 			e.printStackTrace();
 		}
 		question.setAnswers(ans);
-		for (int i = 0; i < question.getAnswers().size(); i++) {
-		}
 	}
 	
 	/**

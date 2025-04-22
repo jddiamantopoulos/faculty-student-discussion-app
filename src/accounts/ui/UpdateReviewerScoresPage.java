@@ -142,7 +142,13 @@ public class UpdateReviewerScoresPage {
         }
         listIndex++;
         listedUser.setPrefSize(550,40);
-        Hyperlink userName = new Hyperlink(reviewer.getUsername());
+        
+        String bookmarked = "";
+        if (db.isReviewerBookmarked(user.getUserName(), reviewer.getUsername())) {
+        	bookmarked = "* ";
+        }
+        
+        Hyperlink userName = new Hyperlink(bookmarked + reviewer.getUsername());
         
         TextField updateScore = new TextField();
         updateScore.setText(Integer.toString(reviewer.getScore()));
