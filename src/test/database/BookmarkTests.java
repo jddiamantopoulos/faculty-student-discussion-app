@@ -49,20 +49,18 @@ public class BookmarkTests {
 	@Test
 	public void testGetBookmarkReviewer() {
 		db.addReviewerBookmark("testUser", "reviewer123");
-		
-		List<Integer> reviewers = db.getBookmarkedReviews(1);
-		assertEquals(1,reviewers.size());
-		assertTrue(reviewers.contains(Integer.parseInt("reviewer123")));
+		List<String> reviewers = db.getBookmarkedReviews("testUser");
+		assertEquals(1, reviewers.size());
+		assertTrue(reviewers.contains("reviewer123"));
 	}
-	
+
 	@Test
 	public void testGetBookmarkedAnswers() {
 		db.addAnswerBookmark("testUser", 1);
-		List<Integer> answers = db.getBookmarkedAnswers(1);
-		assertEquals(1,answers.size());
-		assertTrue(answers.contains(1));
-	}
-	
+		List<String> answers = db.getBookmarkedAnswers("testUser");
+		assertEquals(1, answers.size());
+		assertTrue(answers.contains("1"));
+	}	
 	@Test
 	public void testAddAndRemoveReviewer() {
 		assertTrue(db.addReviewerBookmark("testUser", "reviewer123"));
@@ -92,7 +90,7 @@ public class BookmarkTests {
 	}
 	
 	private void insertTestReviewer(String reviewer) throws SQLException {
-		db.register(new User(reviewer,"password", "reviewer"))
+		db.register(new User(reviewer, "password", "reviewer"))
 		;
 	}
 }
