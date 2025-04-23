@@ -91,6 +91,9 @@ public class UserHomePage {
 	    	new UpdateReviewerScoresPage(databaseHelper, currentUser).show(primaryStage);
 	    });
 	    
+	    // Add elements to layout
+	    layout.getChildren().addAll(userLabel, questionPageButton, messagePageButton);
+	    
 	    // Separator between unrelated elements
 	    Separator separator = new Separator();
 	    
@@ -166,8 +169,6 @@ public class UserHomePage {
 
         Button moderationButton = new Button("Moderation Home");
         moderationButton.setOnAction(a -> new AdministrationSearchPage(databaseHelper, currentUser).show(primaryStage));
-
-        layout.getChildren().addAll(userLabel, questionPageButton, messagePageButton);
         
         if (currentUser.getRole().equals("user")) {
             reviewerRequestButton.setText("Request Reviewer Role");
@@ -193,9 +194,6 @@ public class UserHomePage {
 	    reviewerScorecardButton.setOnAction(a -> {
 	    	new ReviewerScorecardPage(databaseHelper, currentUser).show(primaryStage);
 	    });
-	    
-	    // Add elements to layout
-	    layout.getChildren().addAll(userLabel, questionPageButton, messagePageButton, reviewerRequestButton);
 	    
         if (!currentUser.getRole().equals("user")) {
             layout.getChildren().add(reviewerProfileButton);
