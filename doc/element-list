@@ -13,6 +13,7 @@ questions.util
 taskmessaging.ui
 taskmessaging.util
 test.accounts.util
+test.administration.ui
 test.database
 test.legacy
 test.questions.util

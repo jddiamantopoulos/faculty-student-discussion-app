@@ -7,6 +7,7 @@ import accounts.util.ReviewerProfile;
 import accounts.util.User;
 import administration.ui.AdministrationSearchPage;
 import administration.ui.ReviewerRequestsUsersPage;
+import administration.ui.ReviewerScorecardPage;
 import databasePart1.DatabaseHelper;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -112,7 +113,13 @@ public class AdminHomePage {
 	    	new AdministrationSearchPage(databaseHelper, currentUser).show(primaryStage);
 	    });
 	    
-	    Button reviewerProfileButton = new Button("Reviewer Profile");
+		Button reviewerScorecardButton = new Button("Set up reviewer scorecards");
+				
+		reviewerScorecardButton.setOnAction(a -> {
+			new ReviewerScorecardPage(databaseHelper, currentUser).show(primaryStage);
+		});
+
+		Button reviewerProfileButton = new Button("Reviewer Profile");
         reviewerProfileButton.setOnAction(e -> {
             try {
                 ReviewerProfile profile = databaseHelper.getReviewerProfile(currentUser.getUserName());
@@ -143,7 +150,7 @@ public class AdminHomePage {
         });
 	    
 	    
-	    layout.getChildren().addAll(adminLabel, questionPageButton, messagePageButton, reviewerRequestButton, moderationButton, adminTaskRequestButton, separator, reviewerProfileButton, reviewerScoresPageButton, updateAccountBtn, back, logout);
+	    layout.getChildren().addAll(adminLabel, questionPageButton, messagePageButton, reviewerRequestButton, moderationButton, adminTaskRequestButton, separator, reviewerProfileButton, reviewerScoresPageButton, reviewerScorecardButton, updateAccountBtn, back, logout);
 
 	    Scene adminScene = new Scene(layout, 800, 400);
 

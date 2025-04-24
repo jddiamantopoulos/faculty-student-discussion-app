@@ -138,11 +138,11 @@ public class TaskMessageListPage {
 							openStatus = db.getTaskMessageRequestOpenStatus(searchedRequest);
 						}
 						// else if not admin and not in database, create new request with current user as requester
-						else if (!user.getUserName().equals("admin")) {
+						else if (!user.getRole().equals("admin")) {
 							requester = user.getUserName();
 						}
 						// else if admin and not in database, display error message
-						else if (user.getUserName().equals("admin")) {
+						else if (user.getRole().equals("admin")) {
 							Alert adminErrorMessage = new Alert(AlertType.ERROR, "This task request does not exist.\nAdmins cannot create new task requests.");
 							adminErrorMessage.show();
 						}
@@ -153,7 +153,7 @@ public class TaskMessageListPage {
 					}
 	    			
 	    			try {
-						if (db.getTaskMessagesForConvo(searchedRequest).size() != 0 || !user.getUserName().equals("admin")) {
+						if (db.getTaskMessagesForConvo(searchedRequest).size() != 0 || !user.getRole().equals("admin")) {
 							new TaskMessagePage(db, user, searchedRequest, requester, openStatus, "open").show(primaryStage);
 						}
 					} catch (SQLException e1) {

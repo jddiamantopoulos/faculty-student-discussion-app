@@ -172,6 +172,12 @@ public class DatabaseHelper {
 						+ "feedbackBy VARCHAR(16), " + "feedbackText VARCHAR(2000))";
 				statement.execute(reviewFeedbackTable);
 				
+				// Create table for reviewer scorecards
+				String reviewerScorecards = "CREATE TABLE IF NOT EXISTS reviewerScorecards ("
+				        + "id INT AUTO_INCREMENT PRIMARY KEY, " + "username VARCHAR(16), " 
+						+ "score INT)";
+				statement.execute(reviewerScorecards);
+				
 				// Create table for reviewers book mark
 				String bookmarkedReviewersTable = "CREATE TABLE IF NOT EXISTS ReviewerBookmarks (" + "userId VARCHAR(16), " +  "reviewerId VARCHAR(16), " + "PRIMARY KEY (userId, reviewerId))";
 				statement.execute(bookmarkedReviewersTable);
@@ -180,11 +186,6 @@ public class DatabaseHelper {
 				String bookmarkedAnswersTable = "CREATE TABLE IF NOT EXISTS AnswerBookmarks (" +
 				        "userId VARCHAR(16), " + "answerId INT, " + "PRIMARY KEY (userId, answerId))";
 				statement.execute(bookmarkedAnswersTable);
-
-
-
-				
-				
 				
 			} catch (SQLException e2) {
 				System.err.println("Multiple database errors.");
@@ -1354,7 +1355,7 @@ public class DatabaseHelper {
 		try (ResultSet rs = pstmt.executeQuery()) {
 			if (list != null) {
 				while (rs.next()) {
-					Reviewer temp = new Reviewer(rs.getString("userName"), 50);
+					Reviewer temp = new Reviewer(rs.getString("userName"), getReviewerScorecard(rs.getString("userName")));
 					boolean found = false;
 					// WARNING: very inefficient
 					for (int i = 0; i < list.size(); i++) {
@@ -1372,7 +1373,7 @@ public class DatabaseHelper {
 			else {
 				list = new ArrayList<Reviewer>();
 				while (rs.next()) {
-					Reviewer temp = new Reviewer(rs.getString("userName"), 50);
+					Reviewer temp = new Reviewer(rs.getString("userName"), getReviewerScorecard(rs.getString("userName")));
 					list.add(temp);
 				}
 				user.setReviewersList(list);
@@ -1560,6 +1561,27 @@ public class DatabaseHelper {
 	}
 	
 	/**
+	 * Gets the number of likes for a given review.
+	 * @param reviewId The primary key of the review.
+	 * @return The number of likes.
+	 */
+	public int getReviewLikes(int reviewId) {
+		String query = "SELECT * FROM reviewLikes WHERE reviewId = ?";
+		int numLikes = 0;
+		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+			pstmt.setInt(1, reviewId);
+			ResultSet rs = pstmt.executeQuery();
+			while (rs.next()) {
+				numLikes++;
+			}
+			return numLikes;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return 0;
+		}
+	}
+	
+	/**
 	 * Removes the like from a review that the user had previously liked
 	 * @param reviewId the id of the review being unliked
 	 * @param likedBy the username of the user removing the like
@@ -1623,20 +1645,116 @@ public class DatabaseHelper {
 	
 	/**
 	 * Counts the number of likes the count increases for a review
-	 * @param reviewId the id of the review to increment likes 
+	 * @param review the review to increment likes 
+	 * @param userName the user who liked the review
 	 * @return true if successful, false if not
 	 */
-	public boolean incrementReviewLike(int reviewId) {
-		String query = "UPDATE reviews SET likeNum = likeNum + 1 WHERE reviewId = ?";
+	public boolean incrementReviewLike(Review review, String userName) {
+		String query = "SELECT * FROM reviewLikes WHERE reviewId = ? AND likedBy = ?";
 		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
-			pstmt.setInt(1, reviewId);
-			pstmt.executeUpdate();
-			return true;
+			pstmt.setInt(1, review.getReviewId());
+			pstmt.setString(2, userName);
+			ResultSet rs = pstmt.executeQuery();
+			if (!rs.next()) {
+				return likeReview(review.getReviewId(), userName);
+			}
+			else {
+				return unlikeReview(review.getReviewId(), userName);
+			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return false;
 		}
 	}
+	
+	// Reviewer Scorecards
+	
+	/**
+	 * Updates the default score for a given user.
+	 * @param username The user whose score should be updated.
+	 * @param score The score to be set.
+	 * @return True if update success.
+	 */
+	public boolean updateReviewerScorecard(String username, int score) {
+		boolean exists = false;
+		String prev = "SELECT score FROM reviewerScorecards WHERE username = ?";
+		try (PreparedStatement prevStmt = connection.prepareStatement(prev)) {
+			prevStmt.setString(1, username);
+			ResultSet rs = prevStmt.executeQuery();
+			if (rs.next()) {
+				exists = true;
+			}
+		} catch (SQLException e) {
+			System.err.println("User could not be found.");
+		}
+		if (exists) {
+			String query = "UPDATE reviewerScorecards SET score = ? WHERE username = ?";
+			try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+				pstmt.setInt(1, score);
+				pstmt.setString(2, username);
+				pstmt.executeUpdate();
+				return true;
+			} catch (SQLException e) {
+				e.printStackTrace();
+				return false;
+			}
+		}
+		else {
+			String query2 = "INSERT INTO reviewerScorecards (username, score) VALUES (?, ?)";
+			try (PreparedStatement pstmt2 = connection.prepareStatement(query2)) {
+				pstmt2.setString(1, username);
+				pstmt2.setInt(2, score);
+				pstmt2.executeUpdate();
+				return true;
+			} catch (SQLException e2) {
+				e2.printStackTrace();
+				return false;
+			}
+		}
+	}
+	
+	/**
+	 * Gets the default score for a given reviewer.
+	 * @param username The user whose score should be retrieved.
+	 * @return An integer (1 to 100) describing how a reviewer should be trusted.
+	 */
+	public int getReviewerScorecard(String username) {
+		String query = "SELECT * FROM reviewerScorecards WHERE username = ?";
+		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+			pstmt.setString(1, username);
+			ResultSet rs = pstmt.executeQuery();
+			if (rs.next()) {
+				return rs.getInt("score");
+			}
+			else {
+				return 50;
+			}
+		} catch (SQLException e) {
+			if (!updateReviewerScorecard(username, 50)) {
+				e.printStackTrace();
+			}
+			return 50;
+		}
+	}
+	
+	/**
+	 *  Gets all users with the reviewer role from the database.
+	 *  @throws SQLException Should be handled internally.
+	 *  @return A list of all users in the database.
+	 */
+	public ArrayList<String> getReviewers() throws SQLException {
+		String getUsers = "SELECT * FROM cse360users WHERE NOT role = 'user'";
+		ArrayList<String> users = new ArrayList<String>();
+		try (ResultSet rs = statement.executeQuery(getUsers);) {
+			while (rs.next()) {
+				users.add(rs.getString("userName"));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return users;
+	}
+	
 	/**
 	 * Adds a bookmark to an answer and removes it if already present.
 	 * @param userId The username of the application's current user.
@@ -1812,5 +1930,6 @@ public class DatabaseHelper {
         pstmt.setString(2, reviewerId);
         pstmt.executeUpdate();
 	}
+	 
 }
 	
