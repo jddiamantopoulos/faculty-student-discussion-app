@@ -1814,15 +1814,15 @@ public class DatabaseHelper {
 	 * @param userId The ID of the current user.
 	 * @return A list of bookmarked answer IDs.
 	 */
-	public List<Integer> getBookmarkedAnswers(int userId){
-	    List<Integer> answers = new ArrayList<>();
+	public List<String> getBookmarkedAnswers(String userId){
+	    List<String> answers = new ArrayList<>();
 	    String query = "SELECT answerId FROM AnswerBookmarks WHERE userId = ?";
 	    try (PreparedStatement pstmt = connection.prepareStatement(query))
 	          {
-	        pstmt.setInt(1, userId);
+	        pstmt.setString(1, userId);
 	        ResultSet rs = pstmt.executeQuery();
 	        while (rs.next()) {
-	        	answers.add(rs.getInt("answerId"));
+	        	answers.add(rs.getString("answerId"));
 	        }
 	    } catch (SQLException e) {
 	        e.printStackTrace();
@@ -1872,15 +1872,15 @@ public class DatabaseHelper {
 	 * @param userId The ID of the current user.
 	 * @return A list of bookmarked reviewer IDs.
 	 */
-	public List<Integer> getBookmarkedReviews(int userId) {
-	    List<Integer> reviewerIds = new ArrayList<>();
+	public List<String> getBookmarkedReviews(String userId) {
+	    List<String> reviewerIds = new ArrayList<>();
 	    String query = "SELECT reviewerId FROM ReviewerBookmarks WHERE userId =?";
 	    try (PreparedStatement pstmt = connection.prepareStatement(query))
 	        {
-	        pstmt.setInt(1, userId);
+	        pstmt.setString(1, userId);
 	        ResultSet rs = pstmt.executeQuery();
 	        while (rs.next()) {
-	        	reviewerIds.add(rs.getInt("reviewerId"));
+	        	reviewerIds.add(rs.getString("reviewerId"));
 	        }
 	    } catch (SQLException e) {
 	        e.printStackTrace();
