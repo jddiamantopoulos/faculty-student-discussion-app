@@ -139,8 +139,7 @@ This repository was later migrated to my personal GitHub in early 2026 for portf
 ### Requirements
 
 - Java (compatible with JavaFX)  
-- JavaFX SDK  
-- Database setup (as provided by course template)  
+- JavaFX SDK
 - JUnit 4 (required for running tests)  
 
 ---
@@ -157,17 +156,13 @@ This repository was later migrated to my personal GitHub in early 2026 for portf
 
 3. Configure JavaFX libraries and VM arguments.
 
-4. Ensure your module/classpath matches the provided course template.
-
-5. Set the application entry point to:
+4. Set the application entry point to:
 
    ```
    StartCSE360.java
    ```
 
-6. If your database contains previous data, clear it before running.
-
-7. Run the application.
+5. Run the application.
 
 ---
 
@@ -224,3 +219,4 @@ Run tests through your IDE or test runner with JUnit 4 configured.
 ## License
 
 Educational / portfolio use only.
+
