@@ -13,7 +13,7 @@ This project was developed collaboratively in a multi-person team environment.
 ### Administrative Task Messaging Thread
 ![Task Messaging Thread](screenshots/task-messaging-thread.png)
 
-### Administrative Request List
+### Administrative Task Request List
 ![Task Messaging List](screenshots/task-requests-page.png)
 
 ### Application Home Page
@@ -232,5 +232,6 @@ Run tests through your IDE or test runner with JUnit 4 configured.
 ## License
 
 Educational / portfolio use only.
+
 
 
