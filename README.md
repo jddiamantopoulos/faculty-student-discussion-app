@@ -8,6 +8,19 @@ This project was developed collaboratively in a multi-person team environment.
 
 ---
 
+## Screenshots
+
+### Administrative Task Messaging Thread
+![Task Messaging Thread](screenshots/task-messaging-thread.png)
+
+### Administrative Request List
+![Task Messaging List](screenshots/task-requests-page.png)
+
+### Application Home Page
+![Application Home](screenshots/home-page.jpg)
+
+---
+
 ## Tech Stack
 
 - Java  
@@ -219,4 +232,5 @@ Run tests through your IDE or test runner with JUnit 4 configured.
 ## License
 
 Educational / portfolio use only.
+
 
